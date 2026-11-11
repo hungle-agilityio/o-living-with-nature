@@ -7,6 +7,7 @@ is the background wrapper of one build (started by the tick, not by hand).
 
 from __future__ import annotations
 
+import base64
 import json
 import os
 import queue
@@ -124,6 +125,15 @@ PROTECTED_TEST_DIRS: tuple[str, ...] = ()
 BULLET_PATH = re.compile(r"^\s*[-*]\s+[^`\n]*`([^`\n]+)`", re.MULTILINE)
 LAB_PREFIX = ""
 NTFY_TITLE = ""
+
+
+def header_text(text: str) -> str:
+    """An HTTP header value: ASCII as is, anything else as RFC 2047 UTF-8 (ntfy decodes it)."""
+    if text.isascii():
+        return text
+    return "=?UTF-8?B?" + base64.b64encode(text.encode()).decode("ascii") + "?="
+
+
 REMINDER_SECONDS = 6 * 3600
 SIGNED_OUT_TEXT = "Claude Code is not signed in"
 ENTRYPOINT = "claude-desktop"  # `claude -p` offers the Artifact tool only with this
@@ -217,7 +227,7 @@ class RealHost:
         request = urllib.request.Request(
             f"https://ntfy.sh/{topic}",
             data=message.encode(),
-            headers={"Title": NTFY_TITLE, "Priority": priority},
+            headers={"Title": header_text(NTFY_TITLE), "Priority": priority},
         )
         try:
             urllib.request.urlopen(request, timeout=10).close()
