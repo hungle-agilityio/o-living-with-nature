@@ -19,7 +19,7 @@ Use the `build-verify-report` skill. In short:
 | Types | `uv run mypy .` |
 | Tests | `uv run pytest -q` |
 | Coverage | 90% on services and repositories |
-| Skill and hook tests | `uv run pytest .flow/plugin/hooks/tests .claude/skills` |
+| Skill and hook tests | `uv run pytest` on the plugin's `hooks/tests` and `skills` and on `.claude/skills`, only the folders that exist; none, or no test in them, is PASS with "no skill or hook tests found" |
 | Issue | each criterion of the issue, from the criteria file |
 | Query count | asserted for list and dashboard pages |
 | Security | no secret-like string in the diff (`.claude/rules/security.md`) |
