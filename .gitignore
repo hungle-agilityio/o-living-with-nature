@@ -10,6 +10,7 @@ db.sqlite3
 staticfiles/
 .env
 .env.*
+!.env.example
 ops/agent.env
 out/
 .DS_Store
