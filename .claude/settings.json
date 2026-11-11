@@ -21,6 +21,7 @@
       "Bash(gh repo view:*)",
       "Bash(gh auth status:*)",
       "Bash(uv run coverage:*)",
+      "Bash(uv run python .claude/skills/check-in-browser/browser_check.py --spec out/*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git switch:*)",
