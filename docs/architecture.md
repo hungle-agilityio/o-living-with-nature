@@ -5,15 +5,16 @@ Phase 1 is a small bilingual (VI/EN) site of five pages (Home, House, Hòa Xuân
 ## Modules
 
 ```
-config/            settings (environment), root URLs, WSGI
-  └─ urls.py ──► apps/pages/urls.py
-apps/pages/        the public pages
+src/config/        settings (environment), root URLs, WSGI
+  └─ urls.py ──► src/pages/urls.py
+src/pages/         the public pages (one feature = one Django app)
   ├─ urls.py       "/" home, "/healthz/" health check (more pages come with the first epic)
   ├─ views.py      thin: render a template; logic goes to services.py when it appears
-  └─ services.py   (created with the first rule)
-templates/         base.html + pages/*.html (all visible text, VI and EN)
-static/            CSS, images
-tests/             app tests (protected on main)
+  ├─ services.py   (created with the first rule)
+  ├─ templates/    pages/*.html (all visible text, VI and EN)
+  └─ tests/        the feature's tests (protected on main)
+src/templates/     base.html, shared by every feature
+src/static/        CSS, images shared by every feature
 ```
 
 ## Request flow
@@ -29,8 +30,8 @@ No database reads in phase 1; SQLite exists for Django itself. The health check 
 ## Delivery flow
 
 ```
-issue (agent:ready) ──► loop on the Mac mini (ops/, plugin agent-flow) ──► pull request into main
-main ──► release branch "deploy" (ops/release.py) ──► Render deploys after the Checks workflow passes
+issue (agent:ready) ──► loop on the Mac mini (.flow/loop/, plugin agent-flow in .flow/plugin/) ──► pull request into main
+main ──► release branch "deploy" (.flow/loop/release.py) ──► Render deploys after the Checks workflow passes
 ```
 
 TODO: the URL scheme for the two languages and the page list's URLs come with the first epic.

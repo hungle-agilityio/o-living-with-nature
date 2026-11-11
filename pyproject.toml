@@ -27,8 +27,8 @@ package = false
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-# The agent-flow plugin has its own tests (the "Plugin tests" step); the app checks skip it.
-extend-exclude = ["*/migrations/*", "plugins"]
+# The flow (.flow/) has its own tests; the app checks skip it.
+extend-exclude = ["*/migrations/*", ".flow"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
@@ -36,13 +36,15 @@ select = ["E", "F", "I", "UP", "B"]
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.settings"
 python_files = ["test_*.py"]
-testpaths = ["tests"]
-addopts = "--cov=apps --cov-report=term-missing"
+pythonpath = ["src"]
+testpaths = ["src"]
 
 [tool.mypy]
 strict = true
+mypy_path = "src"
+explicit_package_bases = true
 plugins = ["mypy_django_plugin.main"]
-exclude = ["^plugins/", "/migrations/"]
+exclude = ["^\\.flow/", "/migrations/"]
 
 [tool.django-stubs]
 django_settings_module = "config.settings"

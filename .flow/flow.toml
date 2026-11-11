@@ -1,0 +1,40 @@
+# The project values of the flow, read by .flow/loop/flow_config.py.
+
+[project]
+repo = "hungle-agilityio/o-living-with-nature"
+owner = "hungle-agilityio"
+app_dir = "."
+display_name = "\u1ede \u2014 Living with Nature"
+slug = "o-living"
+
+[loop]
+state_dir = "~/.o-living"
+tmux_session = "o-living-loop"
+launchd_label = "com.o-living.loop"
+setup_command = ["bash", "scripts/setup.sh"]
+alone_words = []
+
+[checks]
+commands = [["bash", "scripts/check.sh"]]
+ci_workflow = "Checks"
+protected_test_dirs = ["tests"]
+
+[release]
+timezone = "Asia/Ho_Chi_Minh"
+deploy_line = ""
+
+[plugin]
+id = "agent-flow@o-living"
+marketplace = "o-living"
+
+[paths]
+loop_dir = ".flow/loop"
+plugin_dir = ".flow/plugin"
+intent_file = "docs/intent/{feature}.md"
+specs_dir = "docs/specs"
+spec_pr_dirs = ["docs/intent", "docs/specs"]
+plans_dir = "docs/plans"
+decisions_dir = "docs/decisions"
+templates_dir = "docs/templates"
+code_dirs = ["src"]
+flow_dirs = [".flow/", ".claude/", ".github/", "docs/intent/", "docs/specs/", "scripts/"]

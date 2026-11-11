@@ -1,12 +1,14 @@
 # Architecture rules
 
+Code is split by feature, not by layer: `src/<feature>/` holds everything one feature needs (a Django app: views, URLs, its templates in `src/<feature>/templates/`), and its tests in `src/<feature>/tests/`. The Django project is `src/config/`; templates and static files shared by every feature are in `src/templates/` and `src/static/`. The overview is `docs/architecture.md`.
+
 ## Layers
 
-- **Views** (`apps/pages/views.py`): read the request, call a service when there is logic, render a template. No business rule in a view or a template.
-- **Services** (`apps/pages/services.py`, created when the first rule appears): plain typed functions or service objects that hold the logic and are unit tested.
+- **Views** (`src/pages/views.py`): read the request, call a service when there is logic, render a template. No business rule in a view or a template.
+- **Services** (`src/pages/services.py`, created when the first rule appears): plain typed functions or service objects that hold the logic and are unit tested.
 - **Models**: only when a page needs stored data. Phase 1 stores nothing; a model is a decision for an issue, never a side effect.
-- **Templates** (`templates/`): presentation only; every page extends `base.html`.
-- **Settings** (`config/settings.py`): values that differ per environment come from environment variables; secrets are never committed.
+- **Templates** (`src/<feature>/templates/`, shared ones in `src/templates/`): presentation only; every page extends `base.html`.
+- **Settings** (`src/config/settings.py`): values that differ per environment come from environment variables; secrets are never committed.
 
 ## Dependencies
 

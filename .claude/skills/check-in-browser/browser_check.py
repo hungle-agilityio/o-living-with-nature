@@ -61,9 +61,9 @@ REDACTED = "[redacted]"
 
 
 def plugin_hook(name: str) -> Path:
-    """A hook of the agent-flow plugin: plugins/agent-flow/hooks/<name> at the git root."""
+    """A hook of the agent-flow plugin: .flow/plugin/hooks/<name> at the git root."""
     for folder in Path(__file__).resolve().parents:
-        candidate = folder / "plugins" / "agent-flow" / "hooks" / name
+        candidate = folder / ".flow" / "plugin" / "hooks" / name
         if candidate.is_file():
             return candidate
     raise FileNotFoundError(f"the agent-flow plugin hook {name} was not found")

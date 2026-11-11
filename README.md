@@ -15,16 +15,17 @@ Open http://localhost:8000/ (health check: `/healthz/`).
 ## Check it
 
 ```
-scripts/check.sh            # lint, format, types, app tests, plugin tests (same as CI)
+bash scripts/check.sh       # lint, format, types, tests (same as CI and the loop)
 uv run python .claude/skills/check-in-browser/browser_check.py   # pages in a headless browser
 ```
 
 ## Deploy
 
-Render service `o-living-web` from `render.yaml`: it deploys the `deploy` branch after the `Checks` workflow passes. Set `SITE_BASE_URL` in the Render dashboard. A release moves `main` to `deploy` (`ops/release.py`).
+Render service `o-living-web` from `render.yaml`: it deploys the `deploy` branch after the `Checks` workflow passes. Set `SITE_BASE_URL` in the Render dashboard. A release moves `main` to `deploy` (`.flow/loop/release.py`).
 
 ## More
 
 - How the project is built and worked on: [`CLAUDE.md`](CLAUDE.md), [`.claude/`](.claude/)
 - Architecture: [`docs/architecture.md`](docs/architecture.md)
-- Decisions: [`.claude/knowledge/decisions/`](.claude/knowledge/decisions/README.md)
+- Decisions: [`docs/decisions/`](docs/decisions/README.md)
+- Code: `src/<feature>/` with its tests in `src/<feature>/tests/`; the agent flow: `.flow/`
