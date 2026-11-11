@@ -2,6 +2,7 @@
   <div class="site-header__row">
     <div class="site-header__left">
       <a class="wordmark" href="/">Ở</a>
+      {% if daypart %}<span class="site-header__time label">It's {{ daypart.clock }} in Hòa Xuân · {{ daypart.label }}</span>{% endif %}
     </div>
     <nav class="nav-row" aria-label="Main">
       {% include "includes/nav_links.html" %}
