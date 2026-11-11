@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: o-living-web
+    runtime: python
+    plan: free
+    region: singapore
+    branch: deploy
+    autoDeployTrigger: checksPass
+    healthCheckPath: /healthz/
+    buildCommand: pip install uv && uv sync --frozen --no-dev && uv run --no-sync python manage.py collectstatic --noinput
+    startCommand: uv run --no-sync python manage.py migrate --noinput && uv run --no-sync gunicorn config.wsgi --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DJANGO_DEBUG
+        value: "0"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: o-living-web.onrender.com
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: SITE_BASE_URL
+        sync: false
