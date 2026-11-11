@@ -2,16 +2,16 @@
 
 ## Summary
 
-Every page of the English site (at the root, phase 1) gets one shared look: the header, the footer, the editorial type, and colours that follow the time of day in Hòa Xuân. The five page addresses exist (`/`, `/house/`, `/hoa-xuan/`, `/faq/`, `/contact/`), each with its own title and description, but only a heading; epic 3 fills them. Every place for a photo or a video shows its empty state until epics 2 and 3 add files. The "page not found" page takes the new look. The search-engine groundwork (canonical address, Open Graph, `sitemap.xml`, `robots.txt`) is in place, and one switch keeps the whole site out of search results. Values and drawings: `docs/specs/site-shell/design.md`.
+Every page of the English site (at the root, phase 1) gets one shared look, design E "Through the Ở": the header, the footer, the editorial type, and colours that follow the time of day in Hòa Xuân. The home page opens on a giant letter "Ở" filled with a garden loop for the time of day, with a dictionary line that teaches the word; scrolling flies through the letter into the loop. The five page addresses exist (`/`, `/house/`, `/hoa-xuan/`, `/faq/`, `/contact/`), each with its own title and description, but only a heading; epic 3 fills them. Every place for a photo or a video shows its empty state until epics 2 and 3 add files, except the four illustrative hero loops. The "page not found" page takes the new look. The search-engine groundwork (canonical address, Open Graph, `sitemap.xml`, `robots.txt`) is in place, and one switch keeps the whole site out of search results. Values and drawings: `docs/specs/site-shell/design.md`.
 
 ## Acceptance criteria
 
 ### Look and layout (T1)
 
 - **AC1.** Every page is English: `html lang="en"`, and the settings say `LANGUAGE_CODE = "en"` with English as the only language.
-- **AC2.** Every page has the header from design.md: the top strip, the wordmark "Ở" linking to `/`, and the links "The house" (`/house/`), "Hòa Xuân" (`/hoa-xuan/`), "FAQ" (`/faq/`) and "Contact" (`/contact/`). The link of the page being shown carries `aria-current="page"`.
+- **AC2.** Every page has the header row from design.md: the wordmark "Ở" linking to `/`, the time line of AC10, and the links "The house" (`/house/`), "Hòa Xuân" (`/hoa-xuan/`), "FAQ" (`/faq/`) and "Contact" (`/contact/`). The link of the page being shown carries `aria-current="page"`.
 - **AC3.** At 760px wide or less, the four links are inside a `details` element whose `summary` reads "Menu"; opening it shows the four links as a list. No JavaScript is used for it.
-- **AC4.** Every page has the footer from design.md, including the line `Photos marked "Illustrative" are stock photos standing in until the house is finished.`
+- **AC4.** Every page has the footer from design.md, including "Ở  a word for staying · Hòa Xuân, Đà Nẵng" and the line `Photos and videos marked "Illustrative" are stand-ins until the house is finished.`
 - **AC5.** The stylesheet defines the fonts, type scale, colours, spacing and buttons of design.md as CSS custom properties (for example `--ink`, `--ground`, `--muted`), and the pages load Be Vietnam Pro and Cormorant Garamond from Google Fonts with `display=swap`.
 - **AC6.** A reusable media slot (`src/templates/includes/media.html`) takes a ratio, an optional photo or video, alt text, an illustrative flag and a credit:
   - with a photo and the flag on, it shows the photo, the chip "Illustrative photo" and the credit as a caption;
@@ -23,13 +23,13 @@ Every page of the English site (at the root, phase 1) gets one shared look: the 
 
 - **AC8.** A service returns the theme for a moment in Đà Nẵng time (Asia/Ho_Chi_Minh): `dawn` from 05:00 to 07:59, `day` from 08:00 to 16:59, `dusk` from 17:00 to 18:59, `night` from 19:00 to 04:59. Tests cover each boundary (04:59, 05:00, 07:59, 08:00, 16:59, 17:00, 18:59, 19:00).
 - **AC9.** Every page's `body` carries a `data-daypart` attribute set to the theme name for the current Đà Nẵng time, and the colours of design.md's table apply for that theme.
-- **AC10.** The top strip shows "It's HH:MM in Hòa Xuân" with the Đà Nẵng time of the request (24-hour clock).
+- **AC10.** The header row shows "It's HH:MM in Hòa Xuân · Theme" with the Đà Nẵng time of the request (24-hour clock) and the theme name with a capital first letter (for example "It's 13:20 in Hòa Xuân · Day").
 - **AC11.** The query `?t=dawn`, `?t=day`, `?t=dusk` or `?t=night` shows that theme instead; any other value is ignored and the real theme shows. The footer has the line "See Ở at dawn · day · dusk · night", each word linking to the current page with that `?t=` value.
 - **AC12.** The colour change has a 0.9s transition, and none under `prefers-reduced-motion: reduce`.
 
 ### Pages and search groundwork (T3)
 
-- **AC13.** `/`, `/house/`, `/hoa-xuan/`, `/faq/` and `/contact/` answer 200. Each shows one `h1`: "Living with nature" (styled as in design.md, "with" in italic serif), "The house", "Hòa Xuân", "FAQ", "Contact". The home page also shows its hero media slot in the empty state, 21:9 (4:5 on phones).
+- **AC13.** `/`, `/house/`, `/hoa-xuan/`, `/faq/` and `/contact/` answer 200. Each shows one `h1`: "Living with nature" (styled as in design.md, "with" in italic serif), "The house", "Hòa Xuân", "FAQ", "Contact". The four inner pages show the inner page heading of design.md (chapter marker, chapter word, `h1`). Until T5, the home page shows its `h1` under a plain letter "Ở" in Sand.
 - **AC14.** Each page has this `title` and `meta name="description"`:
 
   | Page | Title | Description |
@@ -44,6 +44,14 @@ Every page of the English site (at the root, phase 1) gets one shared look: the 
 - **AC16.** `/sitemap.xml` answers 200 with `application/xml`, listing the five canonical addresses and nothing else.
 - **AC17.** `INDEXING_ENABLED` comes from the environment and is off unless set to `1`. Off: every page has `meta name="robots" content="noindex, nofollow"` and `/robots.txt` reads `User-agent: *`, `Disallow: /` and the `Sitemap:` line. On: the meta tag reads `index, follow` and `/robots.txt` reads `User-agent: *`, `Allow: /` and the `Sitemap:` line.
 - **AC18.** No page makes a database query (0 queries on each of the five pages, `sitemap.xml` and `robots.txt`); a test checks it.
+
+### Home hero "Through the Ở" (T5)
+
+- **AC21.** The home page opens with the letter "Ở" (Cormorant Garamond 500, sized as in design.md) filled with the loop of the current theme from `src/static/media/hero/` (`mp4` and `webm` sources, the `jpg` poster), and under it the dictionary line: "ở · verb · Vietnamese · say "uh?"" then "1. to stay. 2. to live somewhere. 3. to be at home." (with "ở" and "to be at home." in italic), and "Scroll, and come in ↓". The chip "Illustrative video" shows, and `media-credits.md` lists every loop.
+- **AC22.** With JavaScript and no reduced motion, scrolling through the hero stage flies through the letter as described in design.md: the letter grows and centres until the loop fills the screen, the dictionary line fades out in the first sixth, the header row turns Paper over the loop, and in the last fifth the `h1` "LIVING with NATURE" and its line rise into place. Scrolling back up plays it in reverse. The script is one small plain JavaScript file (`src/static/js/hero.js`) loaded with `defer`, with no library.
+- **AC23.** Without JavaScript, or under `prefers-reduced-motion: reduce`, the hero is still: the letter is filled with the theme's poster photo through CSS `background-clip: text`, no video plays, and the dictionary line, the `h1` and its line are all visible in the page flow. The `h1` is in the HTML in every case, never drawn only on the canvas.
+- **AC24.** With `?t=` (AC11) the hero uses that theme's loop and poster. When a theme's files are missing, the letter is filled with Sand #E9E2D3, no chip shows and nothing breaks.
+- **AC25.** The home page stays light: the hero videos use `preload="metadata"`, only the current theme's loop is in the page, the page itself makes 0 database queries, and on a 390px wide screen nothing scrolls sideways.
 
 ### Page not found (T4)
 
@@ -61,13 +69,17 @@ Every page of the English site (at the root, phase 1) gets one shared look: the 
 - Query values: `?t=` is checked against the four names only; anything else, upper case included, is ignored and never echoed into the page.
 - Caching: themed pages are not cached by the server, so the theme is always current.
 - Permissions: every page is public; nothing to sign in to.
-- Reduced motion: no colour transition, no autoplay video (poster only).
+- Reduced motion: no colour transition, no autoplay video (poster only), no flight through the letter.
+- No JavaScript: every page works; the home hero is the still version of AC23.
+- Slow phone: the letter shows the poster until the loop can play; the flight never waits for the video.
 
 ## Decisions
 
 | Question | Chosen | Rejected | Why |
 |---|---|---|---|
-| Overall look | Editorial v2: uppercase light sans with italic serif words, wide air, photo-led | First "Quiet Garden" version (owner: not artistic enough) | Owner wants a unique, artistic feel close to the L'OISEAU DÉ reference, without copying it |
+| Overall look | Design E "Through the Ở": the giant letter as a door, a dictionary line, chapters named ở nhà, ở gần, ở lâu, ở lại?, editorial type (uppercase light sans with italic serif words) | Designs A Atelier, B Field Journal, C Cinematic, D Atelier Cinema, compared as tour videos | Owner chose E: the name itself becomes the experience, so a visitor remembers "Ở" after one visit, and it keeps the time-of-day idea |
+| Fly-through animation | One small plain JavaScript file as a progressive enhancement, still hero without it | A JavaScript framework or animation library; CSS only | The architecture allows small plain scripts; a canvas is needed to show video through a letter; every page still works without script |
+| Hero loops in epic 1 | Four illustrative Pexels loops as static files, labelled, replaced in epic 2 | Empty hero until epic 2 | The look depends on the loop inside the letter; Pexels License allows it |
 | Unique experience | Both: the site follows the time of day, and a walk-through floor plan on The house | Only one of them; another idea | Time of day gives a first impression on every page; the plan helps visitors picture living there |
 | Whose clock | Đà Nẵng time, worked out by Django on the server | The visitor's clock (needs JavaScript) | Visitors abroad feel life in Hòa Xuân; no script; the same for search engines |
 | Time slots | Dawn 05–08, Day 08–17, Dusk 17–19, Night 19–05 | Day and night only | Four moods give the richest change |
