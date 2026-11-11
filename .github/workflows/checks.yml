@@ -12,10 +12,6 @@ concurrency:
   group: checks-${{ github.ref }}
   cancel-in-progress: true
 
-defaults:
-  run:
-    working-directory: .
-
 jobs:
   checks:
     runs-on: ubuntu-latest
@@ -31,16 +27,8 @@ jobs:
         run: pip install uv==0.5.30
       - name: Install the locked dependencies
         run: uv sync --frozen
-      - name: Lint
-        run: uv run ruff check .
-      - name: Format
-        run: uv run ruff format --check .
-      - name: Types
-        run: uv run mypy .
-      - name: App tests with coverage
-        run: uv run pytest -q
-      - name: Plugin and skill tests
-        run: uv run pytest plugins/agent-flow .claude/skills -q --no-cov -p no:cacheprovider
+      - name: Lint, types and tests
+        run: bash scripts/check.sh
       - name: Plugin version is bumped when the plugin changes
         if: github.event_name == 'pull_request'
-        run: uv run python ops/check_plugin_version.py "${{ github.event.pull_request.base.sha }}" HEAD
+        run: python .flow/loop/check_plugin_version.py "${{ github.event.pull_request.base.sha }}" HEAD

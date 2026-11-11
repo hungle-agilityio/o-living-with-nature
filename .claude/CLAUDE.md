@@ -6,22 +6,20 @@ A small bilingual (Vietnamese and English) website for one rental garden house i
 
 | Folder | What lives there |
 |---|---|
-| `config/` | Django project: settings, root URLs, WSGI |
-| `apps/pages/` | The one Django app: views and URLs of the public pages |
-| `templates/` | Page templates (`base.html`, `pages/`) |
-| `static/` | CSS and images |
-| `tests/` | All app tests (protected: the loop never edits a test already on `main`) |
-| `ops/` | The loop (tick, launchd, flow config `ops/flow.toml`) |
-| `plugins/agent-flow/` | This repository's own flow plugin (hooks, skills, commands, sub-agents) |
-| `specs/`, `docs/app/templates/` | Specs and issue templates |
+| `src/config/` | Django project: settings, root URLs, WSGI |
+| `src/pages/` | The public pages (one feature, one Django app): views, URLs, `templates/pages/` |
+| `src/pages/tests/` | The feature's tests (protected: the loop never edits a test already on `main`) |
+| `src/templates/`, `src/static/` | Templates (`base.html`) and CSS shared by every feature |
+| `.flow/loop/` | The loop (tick, launchd, release); its config is `.flow/flow.toml` |
+| `.flow/plugin/` | This repository's own flow plugin (hooks, skills, commands, sub-agents) |
+| `docs/` | `intent/`, `specs/`, `plans/`, `decisions/` (ADRs), `templates/` (spec and issue templates), `architecture.md` |
 
 ## Commands
 
 ```
-uv sync
+bash scripts/setup.sh
 uv run python manage.py runserver
-uv run ruff check . && uv run ruff format --check . && uv run mypy . && uv run pytest -q
-uv run pytest plugins/agent-flow .claude/skills -q --no-cov -p no:cacheprovider
+bash scripts/check.sh
 uv run python .claude/skills/check-in-browser/browser_check.py
 ```
 
@@ -31,7 +29,7 @@ Requests go through the Claude Project (analyse, grill-me, spec, issues); the lo
 
 ## Where things go
 
-- Page logic in `apps/pages/` (views stay thin; anything beyond rendering goes to a service module, see `rules/architecture.md`).
+- Page logic in `src/pages/` (views stay thin; anything beyond rendering goes to a service module, see `rules/architecture.md`).
 - Text a visitor reads exists in Vietnamese and English (`rules/domain.md`).
-- The public base URL is `SITE_BASE_URL` in `config/settings.py`, nowhere else.
-- Decisions: `knowledge/decisions/` (ADRs).
+- The public base URL is `SITE_BASE_URL` in `src/config/settings.py`, nowhere else.
+- Decisions: `docs/decisions/` (ADRs).
