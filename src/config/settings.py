@@ -97,7 +97,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-    SECURE_SSL_REDIRECT = True
+    # On by default; only a local run on plain http (the browser check) switches it off.
+    SECURE_SSL_REDIRECT = env_bool("DJANGO_SECURE_SSL_REDIRECT", True)
     SECURE_REDIRECT_EXEMPT = [r"^healthz/$"]  # the host's health check calls plain HTTP
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
