@@ -1,0 +1,48 @@
+[project]
+name = "o-living"
+version = "0.1.0"
+description = "Ở — Living with Nature: bilingual (VI/EN) website of a rental garden house in Hòa Xuân, Đà Nẵng."
+requires-python = ">=3.11"
+dependencies = [
+    "django>=5.1,<6",
+    "gunicorn>=23.0",
+    "whitenoise>=6.7",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-django>=4.9",
+    "pytest-cov>=5.0",
+    "pytest-mock>=3.14",
+    "playwright==1.64.0",
+    "ruff>=0.5",
+    "mypy>=1.10",
+    "django-stubs[compatible-mypy]>=5.1",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+# The agent-flow plugin has its own tests (the "Plugin tests" step); the app checks skip it.
+extend-exclude = ["*/migrations/*", "plugins"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["test_*.py"]
+testpaths = ["tests"]
+addopts = "--cov=apps --cov-report=term-missing"
+
+[tool.mypy]
+strict = true
+plugins = ["mypy_django_plugin.main"]
+exclude = ["^plugins/", "/migrations/"]
+
+[tool.django-stubs]
+django_settings_module = "config.settings"
