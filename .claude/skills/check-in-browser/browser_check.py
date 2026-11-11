@@ -162,7 +162,11 @@ def one_run_secret() -> str:
 
 
 def app_env(database: Path, debug: bool) -> dict[str, str]:
-    """The app's environment: a throw-away database and, with debug off, a one-run secret key."""
+    """The app's environment: a throw-away database and, with debug off, a one-run secret key.
+
+    With debug off the app would send every request to https, which this local run on plain
+    http cannot answer, so the redirect is switched off for this run only.
+    """
     env = {
         **os.environ,
         "DJANGO_DB_NAME": str(database),
@@ -171,19 +175,22 @@ def app_env(database: Path, debug: bool) -> dict[str, str]:
     }
     if not debug:
         env["DJANGO_SECRET_KEY"] = one_run_secret()
+        env["DJANGO_SECURE_SSL_REDIRECT"] = "0"
     return env
 
 
 def start_app(root: Path, database: Path, port: int, debug: bool = True) -> subprocess.Popen[bytes]:
-    """With debug off the app runs as in production; --insecure still serves the static files."""
+    """With debug off the app runs as in production, so the style files are collected first."""
     env = app_env(database, debug)
-    subprocess.run(
-        [sys.executable, "manage.py", "migrate", "--noinput"],
-        cwd=root,
-        env=env,
-        check=True,
-        capture_output=True,
-    )
+    prepare = [["migrate", "--noinput"], *([] if debug else [["collectstatic", "--noinput"]])]
+    for command in prepare:
+        subprocess.run(
+            [sys.executable, "manage.py", *command],
+            cwd=root,
+            env=env,
+            check=True,
+            capture_output=True,
+        )
     return subprocess.Popen(
         [
             sys.executable,
@@ -191,7 +198,8 @@ def start_app(root: Path, database: Path, port: int, debug: bool = True) -> subp
             "runserver",
             f"127.0.0.1:{port}",
             "--noreload",
-            *([] if debug else ["--insecure"]),
+            # --nostatic lets WhiteNoise serve the collected, hashed files as in production.
+            *([] if debug else ["--insecure", "--nostatic"]),
         ],
         cwd=root,
         env=env,
