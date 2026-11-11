@@ -74,8 +74,9 @@ DATABASES = {
     }
 }
 
-LANGUAGE_CODE = "vi"
-LANGUAGES = [("vi", "Tiếng Việt"), ("en", "English")]
+# Phase 1 is English only, at the site root; Vietnamese comes later under /vi/.
+LANGUAGE_CODE = "en"
+LANGUAGES = [("en", "English")]
 TIME_ZONE = "Asia/Ho_Chi_Minh"
 USE_I18N = True
 USE_TZ = True
