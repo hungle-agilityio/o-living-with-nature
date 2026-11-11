@@ -5,7 +5,8 @@
   --font-sans: "Be Vietnam Pro", system-ui, sans-serif;
   --font-serif: "Cormorant Garamond", Georgia, serif;
 
-  /* Colours (the day theme; the footer and the contact band are fixed) */
+  /* Colours (the day theme until body[data-daypart] sets another; the footer and the contact
+     band are fixed) */
   --ground: #f4f0e8;
   --ink: #1f2a22;
   --muted: #5c6358;
@@ -51,6 +52,33 @@
   --button-spacing: 0.16em;
 }
 
+/* Colour themes: the time of day in Hòa Xuân (Đà Nẵng time), set by the server on body. */
+
+body[data-daypart="dawn"] {
+  --ground: #efe3d6;
+  --ink: #2b2620;
+  --muted: #5e5348;
+}
+
+body[data-daypart="day"] {
+  --ground: #f4f0e8;
+  --ink: #1f2a22;
+  --muted: #5c6358;
+}
+
+body[data-daypart="dusk"] {
+  --ground: #e4be97;
+  --ink: #2a1e16;
+  --muted: #4e3a2c;
+}
+
+body[data-daypart="night"] {
+  --ground: #151d18;
+  --ink: #e9e2d3;
+  --muted: #b9b2a2;
+  --line: rgba(233, 226, 211, 0.18);
+}
+
 *,
 *::before,
 *::after {
@@ -69,6 +97,7 @@ body {
   font-size: var(--size-body);
   line-height: var(--line-body);
   overflow-wrap: break-word;
+  transition: background-color 0.9s ease, color 0.9s ease;
 }
 
 img,
@@ -409,9 +438,13 @@ h2 em,
   }
 }
 
-/* Reduced motion: no video plays, the poster photo shows instead. */
+/* Reduced motion: no colour transition, no video plays, the poster photo shows instead. */
 
 @media (prefers-reduced-motion: reduce) {
+  body {
+    transition: none;
+  }
+
   .media video {
     display: none;
   }
