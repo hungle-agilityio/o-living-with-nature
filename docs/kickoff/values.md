@@ -9,7 +9,7 @@ Approved by the owner in the Project chat on 2026-11-11 (Phase 2 of the kickoff)
 | `SLUG` | `o-living` |
 | `APP_DIR` | `.` |
 | `OWNER` | `hungle-agilityio` |
-| `NTFY_TOPIC` | `o-living-loop-k7q2` |
+| `NTFY_TOPIC` | kept only in `~/.o-living/agent.env` on the Mac mini (the repository is public; anyone who knows the topic can read the loop's messages) |
 | `STACK` | Python 3.11 + Django 5 + SQLite (static bilingual VI/EN pages) |
 | `CODE_DIRS` | `apps/`, `config/`, `templates/`, `static/` |
 | Hosting | Render service `o-living-web`, branch `deploy`, `autoDeployTrigger: checksPass`, health check `/healthz/` |
