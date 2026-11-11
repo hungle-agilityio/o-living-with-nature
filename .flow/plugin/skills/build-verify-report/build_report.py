@@ -103,15 +103,36 @@ def run_checks(root: Path, run: Runner) -> list[dict[str, str]]:
     detail += f", coverage {total}%" if total is not None else ""
     axes.append(axis("Tests", "PASS" if code == 0 else "FAIL", detail))
     axes.append(coverage_axis(root, run, os.environ))
-    suites = [str(PLUGIN_ROOT / "hooks" / "tests"), str(PLUGIN_ROOT / "skills")]
-    suites += [".claude/skills"] if (root / ".claude" / "skills").is_dir() else []
+    axes.append(skill_and_hook_axis(root, run))
+    return axes
+
+
+NO_TESTS_COLLECTED = 5  # pytest's exit code when it finds no test
+
+
+def skill_and_hook_axis(root: Path, run: Runner) -> dict[str, str]:
+    """pytest on the plugin's hook and skill tests and .claude/skills, only the folders that exist.
+
+    A folder that does not exist, or folders without any test, mean "no tests" (PASS with a
+    note), never a failure: pytest stops on a missing path before it runs anything.
+    """
+    candidates = [
+        PLUGIN_ROOT / "hooks" / "tests",
+        PLUGIN_ROOT / "skills",
+        root / ".claude" / "skills",
+    ]
+    suites = [str(path) for path in candidates if path.is_dir()]
+    if not suites:
+        return axis("Skill and hook tests", "PASS", "no skill or hook tests found")
     code, out = run(
         [*WITHOUT_LOOP, "uv", "run", "pytest", *suites, "-q", "--no-cov", "-p", "no:cacheprovider"],
         root,
     )
-    detail = f"{parse_pytest(out)['passed']} passed, {parse_pytest(out)['failed']} failed"
-    axes.append(axis("Skill and hook tests", "PASS" if code == 0 else "FAIL", detail))
-    return axes
+    if code == NO_TESTS_COLLECTED:
+        return axis("Skill and hook tests", "PASS", "no skill or hook tests found")
+    counts = parse_pytest(out)
+    detail = f"{counts['passed']} passed, {counts['failed']} failed"
+    return axis("Skill and hook tests", "PASS" if code == 0 else "FAIL", detail)
 
 
 def coverage_axis(root: Path, run: Runner, env: Mapping[str, str]) -> dict[str, str]:
