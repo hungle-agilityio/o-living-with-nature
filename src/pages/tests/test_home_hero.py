@@ -210,12 +210,17 @@ def test_media_credits_list_every_loop_and_its_files_exist(theme: str) -> None:
 def test_page_loads_the_one_plain_script_deferred(client: Client) -> None:
     page = _parse(_html(client))
 
-    (script,) = page.all("script")
-    assert script["src"] == "/static/js/hero.js"
-    assert "defer" in script
-    assert "async" not in script
-    # Nothing written into the page itself: the script file is all the JavaScript there is.
-    assert page.text["script"] == [""]
+    # The hero's flight, then the photo dialog of the floor plan (one-page AC17).
+    scripts = page.all("script")
+    assert [script["src"] for script in scripts] == [
+        "/static/js/hero.js",
+        "/static/js/floor-plan.js",
+    ]
+    for script in scripts:
+        assert "defer" in script
+        assert "async" not in script
+    # Nothing written into the page itself: the script files are all the JavaScript there is.
+    assert page.text["script"] == ["", ""]
 
 
 def test_script_is_small_and_uses_no_library() -> None:

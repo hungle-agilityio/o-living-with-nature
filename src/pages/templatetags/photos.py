@@ -1,10 +1,12 @@
-"""`{% photo "key" ratio="4 / 3" %}` and `{% area_loop %}`: media slots of `pages.photos`."""
+"""`{% photo "key" ratio="4 / 3" %}` and `{% area_loop %}`: media slots of `pages.photos`;
+`{% floor_plan %}`: the walk through the house, whose blocks link to those photos."""
 
 from typing import Any
 
 from django import template
 from django.templatetags.static import static
 
+from pages import floor_plan as floor_plan_service
 from pages import photos
 
 register = template.Library()
@@ -50,6 +52,22 @@ def area_loop(ratio: str = "16 / 9") -> dict[str, Any]:
         "eager": False,
         "illustrative": loop.illustrative,
         "credit": loop.credit,
+    }
+
+
+@register.inclusion_tag("includes/floor_plan.html")
+def floor_plan() -> dict[str, Any]:
+    """The blocks of the walk through the house, each with the address of its photo, if any."""
+    return {
+        "blocks": [
+            {
+                "name": block.name,
+                "kind": block.kind,
+                "photo": block.photo,
+                "href": static(block.photo.path) if block.photo else None,
+            }
+            for block in floor_plan_service.blocks()
+        ]
     }
 
 
