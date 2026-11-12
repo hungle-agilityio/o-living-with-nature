@@ -14,7 +14,7 @@ except ImportError:  # run as a script from ops/
     import epic_branch  # type: ignore[import-not-found,no-redef,unused-ignore]
 
 IN_EPIC = "agent:in-epic"
-EPIC_TITLE_PREFIX = re.compile(r"^\s*epic\s*:\s*", re.IGNORECASE)
+EPIC_TITLE_PREFIX = re.compile(r"^(?:\s*(?:\[\s*epic\s*\]|epic\s*:))+\s*", re.IGNORECASE)
 REPORT = re.compile(r"https://claude\.ai/artifact/[^\s)>\]]+")
 CLOSES = re.compile(r"Closes #(\d+)")
 PULL_URL = re.compile(r"/pull/(\d+)")
