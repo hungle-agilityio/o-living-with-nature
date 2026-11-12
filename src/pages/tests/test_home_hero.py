@@ -369,7 +369,8 @@ def test_only_the_loop_of_the_current_theme_is_in_the_page(client: Client, theme
 
     named = set(re.findall(r"media/hero/(\w+)\.", html))
     assert named == {theme}
-    assert len(_parse(html).all("video")) == 1
+    # The page also holds the Hòa Xuân area loop (one-page AC14), so the count is the hero's.
+    assert len(_parse(_hero(client, f"/?t={theme}")).all("video")) == 1
 
 
 @pytest.mark.django_db
