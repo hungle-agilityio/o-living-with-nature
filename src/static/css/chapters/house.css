@@ -1,7 +1,103 @@
 /* Chapter 01, the house (#house). The shared chapter rules (spacing, marker, word, heading) are
-   in site.css; the intro, the gallery, the layout list and the floor plan add their rules here
-   in later tasks. */
+   in site.css. Desktop: a 12-column grid with 24px gaps (one-page design.md, Layout): the intro
+   text (columns 1–5) beside the veranda photo (columns 7–12), then the four-photo gallery, then
+   the layout list and "Included" (columns 1–5; columns 7–12 are kept for the floor plan of a
+   later task). Phones: one column, the gallery a sideways row of 240px cards in its own box. */
 
 .chapter--house {
   position: relative;
+}
+
+.house__intro,
+.house__details {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: var(--space-6);
+}
+
+.house__text,
+.house__details > div {
+  grid-column: 1 / span 5;
+}
+
+.house__veranda {
+  grid-column: 7 / span 6;
+}
+
+.house__owner {
+  margin: 0 0 var(--space-4);
+}
+
+.house__why {
+  margin: 0 0 var(--space-4);
+}
+
+.house__points,
+.house__layout ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.house__points li,
+.house__layout li {
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--line);
+}
+
+.house__number {
+  margin-right: var(--space-2);
+  font-family: var(--font-serif);
+  color: var(--muted);
+}
+
+.house__gallery {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.house__included p {
+  margin: 0;
+}
+
+.house__included .label {
+  margin-top: var(--space-4);
+}
+
+.house__layout .label,
+.house__included .label {
+  margin-bottom: var(--space-2);
+}
+
+@media (max-width: 760px) {
+  .house__intro,
+  .house__details {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .house__text,
+  .house__veranda,
+  .house__details > div {
+    grid-column: 1;
+  }
+
+  .house__gallery {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 240px;
+    gap: 18px;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+  }
+
+  .house__gallery li {
+    scroll-snap-align: start;
+  }
 }
