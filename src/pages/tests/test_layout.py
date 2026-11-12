@@ -149,7 +149,9 @@ def test_menu_swaps_with_the_row_at_760px_in_the_stylesheet() -> None:
 def test_page_uses_no_javascript(client: Client) -> None:
     html = _home(client)
 
-    assert "<script" not in html
+    # The menu needs no script. The one script of the home page is the hero's flight (AC22).
+    assert "<script" not in _section(html, "header")
+    assert re.findall(r"<script[^>]*>", html) == ['<script src="/static/js/hero.js" defer>']
     assert "onclick" not in html
 
 

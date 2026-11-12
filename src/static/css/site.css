@@ -412,6 +412,187 @@ h2 em,
   line-height: 1;
 }
 
+/* Home hero "Through the Ở" (design.md, Components).
+
+   As sent by the server it is the still hero: the letter filled with the theme's poster photo,
+   then the dictionary line, the heading and its line, all in the page flow. The flight (a tall
+   stage whose frame stays on screen while the letter grows) exists only under the class that
+   hero.js sets on <html> when the visitor has JavaScript and has not asked for less motion. */
+
+.hero {
+  --hero-foot: 1;
+  --hero-title: 0;
+  overflow-x: clip;
+}
+
+.hero__window {
+  position: relative;
+}
+
+/* The poster photo shows through the letter; with no poster the letter is Sand. */
+.hero__letter {
+  margin: 0;
+  padding-top: 0.08em;
+  text-align: center;
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: var(--size-hero);
+  line-height: 1;
+  color: var(--sand);
+  background-color: var(--sand);
+  background-position: center;
+  background-size: cover;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero__letter {
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.hero__video,
+.hero__canvas,
+.hero__shade {
+  display: none;
+}
+
+.hero__chip {
+  left: auto;
+  right: 0;
+  bottom: var(--space-1);
+}
+
+.hero__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-5);
+  margin-top: var(--space-4);
+}
+
+.hero__gloss p,
+.hero__cue {
+  margin: 0;
+}
+
+.hero__gloss {
+  line-height: 1.35;
+}
+
+.hero__title {
+  margin-top: var(--space-6);
+}
+
+.hero__line {
+  max-width: 34em;
+  margin: var(--space-4) 0 0;
+}
+
+/* The flight */
+
+html.hero-flight .site-main {
+  max-width: none;
+  padding: 0;
+}
+
+/* The header row sits over the letter and leaves with the frame (hero.js moves it). */
+html.hero-flight .site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  transition: color 0.3s ease;
+}
+
+html.hero-over .site-header {
+  color: var(--paper);
+}
+
+/* The open phone menu keeps its own ground, so its links keep the ink. */
+html.hero-over .nav-menu nav {
+  color: var(--ink);
+}
+
+html.hero-flight .hero {
+  height: 330vh;
+}
+
+html.hero-flight .hero__frame {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+
+html.hero-flight .hero__window {
+  position: static;
+}
+
+/* The canvas draws the letter; the one in the page stays for readers that do not see it. */
+html.hero-flight .hero__letter {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+html.hero-flight .hero__video {
+  display: block;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+html.hero-flight .hero__canvas,
+html.hero-flight .hero__shade {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+html.hero-flight .hero__shade {
+  background: linear-gradient(to top, rgba(20, 26, 22, 0.78), rgba(20, 26, 22, 0.18) 62%, rgba(20, 26, 22, 0.3));
+  opacity: var(--hero-title);
+}
+
+html.hero-flight .hero__foot,
+html.hero-flight .hero__title {
+  position: absolute;
+  left: max(var(--side), calc((100% - var(--content-max)) / 2 + var(--side)));
+  right: max(var(--side), calc((100% - var(--content-max)) / 2 + var(--side)));
+  margin: 0;
+}
+
+html.hero-flight .hero__foot {
+  bottom: var(--space-6);
+  opacity: var(--hero-foot);
+}
+
+html.hero-flight .hero__title {
+  bottom: var(--space-6);
+  color: var(--paper);
+  opacity: var(--hero-title);
+  transform: translateY(calc((1 - var(--hero-title)) * 30px));
+  pointer-events: none;
+}
+
+html.hero-flight .hero__chip {
+  right: var(--side);
+  bottom: var(--space-2);
+}
+
 /* Phones */
 
 @media (max-width: 760px) {
