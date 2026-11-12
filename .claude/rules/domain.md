@@ -9,7 +9,7 @@
 
 ## Business rules
 
-- **Pages of phase 1 (five):** Home `/`, The house `/house/`, Hòa Xuân `/hoa-xuan/`, FAQ `/faq/`, Contact `/contact/`. No blog.
+- **Phase 1 is one page:** `/` holds the hero and five chapters with the ids `house`, `hoa-xuan`, `rent`, `faq` and `contact` (spec: `docs/specs/one-page/spec.md`). The menu links to the chapter ids. The old addresses `/house/`, `/hoa-xuan/`, `/faq/` and `/contact/` redirect (301) to their chapter. No blog.
 - **Languages:** phase 1 is English only, at the site root. Vietnamese comes in phase 3 under `/vi/`; English addresses never change.
 - **Voice:** the owner speaking in the first person ("Hi, I'm Bún…").
 - **Contact:** phone, WhatsApp and Zalo, shown as buttons (no email in phase 1). The site does not send messages for the visitor.

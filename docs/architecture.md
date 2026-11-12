@@ -1,6 +1,6 @@
 # Architecture
 
-Phase 1 is a small bilingual (VI/EN) site of five pages (Home, House, Hòa Xuân area, FAQ, Contact). Rules for code: `.claude/rules/architecture.md` and `.claude/rules/django.md`.
+Phase 1 is a small bilingual (VI/EN) site on one page: `/` with the hero and five chapters (house, Hòa Xuân, rent, FAQ, contact). Rules for code: `.claude/rules/architecture.md` and `.claude/rules/django.md`.
 
 ## Modules
 
