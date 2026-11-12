@@ -1,6 +1,10 @@
 """The health page the host checks, and the home page renders."""
 
+import pytest
 from django.test import Client
+
+# The home page reads the site settings (one query), so every test here may use the database.
+pytestmark = pytest.mark.django_db
 
 
 def test_health_page_says_ok(client: Client) -> None:

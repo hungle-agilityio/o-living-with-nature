@@ -1,0 +1,6 @@
+/* Chapter 03, the rent (#rent). The shared chapter rules (spacing, marker, word, heading) are in
+   site.css; the price line, the buttons and the terms add their rules here in a later task. */
+
+.chapter--rent {
+  position: relative;
+}

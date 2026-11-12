@@ -1,0 +1,7 @@
+/* Chapter 01, the house (#house). The shared chapter rules (spacing, marker, word, heading) are
+   in site.css; the intro, the gallery, the layout list and the floor plan add their rules here
+   in later tasks. */
+
+.chapter--house {
+  position: relative;
+}

@@ -1,0 +1,7 @@
+/* Chapter 02, Hòa Xuân (#hoa-xuan). The shared chapter rules (spacing, marker, word, heading)
+   are in site.css; the area loop, the travel list and the photos add their rules here in a
+   later task. */
+
+.chapter--hoa-xuan {
+  position: relative;
+}
