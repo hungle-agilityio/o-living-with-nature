@@ -1,0 +1,392 @@
+<!-- Approved prototype (owner, 2026-11-12), https://claude.ai/artifact/KGHzvGFPmKt8jEd95cxnEG. A reference for look and motion, not code to copy as is: the "Xem lại intro" button is for review only. Media paths point to src/static/media. -->
+<title>Ở one page prototype</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap">
+<style>
+/* Layout: design E "Through the Ở" as one page: autoplay letter intro, chapters in a 1360px / 12-column container, full-bleed video band and Ink contact band. Day theme only (the site's own palette). */
+:root{
+  --paper:#F4F0E8; --sand:#E9E2D3; --ink:#1F2A22; --stone:#5C6358; --line:#D9D2C3; --mist:#C9C3B4; --moss:#3F5A3A;
+  --serif:"Cormorant Garamond",Georgia,serif; --sans:"Be Vietnam Pro",system-ui,sans-serif;
+  --max:1360px; --side:40px; --gap:136px;
+  color-scheme:light;
+}
+@media (max-width:760px){:root{--side:18px;--gap:88px}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.7;overflow-x:hidden}
+a{color:inherit}
+.w{max-width:var(--max);margin:0 auto;padding-left:max(var(--side),env(safe-area-inset-left,0px));padding-right:max(var(--side),env(safe-area-inset-right,0px))}
+.lab{font-size:11px;letter-spacing:.22em;text-transform:uppercase}
+.muted{color:var(--stone)}
+.serif{font-family:var(--serif);font-weight:300}
+.it{font-family:var(--serif);font-style:italic;font-weight:300}
+.caps{font-weight:300;text-transform:uppercase;letter-spacing:-.03em;line-height:.9}
+.caps .it{text-transform:none;letter-spacing:-.01em}
+.word{font-family:var(--serif);font-style:italic;font-weight:300;font-size:200px;line-height:.8;margin:18px 0 0}
+.hook{font-family:var(--serif);font-size:26px;line-height:1;display:inline-block;transform:translateY(4px)}
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:24px 40px}
+.grid>*{min-width:0}
+.ph{position:relative;overflow:hidden;background:var(--sand);margin:0}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.chip{position:absolute;left:12px;bottom:12px;padding:4px 9px;background:rgba(20,26,22,.72);color:var(--paper);font-size:10px;letter-spacing:.14em;text-transform:uppercase;border-radius:999px;z-index:2}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 26px;border-radius:999px;border:1px solid currentColor;text-decoration:none;font-size:13px;letter-spacing:.16em;text-transform:uppercase}
+.btn.fill{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.btn.paper{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+:focus-visible{outline:2px solid var(--moss);outline-offset:3px}
+
+/* Header */
+.hdr{position:fixed;top:0;left:0;right:0;z-index:30;padding-top:env(safe-area-inset-top,0px);transition:color .4s,background-color .4s,transform .4s}
+.hdr .w{display:flex;justify-content:space-between;align-items:center;gap:16px;height:64px}
+.hdr nav{display:flex;gap:28px}
+.hdr nav a{text-decoration:none}
+.hdr nav a.cta{border-bottom:1px solid currentColor}
+.hdr .logo{font-family:var(--serif);font-size:22px;font-weight:500;text-decoration:none;letter-spacing:0;text-transform:none;margin-right:14px}
+.hdr.over{color:var(--paper)}
+.hdr.solid{background:rgba(244,240,232,.94);border-bottom:1px solid var(--line);color:var(--ink)}
+.menu{display:none}
+.menu summary{list-style:none;cursor:pointer;border:1px solid currentColor;border-radius:999px;padding:8px 16px}
+.menu summary::-webkit-details-marker{display:none}
+.menu ul{position:absolute;right:max(var(--side),env(safe-area-inset-right,0px));top:60px;list-style:none;margin:0;padding:12px 20px;background:var(--paper);color:var(--ink);border:1px solid var(--line)}
+.menu li a{display:block;padding:10px 0;text-decoration:none}
+
+/* Hero */
+.hero{position:relative;height:100vh;height:100svh;min-height:560px;overflow:hidden;background:var(--paper)}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero video.src{position:absolute;width:2px;height:2px;opacity:0;pointer-events:none}
+.hero .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,19,16,.45),rgba(14,19,16,0) 30%,rgba(14,19,16,.05) 55%,rgba(14,19,16,.72));opacity:0}
+.hero .foot{position:absolute;left:0;right:0;bottom:44px;z-index:3}
+.hero .foot .row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:24px}
+.hero .gloss{margin:0;font-family:var(--serif);font-weight:300;font-size:26px;line-height:1.35;max-width:560px}
+.hero .end{position:absolute;left:0;right:0;bottom:64px;z-index:3;color:var(--paper)}
+.hero h1{margin:0;font-size:150px;display:flex;flex-direction:column}
+.hero h1 .ln{display:block;overflow:hidden;padding-bottom:.06em}
+.hero h1 .ln>span{display:block}
+.hero h1 .ln:last-child{align-self:flex-end}
+.hero .sub{margin:24px 0 0;font-family:var(--serif);font-weight:300;font-size:26px;line-height:1.35;max-width:620px}
+.hero .cue{position:absolute;right:max(var(--side),env(safe-area-inset-right,0px));bottom:24px;z-index:3;color:var(--paper);opacity:0}
+.hero .vchip{left:auto;right:16px;bottom:auto;top:84px}
+.replay{position:fixed;left:max(16px,env(safe-area-inset-left,0px));top:calc(76px + env(safe-area-inset-top,0px));transition:opacity .3s;z-index:40;font:inherit;font-size:11px;letter-spacing:.16em;text-transform:uppercase;background:var(--ink);color:var(--paper);border:0;border-radius:999px;padding:10px 16px;cursor:pointer;opacity:.9}
+/* still hero (no script / less motion) */
+.still .hero{height:auto;min-height:0;padding:120px 0 64px}
+.still .hero canvas,.still .hero .shade,.still .hero .cue{display:none}
+.still .hero .letter{display:block}
+.hero .letter{display:none;font-family:var(--serif);font-weight:500;font-size:min(60vh,92vw);line-height:.85;text-align:center;margin:0;background-size:cover;background-position:center;-webkit-background-clip:text;background-clip:text;color:transparent}
+.still .hero .foot,.still .hero .end{position:static;margin-top:40px}
+.still .hero .end{color:var(--ink)}
+
+/* Chapters */
+.chap{padding-top:var(--gap)}
+.intro{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:24px 40px;align-items:end}
+.intro>*{min-width:0}
+.rooms{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:18px;margin-top:72px}
+.rooms figure{margin:0}
+.rooms .cap{display:block;margin-top:12px}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}
+.facts .n{font-family:var(--serif);font-weight:300;font-size:80px;line-height:1}
+.list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.list li{padding:14px 0;border-bottom:1px solid var(--line)}
+.plan{position:relative;aspect-ratio:4/3;max-width:100%;border:1px solid var(--ink);display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr))}
+.plan span{display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;font-size:10px;letter-spacing:.2em;text-transform:uppercase}
+.band{position:relative;height:100vh;min-height:680px;color:var(--paper);margin-top:var(--gap);overflow:hidden;background:#3a4436}
+.band video,.band .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.band .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,19,16,.55),rgba(14,19,16,.15) 40%,rgba(14,19,16,.72))}
+.band .inner{position:absolute;left:0;right:0;top:72px;bottom:56px;display:flex;flex-direction:column;justify-content:space-between}
+.band .facts>div{border-top:1px solid rgba(244,240,232,.6);padding-top:14px}
+.band .facts .it{display:block;font-size:32px;line-height:1.2}
+.band .chip{left:auto;right:16px}
+.faq{max-width:880px;margin-top:48px;border-top:1px solid var(--line)}
+.faq details{border-bottom:1px solid var(--line);padding:20px 0}
+.faq summary{cursor:pointer;font-size:20px;list-style:none;display:flex;justify-content:space-between;gap:16px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:var(--serif);font-size:30px;line-height:1}
+.faq details[open] summary::after{content:"–"}
+.faq p{margin:12px 0 0;color:var(--stone);max-width:64ch}
+.contact{background:var(--ink);color:var(--paper);margin-top:var(--gap)}
+footer{background:var(--ink);color:var(--mist);border-top:1px solid #3A463C}
+.cbar{display:none}
+
+/* Motion: hiding rules only under .motion, set by the script */
+.motion .hdr{animation:hdrIn .9s .2s both}
+@keyframes hdrIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+.motion .rv{opacity:0;transform:translateY(42px);transition:opacity 1.1s cubic-bezier(.2,.7,.2,1),transform 1.1s cubic-bezier(.2,.7,.2,1)}
+.motion .rv.in{opacity:1;transform:none}
+.motion .ph img{animation:kb 22s ease-in-out infinite alternate}
+@keyframes kb{from{transform:scale(1.02)}to{transform:scale(1.09) translate(-1.5%,-1%)}}
+
+@media (max-width:760px){
+  .hdr nav{display:none}.menu{display:block}
+  .hdr .clock{display:none}
+  .word{font-size:96px}
+  .hero h1{font-size:60px}
+  .hero .gloss,.hero .sub{font-size:20px}
+  .intro,.grid{grid-template-columns:minmax(0,1fr)}
+  .intro>*,.grid>*{grid-column:auto!important}
+  .rooms{display:flex;overflow-x:auto;gap:12px;margin-top:40px;padding-bottom:8px;scroll-snap-type:x mandatory}
+  .rooms figure{flex:0 0 240px;margin-top:0!important;scroll-snap-align:start}
+  .rooms .ph{height:320px!important}
+  .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .facts .n{font-size:56px}
+  .band .facts .it{font-size:24px}
+  .big{font-size:44px!important}
+  .faqh{font-size:60px!important}
+  .cbar{display:grid;position:fixed;left:0;right:0;bottom:0;z-index:25;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:10px max(12px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));background:rgba(31,42,34,.96);transform:translateY(110%);transition:transform .3s}
+  .cbar.on{transform:none}
+  .cbar .btn{min-height:44px;padding:0;color:var(--paper);font-size:12px}
+  .cbar .btn.paper{color:var(--ink)}
+}
+.replay.off{opacity:0;pointer-events:none}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+
+<header class="hdr" id="hdr">
+  <div class="w lab">
+    <span style="display:flex;align-items:center"><a class="logo" href="#top" aria-label="Ở, back to the top">Ở</a><span class="clock">It's 13:20 in Hòa Xuân · Day</span></span>
+    <nav aria-label="Chapters"><a href="#house">The house</a><a href="#hoa-xuan">Hòa Xuân</a><a href="#rent">Rent</a><a href="#faq">FAQ</a><a class="cta" href="#contact">Contact</a></nav>
+    <details class="menu"><summary>Menu</summary><ul><li><a href="#house">The house</a></li><li><a href="#hoa-xuan">Hòa Xuân</a></li><li><a href="#rent">Rent</a></li><li><a href="#faq">FAQ</a></li><li><a href="#contact">Contact</a></li></ul></details>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero" id="hero">
+  <video class="src" id="heroVideo" muted loop playsinline preload="auto" poster="/static/media/hero/day.jpg" aria-hidden="true" tabindex="-1"><source src="/static/media/hero/day.mp4" type="video/mp4"></video>
+  <canvas id="heroCanvas" aria-hidden="true"></canvas>
+  <p class="letter" aria-hidden="true" style="background-image:url(/static/media/hero/day.jpg)">Ở</p>
+  <div class="shade" id="heroShade"></div>
+  <div class="foot w" id="heroFoot"><div class="row">
+    <p class="gloss"><span class="it">ở</span> &nbsp;<span class="lab muted">verb · Vietnamese · say "uh?"</span><br>1. to stay. &nbsp;2. to live somewhere. &nbsp;3. <span class="it">to be at home.</span></p>
+  </div></div>
+  <div class="end w" id="heroEnd">
+    <h1 class="caps"><span class="ln"><span>Living</span></span><span class="ln"><span><span class="it">with</span> nature</span></span></h1>
+    <p class="sub ln"><span>A garden house in Hòa Xuân, Đà Nẵng. Two bedrooms, two gardens, <span class="it">rented whole, by the month.</span></span></p>
+  </div>
+  <span class="lab cue" id="heroCue">Scroll, and come in ↓</span>
+  <span class="chip vchip">Illustrative video</span>
+</section>
+
+<!-- 01 ở nhà -->
+<section class="chap w" id="house" aria-labelledby="house-h">
+  <div class="intro">
+    <div style="grid-column:span 7">
+      <span class="lab muted rv"><span class="hook">̉</span> 01 · at home</span>
+      <p class="word rv" lang="vi">ở nhà</p>
+      <h2 id="house-h" class="caps rv" style="font-size:64px;margin:20px 0 0">The <span class="it">house</span></h2>
+    </div>
+    <div style="grid-column:8 / span 5" class="rv">
+      <p class="serif" style="margin:0;font-size:28px;line-height:1.3">Hi, I'm Bún. I built a small garden house in Hòa Xuân, and I'd love for someone to make it <span class="it">home for a while.</span></p>
+      <p class="muted" style="margin:18px 0 0">I wanted a house that feels good to live in every day, not just in photos: a little garden, morning light, a veranda to sit on. Ở is that house.</p>
+    </div>
+  </div>
+  <div class="rooms">
+    <figure class="rv" style="grid-column:span 5"><div class="ph" style="height:620px"><img src="/static/media/photos/bedroom.jpg" alt="A calm bedroom with soft light" loading="lazy"><span class="chip">Illustrative</span></div><span class="lab cap">Bedrooms · two</span></figure>
+    <figure class="rv" style="grid-column:span 4;margin-top:160px"><div class="ph" style="height:460px"><img src="/static/media/photos/lightwell.jpg" alt="An indoor light well with hanging plants under a skylight" loading="lazy"><span class="chip">Illustrative</span></div><span class="lab cap">Light well</span></figure>
+    <figure class="rv" style="grid-column:span 3;margin-top:60px"><div class="ph" style="height:340px"><img src="/static/media/photos/veranda.jpg" alt="A shaded veranda with chairs and plants" loading="lazy"><span class="chip">Illustrative</span></div><span class="lab cap">Veranda</span></figure>
+    <figure class="rv" style="grid-column:2 / span 5"><div class="ph" style="height:380px"><img src="/static/media/photos/kitchen.jpg" alt="A sunlit kitchen with wooden shelves" loading="lazy"><span class="chip">Illustrative</span></div><span class="lab cap">Living &amp; kitchen</span></figure>
+    <figure class="rv" style="grid-column:8 / span 5;margin-top:-120px"><div class="ph" style="height:460px"><img src="/static/media/photos/garden-evening.jpg" alt="A garden in the evening with string lights" loading="lazy"><span class="chip">Illustrative</span></div><span class="lab cap">Back garden</span></figure>
+  </div>
+  <div class="facts rv" style="margin-top:96px;border-top:1px solid var(--ink);padding-top:24px">
+    <div><span class="n">2</span><span class="lab muted" style="display:block">bedrooms</span></div>
+    <div><span class="n">2</span><span class="lab muted" style="display:block">gardens</span></div>
+    <div><span class="n">1</span><span class="lab muted" style="display:block">light well</span></div>
+    <div><span class="n">1</span><span class="lab muted" style="display:block">household at a time</span></div>
+  </div>
+  <div class="grid" style="margin-top:96px">
+    <div style="grid-column:1 / span 5">
+      <p class="lab muted rv" style="margin:0 0 16px">The layout</p>
+      <ul class="list rv"><li>Two bedrooms</li><li>One bathroom</li><li>Living room and kitchen</li><li>Mezzanine</li><li>Light well</li><li>Front and back gardens</li><li>Covered veranda</li><li>Laundry, drying and storage area</li></ul>
+      <p class="lab muted rv" style="margin:40px 0 12px">Included</p>
+      <p class="rv" style="margin:0">Basic furniture. Garden care once a week. Cleaning can be arranged.</p>
+    </div>
+    <div style="grid-column:7 / span 6">
+      <p class="lab muted rv" style="margin:0 0 16px">Walk through the house</p>
+      <div class="plan rv" role="img" aria-label="Schematic ground floor plan">
+        <span style="grid-column:1 / 7;grid-row:1;border-bottom:1px solid var(--ink)">Front garden</span>
+        <span style="grid-column:1 / 4;grid-row:2 / 4;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink);background:var(--sand)">Living + kitchen</span>
+        <span style="grid-column:4 / 5;grid-row:2 / 4;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink)">Light well</span>
+        <span style="grid-column:5 / 7;grid-row:2 / 4;border-bottom:1px solid var(--ink)">Bedroom</span>
+        <span style="grid-column:1 / 7;grid-row:4">Veranda · back garden</span>
+        <span class="chip" style="left:auto;right:12px;bottom:12px">Schematic</span>
+      </div>
+      <p class="muted rv" style="font-size:12px;margin:8px 0 0">Ground floor, schematic until the architect's plan. Upstairs: second bedroom, mezzanine.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 02 ở gần -->
+<section class="band" id="hoa-xuan" aria-labelledby="hx-h">
+  <img class="poster" src="/static/media/area/area.jpg" alt="">
+  <video id="areaVideo" muted loop playsinline preload="none" poster="/static/media/area/area.jpg" aria-hidden="true" tabindex="-1"><source src="/static/media/area/area.mp4" type="video/mp4"></video>
+  <div class="veil"></div>
+  <div class="inner w">
+    <div>
+      <span class="lab rv"><span class="hook">̉</span> 02 · close by</span>
+      <p class="word rv" lang="vi">ở gần</p>
+      <h2 id="hx-h" class="caps rv" style="font-size:64px;margin:44px 0 0">Hòa <span class="it">Xuân</span></h2>
+    </div>
+    <div>
+      <p class="serif rv" style="font-size:28px;line-height:1.3;margin:0 0 28px;max-width:640px">Everything you need day to day is close by.</p>
+      <div class="facts rv">
+        <div><span class="lab">Supermarket</span><span class="it">across the road</span></div>
+        <div><span class="lab">Market</span><span class="it">about 10 min</span></div>
+        <div><span class="lab">Beach</span><span class="it">about 10 min</span></div>
+        <div><span class="lab">Airport</span><span class="it">about 15 min</span></div>
+      </div>
+    </div>
+  </div>
+  <span class="chip">Illustrative video</span>
+</section>
+<div class="w" style="padding-top:48px">
+  <div class="grid">
+    <figure class="ph rv" style="grid-column:span 4;aspect-ratio:4/3;max-width:100%"><img src="/static/media/photos/market.jpg" alt="A woman selling vegetables at a street market" loading="lazy"><span class="chip">Illustrative</span></figure>
+    <figure class="ph rv" style="grid-column:span 4;aspect-ratio:4/3;max-width:100%"><img src="/static/media/photos/street.jpg" alt="A quiet street with low houses" loading="lazy"><span class="chip">Illustrative</span></figure>
+    <figure class="ph rv" style="grid-column:span 4;aspect-ratio:4/3;max-width:100%"><img src="/static/media/photos/beach-sunset.jpg" alt="People on the beach at sunset" loading="lazy"><span class="chip">Illustrative</span></figure>
+  </div>
+  <p class="rv" style="margin:32px 0 0"><a class="btn" href="https://maps.google.com/?q=H%C3%B2a%20Xu%C3%A2n%2C%20%C4%90%C3%A0%20N%E1%BA%B5ng" target="_blank" rel="noopener">Hòa Xuân on Google Maps ↗</a></p>
+</div>
+
+<!-- 03 ở lâu -->
+<section class="chap w" id="rent" aria-labelledby="rent-h">
+  <div class="grid" style="align-items:start">
+    <div style="grid-column:span 6">
+      <span class="lab muted rv"><span class="hook">̉</span> 03 · to stay a long while</span>
+      <p class="word rv" lang="vi">ở lâu</p>
+      <h2 id="rent-h" class="caps rv" style="font-size:64px;margin:20px 0 0">The <span class="it">rent</span></h2>
+      <p class="caps big rv" style="margin:56px 0 0;font-size:84px;line-height:.95">From 13–14 <span class="it">million</span> VND <span class="it">a month</span></p>
+      <p class="rv" style="display:flex;flex-wrap:wrap;gap:12px;margin:36px 0 0"><a class="btn fill" href="#contact">Call</a><a class="btn" href="#contact">WhatsApp</a><a class="btn" href="#contact">Zalo</a></p>
+      <ul class="list rv" style="margin-top:48px"><li>Whole house, by the month</li><li>Minimum stay one month</li><li>Two months' deposit</li><li>Included each month: up to 300 kWh of electricity and 10 m³ of water. Anything above is charged at the official rate.</li><li>I take care of temporary residence registration for you</li></ul>
+    </div>
+    <div style="grid-column:8 / span 5;display:flex;flex-direction:column;gap:22px">
+      <figure class="ph rv" style="height:560px"><img src="/static/media/photos/tea.jpg" alt="A cup of tea by a window" loading="lazy"><span class="chip">Illustrative</span></figure>
+      <p class="serif rv" style="margin:0;font-size:24px;line-height:1.35">"I wanted a house that feels good to live in every day, <span class="it">not just in photos.</span>" <span class="lab muted">— Bún</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- 04 FAQ -->
+<section class="chap w" id="faq" aria-labelledby="faq-h">
+  <span class="lab muted rv"><span class="hook">̉</span> 04 · questions</span>
+  <h2 id="faq-h" class="caps faqh rv" style="font-size:150px;margin:18px 0 0">FAQ</h2>
+  <div class="faq rv">
+    <details open><summary>What is the minimum stay?</summary><p>One month.</p></details>
+    <details><summary>Can I rent a room, not the whole house?</summary><p>No. The house is rented whole.</p></details>
+    <details><summary>How much is the rent?</summary><p>From 13–14 million VND a month.</p></details>
+    <details><summary>How much is the deposit?</summary><p>Two months' rent.</p></details>
+    <details><summary>Are electricity and water included?</summary><p>Up to 300 kWh of electricity and 10 m³ of water each month. Anything above is charged at the official rate.</p></details>
+    <details><summary>Can I bring a pet?</summary><p>Let's talk. Tell me about your pet.</p></details>
+    <details><summary>Do you help with temporary residence registration?</summary><p>Yes. I take care of temporary residence registration for you.</p></details>
+    <details><summary>Can I visit before I decide?</summary><p>Yes. Send me a message and we'll find a time.</p></details>
+  </div>
+</section>
+
+<!-- 05 ở lại? -->
+<section class="contact" id="contact" aria-labelledby="contact-h">
+  <div class="w" style="padding-top:128px;padding-bottom:112px;display:flex;flex-direction:column;gap:32px">
+    <span class="lab rv" style="color:var(--mist)"><span class="hook">̉</span> 05</span>
+    <p class="word rv" lang="vi" style="margin:0">ở lại?</p>
+    <div class="rv" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:28px">
+      <div>
+        <h2 id="contact-h" class="caps" style="font-size:64px;margin:0">Will you <span class="it">stay?</span></h2>
+        <p class="serif" style="margin:20px 0 0;font-size:30px;line-height:1.3;max-width:640px">Hi, I'm Bún. <span class="it">I usually reply within an hour.</span></p>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px"><a class="btn paper" href="#contact">Call</a><a class="btn" href="#contact">WhatsApp</a><a class="btn" href="#contact">Zalo</a></div>
+    </div>
+  </div>
+</section>
+</main>
+<footer>
+  <div class="w lab" style="padding-top:32px;padding-bottom:calc(32px + env(safe-area-inset-bottom,0px));display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px">
+    <span><span class="serif" style="font-size:22px;text-transform:none;letter-spacing:0;color:var(--paper)">Ở</span> &nbsp;a word for staying · Hòa Xuân, Đà Nẵng</span>
+    <span>See Ở at dawn · day · dusk · night</span>
+    <span style="flex-basis:100%;text-transform:none;letter-spacing:0;font-size:12px">Photos and videos marked "Illustrative" are stand-ins until the house is finished.</span>
+  </div>
+</footer>
+<nav class="cbar" id="cbar" aria-label="Contact"><a class="btn paper" href="#contact">Call</a><a class="btn" href="#contact">WhatsApp</a><a class="btn" href="#contact">Zalo</a></nav>
+<button class="replay" id="replay" type="button">↺ Xem lại intro</button>
+
+<script>
+(function(){
+  "use strict";
+  var root=document.documentElement;
+  var less=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var hdr=document.getElementById("hdr"),hero=document.getElementById("hero"),cv=document.getElementById("heroCanvas"),ctx=cv.getContext("2d");
+  var video=document.getElementById("heroVideo"),shade=document.getElementById("heroShade"),foot=document.getElementById("heroFoot"),end=document.getElementById("heroEnd"),cue=document.getElementById("heroCue");
+  var replay=document.getElementById("replay");
+  var lines=[].slice.call(end.querySelectorAll(".ln>span"));
+  var poster=new Image();poster.src=video.poster;
+  if(less){root.classList.add("still");document.getElementById("replay").hidden=true;}
+  else root.classList.add("motion");
+
+  function clamp(v){return Math.min(1,Math.max(0,v));}
+  function ease(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;}
+  function font(px){return '500 '+px+'px "Cormorant Garamond", Georgia, serif';}
+  var W,H,R,size,ox,oy,ax,ay,start=0,skipped=false;
+  function measure(){
+    R=Math.min(window.devicePixelRatio||1,2);W=hero.clientWidth;H=hero.clientHeight;cv.width=Math.round(W*R);cv.height=Math.round(H*R);
+    size=Math.min(.7*H,1.05*W);ctx.font=font(size);
+    var b=ctx.measureText("Ở"),bowl=ctx.measureText("O").actualBoundingBoxAscent;
+    ox=W/2-(b.actualBoundingBoxRight-b.actualBoundingBoxLeft)/2;oy=.47*H+(b.actualBoundingBoxAscent-b.actualBoundingBoxDescent)/2;
+    var p=document.createElement("canvas"),g=p.getContext("2d"),em=200;p.width=p.height=2*em;g.font=font(em);
+    var row=Math.round(1.5*em-g.measureText("O").actualBoundingBoxAscent/2);g.fillText("Ở",em/2,1.5*em);
+    var d=g.getImageData(0,row,p.width,1).data,s=-1,c=.15;
+    for(var x=0;x<p.width;x++){var k=d[4*x+3]>127;if(k&&s<0)s=x;else if(!k&&s>=0){c=((s+x)/2-em/2)/em;break;}}
+    ax=ox+c*size;ay=oy-bowl/2;
+  }
+  function paint(){
+    var src=null,w,h;
+    if(video.readyState>=2&&video.videoWidth){src=video;w=video.videoWidth;h=video.videoHeight;}
+    else if(poster.complete&&poster.naturalWidth){src=poster;w=poster.naturalWidth;h=poster.naturalHeight;}
+    if(src){var f=Math.max(W/w,H/h);ctx.drawImage(src,(W-w*f)/2,(H-h*f)/2,w*f,h*f);}else{ctx.fillStyle="#E9E2D3";ctx.fillRect(0,0,W,H);}
+  }
+  function draw(p){
+    ctx.setTransform(R,0,0,R,0,0);ctx.globalCompositeOperation="source-over";ctx.clearRect(0,0,W,H);paint();
+    if(p>=1)return;
+    var s=1+69*Math.pow(p,2.4),m=1-Math.pow(1-p,3);
+    ctx.globalCompositeOperation="destination-in";
+    ctx.translate(ax+(W/2-ax)*m,ay+(H/2-ay)*m);ctx.scale(s,s);ctx.translate(-ax,-ay);ctx.font=font(size);ctx.fillText("Ở",ox,oy);
+  }
+  function tick(now){
+    requestAnimationFrame(tick);
+    var r=hero.getBoundingClientRect(),onScreen=r.bottom>0;
+    var t=skipped?99:(now-start)/1000;
+    var p=clamp((t-.4)/2.8),e=ease(p),ti=clamp((t-3.2)/.8);
+    if(onScreen)draw(e>=.999?1:e);
+    foot.style.opacity=clamp(1-p*6);
+    shade.style.opacity=ti;end.style.opacity=ti>0?1:0;
+    lines.forEach(function(l,i){var k=clamp((t-3.2-.15*i)/.7);k=1-Math.pow(1-k,3);l.style.transform="translateY("+(105*(1-k))+"%)";l.style.opacity=k;});
+    cue.style.opacity=clamp((t-3.9)/.5);
+    var past=r.bottom<72;
+    hdr.classList.toggle("solid",past);
+    replay.classList.toggle("off",past);
+    hdr.classList.toggle("over",!past&&e>.75);
+    if(onScreen){if(video.paused){var pl=video.play();if(pl&&pl.catch)pl.catch(function(){});}}else if(!video.paused)video.pause();
+  }
+  function play(){skipped=window.scrollY>40||location.hash.length>1;start=performance.now();}
+  function skip(){if(!skipped&&performance.now()-start<4000)skipped=true;}
+  if(!less){
+    measure();window.addEventListener("resize",measure);
+    ["wheel","touchstart","keydown","pointerdown"].forEach(function(ev){window.addEventListener(ev,function(e){if(e.target&&e.target.id==="replay")return;skip();},{passive:true});});
+    window.addEventListener("scroll",skip,{passive:true});
+    document.getElementById("replay").addEventListener("click",function(){window.scrollTo({top:0,behavior:"auto"});setTimeout(function(){skipped=false;start=performance.now();},30);});
+    if(document.fonts&&document.fonts.load)document.fonts.load(font(64),"ỞO").then(function(){measure();},function(){});
+    play();requestAnimationFrame(tick);
+    // reveal on scroll: siblings 0.12s apart, at most 5 steps
+    var rvs=[].slice.call(document.querySelectorAll(".rv"));
+    rvs.forEach(function(el){var sib=[].indexOf.call(el.parentNode.children,el);el.style.transitionDelay=Math.min(sib,5)*0.12+"s";});
+    if("IntersectionObserver" in window){
+      var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add("in");io.unobserve(x.target);}});},{threshold:.12});
+      rvs.forEach(function(el){var b=el.getBoundingClientRect();if(b.top<innerHeight&&b.bottom>0)el.classList.add("in");else io.observe(el);});
+    }else rvs.forEach(function(el){el.classList.add("in");});
+  }else{
+    hdr.classList.add("solid");
+    window.addEventListener("scroll",function(){hdr.classList.toggle("solid",true);},{passive:true});
+  }
+  // area loop plays only on screen; phone contact bar after the hero, hidden over Contact
+  var area=document.getElementById("areaVideo"),cbar=document.getElementById("cbar"),contact=document.getElementById("contact");
+  if("IntersectionObserver" in window){
+    if(!less)new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){area.preload="auto";var pl=area.play();if(pl&&pl.catch)pl.catch(function(){});}else area.pause();});}).observe(area);
+    var heroGone=false,contactOn=false;
+    function bar(){cbar.classList.toggle("on",heroGone&&!contactOn);}
+    new IntersectionObserver(function(es){heroGone=!es[0].isIntersecting;bar();}).observe(hero);
+    new IntersectionObserver(function(es){contactOn=es[0].isIntersecting;bar();}).observe(contact);
+  }else cbar.classList.add("on");
+})();
+</script>
