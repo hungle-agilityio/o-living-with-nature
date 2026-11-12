@@ -6,7 +6,7 @@ The one page on `main` (epics 1 to 3) does not look like the approved design. Wi
 
 ## Goal
 
-The page matches the design card (https://claude.ai/artifact/8Kk9W7BQzsfWuGUWWhNAVf) on desktop and phones. The "Ở" plays by itself on load, like a short film, and ends on the full-screen video with the title. The page opens and reveals its chapters with the calm motion of the design E tour video, in the spirit of the reference site loiseau.framer.website, without copying its look or assets.
+The page follows the approved prototype of design E "Through the Ở" (https://claude.ai/artifact/KGHzvGFPmKt8jEd95cxnEG, approved by the owner on 2026-11-12), built from the design E tour video, on desktop and phones. It replaces the layout of the epic 3 design card; the texts and the chapter order of epic 3 stay. The "Ở" plays by itself on load, like a short film, and ends on the full-screen video with the title. The page opens and reveals its chapters with the calm motion of the design E tour video, in the spirit of the reference site loiseau.framer.website, without copying its look or assets.
 
 ## Users
 
