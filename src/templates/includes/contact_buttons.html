@@ -1,0 +1,12 @@
+{% comment %}
+The contact buttons (one-page spec AC9 to AC12): one link button per channel of the owner, in
+the order Call, WhatsApp, Zalo (owner.channels). The first one is the primary button.
+
+  owner  the site settings (owner_content.services.site_settings)
+  place  where the buttons stand: the chapter id ("rent", "contact") or "bar"
+
+data-channel and data-place are read by the click counter (epic 4). WhatsApp and Zalo open in a
+new tab; Call opens the phone. With no channel, nothing is rendered.
+{% endcomment %}{% if owner.channels %}<div class="contact-buttons">{% for channel in owner.channels %}
+  <a class="button{% if not forloop.first %} button--secondary{% endif %}" href="{{ channel.link }}" data-channel="{{ channel.key }}" data-place="{{ place }}"{% if channel.key != "call" %} target="_blank" rel="noopener"{% endif %}>{{ channel.label }}</a>{% endfor %}
+</div>{% endif %}
