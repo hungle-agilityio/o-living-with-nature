@@ -32,6 +32,10 @@ ALLOWED_HOSTS = [
 # The public base URL of the site, in one place (canonical links, sitemap, hreflang).
 SITE_BASE_URL = os.environ.get("SITE_BASE_URL", "http://localhost:8000").rstrip("/")
 
+# The one switch that lets search engines in: on only when the value is exactly "1". It stays
+# off until real photos replace the stand-ins.
+INDEXING_ENABLED = os.environ.get("INDEXING_ENABLED", "") == "1"
+
 INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.staticfiles",

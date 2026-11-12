@@ -142,11 +142,17 @@ def test_page_uses_no_javascript(not_found: str) -> None:
     assert "onclick" not in not_found
 
 
-def test_home_page_does_not_get_the_noindex_of_the_404_page(client: Client) -> None:
+def test_home_page_does_not_get_the_noindex_of_the_404_page(
+    client: Client, settings: Settings
+) -> None:
+    # Since the indexing switch (AC17) every page has a robots tag; with the switch on, the
+    # home page is indexed while the 404 page keeps its noindex.
+    settings.INDEXING_ENABLED = True
+
     response = client.get("/")
 
     assert response.status_code == 200
-    assert 'name="robots"' not in response.content.decode()
+    assert "noindex" not in response.content.decode()
 
 
 @pytest.mark.django_db
