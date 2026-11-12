@@ -1,7 +1,65 @@
 /* Chapter 02, Hòa Xuân (#hoa-xuan). The shared chapter rules (spacing, marker, word, heading)
-   are in site.css; the area loop, the travel list and the photos add their rules here in a
-   later task. */
+   are in site.css. Desktop: a 12-column grid with 24px gaps (one-page design.md, Layout): the
+   area loop (16 / 9, columns 1–7) beside the line, the travel list and the Maps button (columns
+   9–12), then three photos (4 / 3). Phones: one column. */
 
 .chapter--hoa-xuan {
   position: relative;
+}
+
+.hoa-xuan__intro,
+.hoa-xuan__photos {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: var(--space-6);
+}
+
+.hoa-xuan__loop {
+  grid-column: 1 / span 7;
+}
+
+.hoa-xuan__text {
+  grid-column: 9 / span 4;
+  align-self: center;
+}
+
+.hoa-xuan__line {
+  margin: 0 0 var(--space-4);
+}
+
+.hoa-xuan__travel,
+.hoa-xuan__photos {
+  padding: 0;
+  list-style: none;
+}
+
+.hoa-xuan__travel {
+  margin: 0 0 var(--space-4);
+}
+
+.hoa-xuan__travel li {
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--line);
+}
+
+.hoa-xuan__photos {
+  margin-bottom: 0;
+}
+
+.hoa-xuan__photos li {
+  grid-column: span 4;
+}
+
+@media (max-width: 760px) {
+  .hoa-xuan__intro,
+  .hoa-xuan__photos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hoa-xuan__loop,
+  .hoa-xuan__text,
+  .hoa-xuan__photos li {
+    grid-column: 1;
+  }
 }

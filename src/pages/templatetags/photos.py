@@ -1,4 +1,4 @@
-"""`{% photo "key" ratio="4 / 3" %}`: the media slot of a photo of `pages.photos`."""
+"""`{% photo "key" ratio="4 / 3" %}` and `{% area_loop %}`: media slots of `pages.photos`."""
 
 from typing import Any
 
@@ -29,6 +29,27 @@ def photo(context: template.Context, key: str, ratio: str = "3 / 2") -> dict[str
         "eager": _first_photo_of_the_page(context),
         "illustrative": entry.illustrative,
         "credit": entry.credit,
+    }
+
+
+@register.inclusion_tag("includes/media.html")
+def area_loop(ratio: str = "16 / 9") -> dict[str, Any]:
+    """The slot's values for the Hòa Xuân loop; a missing file gives the empty state. The
+    poster stands in for the video under reduced motion, so it always loads lazily."""
+    loop = photos.area_loop()
+    if loop is None:
+        return {"ratio": ratio}
+    return {
+        "ratio": ratio,
+        "video": static(loop.mp4),
+        "webm": static(loop.webm),
+        "photo": static(loop.poster),
+        "alt": loop.label,
+        "width": loop.width,
+        "height": loop.height,
+        "eager": False,
+        "illustrative": loop.illustrative,
+        "credit": loop.credit,
     }
 
 
