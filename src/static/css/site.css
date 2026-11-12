@@ -286,6 +286,45 @@ h2 em,
   padding: var(--space-6) var(--side) var(--section-gap);
 }
 
+/* Chapters of the one page (each chapter's own rules are in css/chapters/) */
+
+.chapter {
+  max-width: 100%;
+  margin-top: var(--section-gap);
+  overflow-wrap: anywhere;
+  /* The menu's jump leaves room above the marker. */
+  scroll-margin-top: var(--space-4);
+}
+
+.chapter-marker {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 28px;
+  line-height: 1;
+}
+
+.chapter .chapter-word {
+  margin: 0 0 var(--space-4);
+}
+
+/* Capitals by small capitals, as the h1, so the heading text stays as written. */
+.chapter h2 {
+  margin: 0;
+  font-weight: 300;
+  text-transform: none;
+  font-variant-caps: all-small-caps;
+  /* 64px capitals on desktop, 40px on phones (one-page design.md); / 0.7 for small capitals. */
+  font-size: calc(64px / 0.7);
+  line-height: 0.9;
+  letter-spacing: var(--spacing-headline);
+}
+
+/* The accent word stays lower case at the heading's real size, as the hero's `em`. */
+.chapter h2 .accent {
+  font-variant-caps: normal;
+  font-size: 0.7em;
+}
+
 /* Footer (an Ink band in every theme) */
 
 .site-footer {
@@ -604,6 +643,10 @@ html.hero-flight .hero__chip {
     --size-quote: 22px;
     --section-gap: 72px;
     --side: 18px;
+  }
+
+  .chapter h2 {
+    font-size: calc(40px / 0.7);
   }
 
   .nav-row {

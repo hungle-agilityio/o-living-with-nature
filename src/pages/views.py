@@ -1,36 +1,26 @@
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponsePermanentRedirect
 from django.shortcuts import render
 from django.utils import timezone
 
+from owner_content.services import site_settings
 from pages import hero, seo
 from pages.daypart import daypart_for
 
 
-def _page(request: HttpRequest, name: str) -> HttpResponse:
-    """One of the five pages: its template with its search tags."""
-    return render(request, f"pages/{name}.html", {"seo": seo.head_for(name)})
-
-
 def home(request: HttpRequest) -> HttpResponse:
+    """The whole site: the hero and the five chapters, with the owner's settings (one query)."""
     theme = daypart_for(timezone.now(), request.GET.dict()).theme
-    context = {"seo": seo.head_for("home"), "hero": hero.media_for(theme)}
+    context = {
+        "seo": seo.head_for("home"),
+        "hero": hero.media_for(theme),
+        "owner": site_settings(),
+    }
     return render(request, "pages/home.html", context)
 
 
-def house(request: HttpRequest) -> HttpResponse:
-    return _page(request, "house")
-
-
-def hoa_xuan(request: HttpRequest) -> HttpResponse:
-    return _page(request, "hoa_xuan")
-
-
-def faq(request: HttpRequest) -> HttpResponse:
-    return _page(request, "faq")
-
-
-def contact(request: HttpRequest) -> HttpResponse:
-    return _page(request, "contact")
+def chapter(request: HttpRequest, chapter_id: str) -> HttpResponse:
+    """An old page address: sent for good to its chapter of the home page, with no query."""
+    return HttpResponsePermanentRedirect(f"/#{chapter_id}")
 
 
 def sitemap(request: HttpRequest) -> HttpResponse:

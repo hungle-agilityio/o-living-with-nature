@@ -1,0 +1,7 @@
+/* Chapter 05, contact (#contact). The shared chapter rules (spacing, marker, word, heading) are
+   in site.css; the Ink band, the owner's line and the buttons add their rules here in a later
+   task. */
+
+.chapter--contact {
+  position: relative;
+}

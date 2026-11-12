@@ -7,6 +7,9 @@ import pytest
 from django.test import Client
 from pytest_django import DjangoAssertNumQueries, Settings
 
+# The home page reads the site settings (one query), so every test here may use the database.
+pytestmark = pytest.mark.django_db
+
 UNKNOWN_ADDRESS = "/this-page-does-not-exist/"
 HEADING = "This path leads nowhere — the garden is this way."
 LINE = "The page you were looking for isn't here. It may have moved, or the link has a typo."

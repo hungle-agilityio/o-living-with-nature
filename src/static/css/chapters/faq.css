@@ -1,0 +1,16 @@
+/* Chapter 04, FAQ (#faq). It has no chapter word; its heading "FAQ" is drawn at 150px on
+   desktop and 60px on phones (design.md), / 0.7 for small capitals. The questions come in a
+   later task. */
+
+.chapter--faq h2 {
+  margin-top: var(--space-4);
+  font-size: calc(150px / 0.7);
+  line-height: 0.63;
+  letter-spacing: -0.021em;
+}
+
+@media (max-width: 760px) {
+  .chapter--faq h2 {
+    font-size: calc(60px / 0.7);
+  }
+}

@@ -18,6 +18,9 @@ from pytest_mock import MockerFixture
 from pages import hero
 from pages.daypart import THEMES
 
+# The home page reads the site settings (one query), so every test here may use the database.
+pytestmark = pytest.mark.django_db
+
 REPO = Path(settings.SRC_DIR).parent
 HERO_FILES = Path(settings.SRC_DIR) / "static" / "media" / "hero"
 LINE = "A garden house in Hòa Xuân, Đà Nẵng. Two bedrooms, two gardens, rented whole, by the month."
@@ -371,10 +374,11 @@ def test_only_the_loop_of_the_current_theme_is_in_the_page(client: Client, theme
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("address", ["/", "/?t=dusk"])
-def test_home_page_asks_the_database_nothing(
+def test_home_page_asks_the_database_one_query(
     client: Client, django_assert_num_queries: DjangoAssertNumQueries, address: str
 ) -> None:
-    with django_assert_num_queries(0):
+    # The one query reads the owner's site settings (one-page AC5).
+    with django_assert_num_queries(1):
         response = client.get(address)
 
     assert response.status_code == 200

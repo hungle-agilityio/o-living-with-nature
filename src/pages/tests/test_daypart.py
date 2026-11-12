@@ -11,6 +11,9 @@ from pytest_mock import MockerFixture
 
 from pages.daypart import DA_NANG, THEMES, Daypart, daypart_for, preview_theme, theme_for
 
+# The home page reads the site settings (one query), so every test here may use the database.
+pytestmark = pytest.mark.django_db
+
 COLOURS = {
     "dawn": ("#efe3d6", "#2b2620", "#5e5348"),
     "day": ("#f4f0e8", "#1f2a22", "#5c6358"),

@@ -428,7 +428,8 @@ def test_without_a_record_the_service_gives_the_defaults_in_one_query(
 def test_no_page_shows_the_values_or_asks_the_database(
     client: Client, django_assert_num_queries: DjangoAssertNumQueries, address: str
 ) -> None:
-    with django_assert_num_queries(0):
+    # `/` reads the site settings in one query; the old addresses redirect to it (one-page AC5).
+    with django_assert_num_queries(1):
         response = client.get(address, follow=True)
 
     html = response.content.decode()

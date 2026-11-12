@@ -36,7 +36,8 @@ class Head:
     og_type: str = OG_TYPE
 
 
-# The five pages of phase 1, in the order of the sitemap. The texts change through issues.
+# The pages of phase 1, in the order of the sitemap: the one page `/` (the old page addresses
+# redirect to its chapters and are not listed). The texts change through issues.
 PAGES: dict[str, Page] = {
     "home": Page(
         path="/",
@@ -45,35 +46,6 @@ PAGES: dict[str, Page] = {
             "A whole garden house with two bedrooms, rented by the month in Hòa Xuân, Đà Nẵng. "
             "From 13–14 million VND a month, minimum stay one month."
         ),
-    ),
-    "house": Page(
-        path="/house/",
-        title="The house · Ở, a garden house for rent in Đà Nẵng",
-        description=(
-            "Two bedrooms, a mezzanine, a light well, front and back gardens and a covered "
-            "veranda. Rented whole, by the month."
-        ),
-    ),
-    "hoa_xuan": Page(
-        path="/hoa-xuan/",
-        title="Hòa Xuân, Đà Nẵng · Living at Ở",
-        description=(
-            "A supermarket across the road, the market and the beach about 10 minutes away, "
-            "the airport about 15 minutes."
-        ),
-    ),
-    "faq": Page(
-        path="/faq/",
-        title="FAQ · Renting Ở in Hòa Xuân, Đà Nẵng",
-        description=(
-            "Minimum stay, deposit, electricity and water, pets, and residence registration "
-            "for foreigners."
-        ),
-    ),
-    "contact": Page(
-        path="/contact/",
-        title="Contact Bún · Ở garden house, Đà Nẵng",
-        description="Call, WhatsApp or Zalo. I usually reply within an hour.",
     ),
 }
 
@@ -102,7 +74,7 @@ def head_for(name: str) -> Head:
 
 
 def sitemap_xml(base_url: str | None = None) -> str:
-    """`sitemap.xml`: the canonical addresses of the five pages and nothing else."""
+    """`sitemap.xml`: the canonical address of each page (only `/`) and nothing else."""
     urls = "".join(
         f"  <url><loc>{escape(canonical_url(page.path, base_url))}</loc></url>\n"
         for page in PAGES.values()
