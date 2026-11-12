@@ -345,6 +345,15 @@ def is_favicon_message(message: Any) -> bool:
     return str(location.get("url", "")).endswith("favicon.ico")
 
 
+def on_request_failed(request: Any, keep: Any) -> None:
+    """Keep a failed request as a network failure, with the browser's reason."""
+    reason = request.failure or "unknown"
+    # The browser stops a preload="metadata" video once it has what it needs: not a failure.
+    if request.resource_type == "media" and "ERR_ABORTED" in reason:
+        return
+    keep("network_failures", f"failed {request.url} ({reason})")
+
+
 def run_step(
     page: Any, base: str, step: dict[str, Any], out_dir: Path, index: int, blur: bool = False
 ) -> tuple[dict[str, Any], bool]:
@@ -381,7 +390,7 @@ def run_step(
             else None
         ),
     )
-    page.on("requestfailed", lambda r: keep("network_failures", f"failed {r.url}"))
+    page.on("requestfailed", lambda r: on_request_failed(r, keep))
     ok = True
     try:
         if "goto" in step:
