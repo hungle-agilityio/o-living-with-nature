@@ -27,6 +27,16 @@ visitor ──HTTPS──► Render (o-living-web) ──► gunicorn ──► 
 
 No database reads in phase 1; SQLite exists for Django itself. The health check `/healthz/` answers `ok` and is exempt from the HTTPS redirect.
 
+## Environment variables
+
+Set by hand, never committed. The values are not written here or anywhere in the repository.
+
+| Name | Purpose | Where it is set |
+|---|---|---|
+| `DATABASE_URL` | The address of the Postgres database on Neon that keeps the owner's settings. Without it the app uses the SQLite file, which Render wipes on every deploy and wake-up (`manage.py check` then warns `config.W001`). | Render, in the environment of the service `o-living-web`. Not set in development and tests (SQLite). |
+| `OWNER_USERNAME` | The sign-in name of the owner's account for the admin at `/owner/`. `manage.py ensure_owner` creates the account at every start. | Render, in the environment of the service `o-living-web`. |
+| `OWNER_PASSWORD` | The password of that account, at least 12 characters. `manage.py ensure_owner` sets it at every start, so changing it on Render changes the password. | Render, in the environment of the service `o-living-web`. |
+
 ## Delivery flow
 
 ```

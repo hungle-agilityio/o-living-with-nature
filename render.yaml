@@ -8,7 +8,7 @@ services:
     autoDeployTrigger: checksPass
     healthCheckPath: /healthz/
     buildCommand: pip install uv && uv sync --frozen --no-dev && uv run --no-sync python manage.py collectstatic --noinput
-    startCommand: uv run --no-sync python manage.py migrate --noinput && uv run --no-sync gunicorn --pythonpath src config.wsgi --bind 0.0.0.0:$PORT
+    startCommand: uv run --no-sync python manage.py migrate --noinput && uv run --no-sync python manage.py ensure_owner && uv run --no-sync gunicorn --pythonpath src config.wsgi --bind 0.0.0.0:$PORT
     envVars:
       - key: DJANGO_DEBUG
         value: "0"
@@ -19,4 +19,11 @@ services:
       - key: PYTHON_VERSION
         value: "3.11"
       - key: SITE_BASE_URL
+        sync: false
+      # Set by hand on Render: the Neon Postgres address and the owner's admin account.
+      - key: DATABASE_URL
+        sync: false
+      - key: OWNER_USERNAME
+        sync: false
+      - key: OWNER_PASSWORD
         sync: false

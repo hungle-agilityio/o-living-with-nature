@@ -4,7 +4,11 @@ Values that differ per environment come from environment variables; nothing secr
 """
 
 import os
+from collections.abc import Mapping
 from pathlib import Path
+from typing import Any
+
+import dj_database_url
 
 # The repository root (db.sqlite3, staticfiles/); the code is in src/.
 BASE_DIR = Path(__file__).resolve().parents[2]
@@ -37,18 +41,29 @@ SITE_BASE_URL = os.environ.get("SITE_BASE_URL", "http://localhost:8000").rstrip(
 INDEXING_ENABLED = os.environ.get("INDEXING_ENABLED", "") == "1"
 
 INSTALLED_APPS = [
+    # The owner's admin (at /owner/) and what it needs: accounts, sessions, messages.
+    "django.contrib.admin",
+    "django.contrib.auth",
     "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
     "django.contrib.staticfiles",
     "pages",
+    "owner_content",
 ]
 
+# Sessions, accounts and messages are for the admin only. They are lazy: a public page never
+# reads the session or the user, so a visitor gets no cookie and the page makes no query.
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     # whitenoise serves the collected files in production; runserver serves them in development.
     *([] if DEBUG else ["whitenoise.middleware.WhiteNoiseMiddleware"]),
+    "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
@@ -63,6 +78,8 @@ TEMPLATES = [
             "context_processors": [
                 "django.template.context_processors.request",
                 "django.template.context_processors.i18n",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
                 "pages.context_processors.daypart",
             ],
         },
@@ -71,13 +88,31 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-DATABASES = {
-    "default": {
+
+def database_config(environ: Mapping[str, str]) -> dict[str, Any]:
+    """The database of this environment.
+
+    Production sets DATABASE_URL (Postgres on Neon): Render's free disk is wiped on every
+    deploy and wake-up, so SQLite there would lose the owner's settings. Development and tests
+    have no DATABASE_URL and use SQLite.
+    """
+    url = environ.get("DATABASE_URL", "").strip()
+    if url:
+        return dict(
+            dj_database_url.parse(
+                url,
+                conn_max_age=600,
+                ssl_require=url.startswith(("postgres://", "postgresql://")),
+            )
+        )
+    return {
         "ENGINE": "django.db.backends.sqlite3",
         # DJANGO_DB_NAME lets a check run on a throw-away database.
-        "NAME": os.environ.get("DJANGO_DB_NAME") or BASE_DIR / "db.sqlite3",
+        "NAME": environ.get("DJANGO_DB_NAME") or BASE_DIR / "db.sqlite3",
     }
-}
+
+
+DATABASES = {"default": database_config(os.environ)}
 
 # Phase 1 is English only, at the site root; Vietnamese comes later under /vi/.
 LANGUAGE_CODE = "en"
