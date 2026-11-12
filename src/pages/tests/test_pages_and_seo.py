@@ -143,17 +143,15 @@ def test_home_page_h1_reads_living_with_nature_with_the_accent_word_in_italic(
     assert re.search(r"<h1[^>]*>\s*Living <em[^>]*>with</em> nature\s*</h1>", main)
 
 
-def test_home_page_h1_is_under_a_plain_letter_in_sand(client: Client) -> None:
+def test_home_page_h1_is_under_the_letter_of_the_hero(client: Client) -> None:
     main = _main(_get(client, "/"))
 
-    letter = re.search(r'<p class="home-letter"[^>]*style="([^"]*)"[^>]*>\s*Ở\s*</p>', main)
-    assert letter, "no plain letter Ở above the h1"
-    assert "color: var(--sand)" in letter.group(1)
-    assert "font-family: var(--font-serif)" in letter.group(1)
+    # The plain Sand letter stood here until the hero was built (AC13, "until T5"); it is now
+    # the hero letter of AC21, which test_home_hero.py checks in full.
+    letter = re.search(r'<p class="hero__letter"[^>]*>\s*Ở\s*</p>', main)
+    assert letter, "no letter Ở above the h1"
     assert main.index(letter.group(0)) < main.index("<h1")
-    # Plain: no photo and no video in it until the hero of the later task.
     assert not _parse(main).all("img")
-    assert not _parse(main).all("video")
 
 
 @pytest.mark.parametrize(("address", "heading", "number", "word"), INNER_PAGES)
