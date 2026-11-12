@@ -79,14 +79,40 @@ def secret_pattern() -> re.Pattern[str]:
     return pattern
 
 
-def phone_numbers(text: str) -> list[str]:
+PUBLIC_VALUES = Path(__file__).resolve().parent / "public_values.txt"
+
+
+def national_digits(value: str) -> str:
+    """The digits of a phone number, with a leading 84 (from +84) written as 0."""
+    digits = re.sub(r"\D", "", value)
+    return "0" + digits[2:] if digits.startswith("84") else digits
+
+
+def load_public_numbers(path: Path = PUBLIC_VALUES) -> frozenset[str]:
+    """The numbers shown on the site on purpose, from public_values.txt (# starts a comment)."""
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except FileNotFoundError:
+        return frozenset()
+    values = (line.strip() for line in lines)
+    listed = (value for value in values if value and not value.startswith("#"))
+    return frozenset(national_digits(value) for value in listed)
+
+
+PUBLIC_NUMBERS = load_public_numbers()
+
+
+def phone_numbers(text: str, public: frozenset[str] | None = None) -> list[str]:
+    """The phone numbers in a text, except the public ones (public_values.txt by default)."""
+    allowed = PUBLIC_NUMBERS if public is None else public
     found: list[str] = []
     for match in PHONE.finditer(text):
         value = match.group(0)
         digits = re.sub(r"\D", "", value)
         has_separator = value.startswith("+") or re.search(r"[ ()./-]", value) is not None
         is_date = re.match(r"\d{4}-\d{2}-\d{2}", value) is not None
-        if has_separator and not is_date and 9 <= len(digits) <= 15:
+        is_public = national_digits(value) in allowed
+        if has_separator and not is_date and not is_public and 9 <= len(digits) <= 15:
             found.append(value)
     return found
 
