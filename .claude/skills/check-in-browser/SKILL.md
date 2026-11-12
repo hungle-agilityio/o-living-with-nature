@@ -40,7 +40,7 @@ uv run python .claude/skills/check-in-browser/browser_check.py
 Every page text, log line and address is scanned for emails, phone numbers, tokens, local paths, public IP addresses and credentials in a URL. The first finding stops the whole run, the screenshot of that step is deleted, and logs are stored with the values replaced by `[redacted]`; only the kind and the step are reported. `result.json` carries `masking: clean` or `findings`, which the report and the sharing gate read.
 
 - Only the page is captured (never the browser window), on a throw-away database.
-- The contact page shows the owner's public phone number and email on purpose; the scan flags them, so a step on that page reports a masking finding until the scan learns an allow list (a later task).
+- Numbers shown on the site on purpose (the owner's Call, WhatsApp and Zalo number) are listed in `public_values.txt`, one per line (`#` starts a comment). The scan, the redaction and the stored logs skip a listed number in any spelling (spaces, dots, dashes, `+84` or a leading `0`, `tel:` links); any other phone number is still reported. A public email is still reported.
 - Fields marked `data-sensitive` in the templates are blurred in the screenshots with `--blur`.
 - `--plant` is not supported yet (the app stores no content); it stops with `NOT RUN`.
 

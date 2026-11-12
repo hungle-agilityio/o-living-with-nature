@@ -1,0 +1,3 @@
+# Contact values shown on the site on purpose; the browser check does not report them.
+# One phone number per line. Spaces, dots and dashes are ignored; +84 and a leading 0 are the same.
+0945 384 500
