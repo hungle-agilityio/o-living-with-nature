@@ -55,7 +55,8 @@
       "Read(~/.claude/plugins/cache/o-living/agent-flow/**)",
       "Bash(uv sync:*)",
       "Bash(git mv:*)",
-      "Bash(git cherry-pick:*)"
+      "Bash(git cherry-pick:*)",
+      "Bash(bash scripts/check.sh)"
     ],
     "ask": [
       "Bash(gh issue close:*)",
