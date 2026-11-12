@@ -1,8 +1,8 @@
 /* Chapter 01, the house (#house). The shared chapter rules (spacing, marker, word, heading) are
    in site.css. Desktop: a 12-column grid with 24px gaps (one-page design.md, Layout): the intro
    text (columns 1–5) beside the veranda photo (columns 7–12), then the four-photo gallery, then
-   the layout list and "Included" (columns 1–5; columns 7–12 are kept for the floor plan of a
-   later task). Phones: one column, the gallery a sideways row of 240px cards in its own box. */
+   the layout list and "Included" (columns 1–5) beside the walk through the house (columns
+   7–12). Phones: one column, the gallery a sideways row of 240px cards in its own box. */
 
 .chapter--house {
   position: relative;
@@ -74,6 +74,116 @@
   margin-bottom: var(--space-2);
 }
 
+/* Walk through the house (#floor-plan): a schematic, not the real layout. Blocks in walking order
+   from the front garden to the back garden, drawn with lines only (no image file). Gardens and
+   wide rooms run across the plan; the other rooms sit two by two. */
+
+.house__plan {
+  grid-column: 7 / span 6;
+  grid-row: 1 / span 2;
+  align-self: start;
+  margin: 0;
+}
+
+.floor-plan__heading {
+  margin: 0 0 var(--space-2);
+  font-weight: inherit;
+}
+
+.floor-plan__drawing {
+  position: relative;
+  padding: var(--space-2) var(--space-2) calc(var(--space-2) + 40px);
+  border: 1px solid var(--line);
+}
+
+.floor-plan__rooms {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.floor-plan__part--garden,
+.floor-plan__part--wide {
+  grid-column: 1 / -1;
+}
+
+.floor-plan__room {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  height: 100%;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  font-size: var(--size-body);
+  line-height: 1.3;
+}
+
+.floor-plan__part--garden .floor-plan__room {
+  border-style: dashed;
+  border-color: var(--muted);
+  color: var(--muted);
+}
+
+a.floor-plan__room {
+  background: var(--sand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+a.floor-plan__room::after {
+  content: "↗";
+  content: "↗" / ""; /* a mark for the eye only: screen readers skip it */
+  margin-left: auto;
+  padding-left: var(--space-1);
+  text-decoration: none;
+}
+
+a.floor-plan__room:hover,
+a.floor-plan__room:focus-visible {
+  border-color: var(--ink);
+  background: var(--ground);
+}
+
+.floor-plan__dialog {
+  width: min(880px, calc(100% - 2 * var(--space-2)));
+  max-height: calc(100% - 2 * var(--space-2));
+  padding: var(--space-2);
+  border: 1px solid var(--line);
+  background: var(--ground);
+  color: var(--ink);
+}
+
+.floor-plan__dialog::backdrop {
+  background: var(--chip);
+}
+
+.floor-plan__dialog .media {
+  margin: 0;
+}
+
+/* At most 70% of the screen high, so a tall photo still leaves its chip, credit and Close in
+   view; the width follows from the photo's ratio (set by the script). */
+.floor-plan__box {
+  width: min(100%, calc(70vh * var(--photo-ratio, 1.5)));
+  margin: 0 auto;
+}
+
+.floor-plan__box img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.floor-plan__dialog form {
+  margin-top: var(--space-2);
+  text-align: right;
+}
+
 @media (max-width: 760px) {
   .house__intro,
   .house__details {
@@ -82,8 +192,10 @@
 
   .house__text,
   .house__veranda,
-  .house__details > div {
+  .house__details > div,
+  .house__plan {
     grid-column: 1;
+    grid-row: auto;
   }
 
   .house__gallery {
