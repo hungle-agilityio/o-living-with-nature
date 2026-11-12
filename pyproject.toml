@@ -5,6 +5,8 @@ description = "Ở — Living with Nature: bilingual (VI/EN) website of a rental
 requires-python = ">=3.11"
 dependencies = [
     "django>=5.1,<6",
+    "dj-database-url>=2.2",
+    "psycopg[binary]>=3.2",
     "gunicorn>=23.0",
     "whitenoise>=6.7",
 ]
