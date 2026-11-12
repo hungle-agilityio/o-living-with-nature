@@ -1,0 +1,6 @@
+<ul class="nav-links">
+  <li><a href="/house/"{% if request.path == "/house/" %} aria-current="page"{% endif %}>The house</a></li>
+  <li><a href="/hoa-xuan/"{% if request.path == "/hoa-xuan/" %} aria-current="page"{% endif %}>Hòa Xuân</a></li>
+  <li><a href="/faq/"{% if request.path == "/faq/" %} aria-current="page"{% endif %}>FAQ</a></li>
+  <li><a href="/contact/" class="nav-links__contact"{% if request.path == "/contact/" %} aria-current="page"{% endif %}>Contact</a></li>
+</ul>

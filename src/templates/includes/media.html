@@ -1,0 +1,33 @@
+{% comment %}
+The media slot: one fixed-ratio place for a photo or a muted looping video.
+
+  ratio         CSS aspect ratio, for example "4 / 3" (default "3 / 2")
+  photo         address of the photo; with a video it is the poster
+  video         address of the video (optional)
+  alt           text for the photo, or the label of the video
+  width, height size of the photo in pixels
+  eager         true for the first photo of a page (no lazy loading)
+  illustrative  true for a stand-in: shows the chip and the credit
+  credit        caption shown under an illustrative photo or video
+
+With no photo and no video the slot shows the empty state.
+{% endcomment %}<figure class="media">
+{% if video %}
+  <div class="media__box" style="aspect-ratio: {{ ratio|default:'3 / 2' }}">
+    <video muted loop playsinline autoplay preload="metadata"{% if photo %} poster="{{ photo }}"{% endif %}{% if alt %} aria-label="{{ alt }}"{% endif %}>
+      <source src="{{ video }}" media="(prefers-reduced-motion: no-preference)">
+    </video>
+    {% if photo %}<img class="media__poster" src="{{ photo }}" alt="{{ alt }}"{% if width %} width="{{ width }}"{% endif %}{% if height %} height="{{ height }}"{% endif %}{% if not eager %} loading="lazy"{% endif %}>{% endif %}
+    {% if illustrative %}<span class="media__chip">Illustrative video</span>{% endif %}
+  </div>
+  {% if illustrative and credit %}<figcaption class="media__credit">{{ credit }}</figcaption>{% endif %}
+{% elif photo %}
+  <div class="media__box" style="aspect-ratio: {{ ratio|default:'3 / 2' }}">
+    <img src="{{ photo }}" alt="{{ alt }}"{% if width %} width="{{ width }}"{% endif %}{% if height %} height="{{ height }}"{% endif %}{% if not eager %} loading="lazy"{% endif %}>
+    {% if illustrative %}<span class="media__chip">Illustrative photo</span>{% endif %}
+  </div>
+  {% if illustrative and credit %}<figcaption class="media__credit">{{ credit }}</figcaption>{% endif %}
+{% else %}
+  <div class="media__box media--empty" style="aspect-ratio: {{ ratio|default:'3 / 2' }}">Ở</div>
+{% endif %}
+</figure>

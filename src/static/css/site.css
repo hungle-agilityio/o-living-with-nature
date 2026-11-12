@@ -1,4 +1,636 @@
+/* Design E "Through the Ở". The values are the contract of docs/specs/site-shell/design.md. */
+
+:root {
+  /* Fonts */
+  --font-sans: "Be Vietnam Pro", system-ui, sans-serif;
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+
+  /* Colours (the day theme until body[data-daypart] sets another; the footer and the contact
+     band are fixed) */
+  --ground: #f4f0e8;
+  --ink: #1f2a22;
+  --muted: #5c6358;
+  --line: #d9d2c3;
+  --paper: #f4f0e8;
+  --sand: #e9e2d3;
+  --sand-ink: #b8ae98;
+  --band: #1f2a22;
+  --chip: rgba(20, 26, 22, 0.72);
+
+  /* Type scale */
+  --size-hero: min(70vh, 105vw);
+  --size-headline: 150px;
+  --size-chapter: 200px;
+  --size-big: 84px;
+  --size-gloss: 26px;
+  --size-quote: clamp(24px, 2.2vw, 30px);
+  --size-body: 16px;
+  --size-label: 11px;
+  --size-label-caps: calc(var(--size-label) / 0.7);
+  --size-wordmark: 22px;
+  --line-body: 1.7;
+  --line-headline: 0.9;
+  --spacing-headline: -0.03em;
+  --spacing-label: 0.22em;
+
+  /* Space */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 48px;
+  --space-6: 64px;
+  --space-7: 136px;
+  --section-gap: 136px;
+  --content-max: 1360px;
+  --side: 40px;
+
+  /* Buttons */
+  --button-height: 48px;
+  --button-radius: 999px;
+  --button-size: 13px;
+  --button-spacing: 0.16em;
+}
+
+/* Colour themes: the time of day in Hòa Xuân (Đà Nẵng time), set by the server on body. */
+
+body[data-daypart="dawn"] {
+  --ground: #efe3d6;
+  --ink: #2b2620;
+  --muted: #5e5348;
+}
+
+body[data-daypart="day"] {
+  --ground: #f4f0e8;
+  --ink: #1f2a22;
+  --muted: #5c6358;
+}
+
+body[data-daypart="dusk"] {
+  --ground: #e4be97;
+  --ink: #2a1e16;
+  --muted: #4e3a2c;
+}
+
+body[data-daypart="night"] {
+  --ground: #151d18;
+  --ink: #e9e2d3;
+  --muted: #b9b2a2;
+  --line: rgba(233, 226, 211, 0.18);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: var(--size-body);
+  line-height: var(--line-body);
+  overflow-wrap: break-word;
+  transition: background-color 0.9s ease, color 0.9s ease;
+}
+
+img,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+}
+
+/* Type */
+
+h1,
+h2 {
+  margin: 0;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: var(--spacing-headline);
+  line-height: var(--line-headline);
+}
+
+h1 {
+  font-size: clamp(44px, 9vw, var(--size-headline));
+}
+
+h1 em,
+h2 em,
+.accent {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  text-transform: none;
+}
+
+.chapter-word {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: var(--size-chapter);
+  line-height: 1;
+}
+
+.big {
+  font-size: var(--size-big);
+  font-weight: 300;
+  line-height: 1;
+}
+
+.gloss {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: var(--size-gloss);
+}
+
+.quote {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: var(--size-quote);
+}
+
+/* Labels are drawn in capitals by the font (small capitals), not by text-transform, so the
+   text of the page stays as written ("The house") for copying, searching and the browser
+   check. Browsers draw small capitals at about 0.7 of the font size, so --size-label-caps
+   gives capitals of --size-label. */
+.label,
+.nav-links,
+.nav-menu summary,
+.site-footer__note {
+  font-variant-caps: all-small-caps;
+  font-size: var(--size-label-caps);
+  line-height: 1.4;
+  letter-spacing: calc(var(--size-label) * 0.22);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* Header */
+
+.site-header {
+  position: relative;
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--space-3) var(--side);
+}
+
+.site-header__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.site-header__left {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.wordmark {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: var(--size-wordmark);
+  line-height: 1;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-links a {
+  display: inline-block;
+  padding: var(--space-1) 0;
+  text-decoration: none;
+}
+
+.nav-links a:hover,
+.nav-links a[aria-current="page"],
+.nav-links .nav-links__contact {
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+
+.nav-menu {
+  display: none;
+}
+
+.nav-menu summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--button-height);
+  padding: 0 var(--space-3);
+  border: 1px solid currentColor;
+  border-radius: var(--button-radius);
+  cursor: pointer;
+  list-style: none;
+}
+
+.nav-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.nav-menu nav {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: 0 var(--side) var(--space-2);
+  background: var(--ground);
+  border-bottom: 1px solid var(--line);
+}
+
+.nav-menu .nav-links {
+  flex-direction: column;
+  gap: 0;
+}
+
+.nav-menu .nav-links li {
+  border-top: 1px solid var(--line);
+}
+
+.nav-menu .nav-links a {
+  display: block;
+  padding: var(--space-2) 0;
+}
+
+/* Main */
+
+.site-main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--space-6) var(--side) var(--section-gap);
+}
+
+/* Footer (an Ink band in every theme) */
+
+.site-footer {
+  background: var(--band);
+  color: var(--paper);
+}
+
+.site-footer__inner {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--space-6) var(--side);
+}
+
+.site-footer p {
+  margin: 0 0 var(--space-2);
+}
+
+.site-footer p:last-child {
+  margin-bottom: 0;
+}
+
+.site-footer__mark {
+  margin-right: var(--space-2);
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: var(--size-wordmark);
+}
+
+.site-footer__note {
+  opacity: 0.8;
+}
+
+/* Buttons: Ink fill on paper, Paper fill on an Ink band; the secondary is an outline. */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--button-height);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--ink);
+  border-radius: var(--button-radius);
+  background: var(--ink);
+  color: var(--ground);
+  font-family: var(--font-sans);
+  font-variant-caps: all-small-caps;
+  font-size: calc(var(--button-size) / 0.7);
+  letter-spacing: calc(var(--button-size) * 0.16);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button--secondary {
+  background: transparent;
+  color: var(--ink);
+}
+
+.band .button,
+.site-footer .button {
+  border-color: var(--paper);
+  background: var(--paper);
+  color: var(--band);
+}
+
+.band .button--secondary,
+.site-footer .button--secondary {
+  background: transparent;
+  color: var(--paper);
+}
+
+/* Media slot */
+
+.media {
+  margin: 0;
+}
+
+.media__box {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  background: var(--sand);
+}
+
+.media img,
+.media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.media__poster {
+  display: none;
+}
+
+.media__chip {
+  position: absolute;
+  left: var(--space-2);
+  bottom: var(--space-2);
+  padding: 6px 12px;
+  border-radius: var(--button-radius);
+  background: var(--chip);
+  color: var(--paper);
+  font-variant-caps: all-small-caps;
+  font-size: calc(10px / 0.7);
+  line-height: 1.2;
+  letter-spacing: 2.2px;
+}
+
+.media__credit {
+  margin-top: var(--space-1);
+  color: var(--muted);
+  font-size: var(--size-label);
+  letter-spacing: 0.04em;
+}
+
+.media--empty {
+  display: grid;
+  place-items: center;
+  background: var(--sand);
+  color: var(--sand-ink);
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: clamp(48px, 12vw, 120px);
+  line-height: 1;
+}
+
+/* Home hero "Through the Ở" (design.md, Components).
+
+   As sent by the server it is the still hero: the letter filled with the theme's poster photo,
+   then the dictionary line, the heading and its line, all in the page flow. The flight (a tall
+   stage whose frame stays on screen while the letter grows) exists only under the class that
+   hero.js sets on <html> when the visitor has JavaScript and has not asked for less motion. */
+
+.hero {
+  --hero-foot: 1;
+  --hero-title: 0;
+  overflow-x: clip;
+}
+
+.hero__window {
+  position: relative;
+}
+
+/* The poster photo shows through the letter; with no poster the letter is Sand. */
+.hero__letter {
+  margin: 0;
+  padding-top: 0.08em;
+  text-align: center;
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: var(--size-hero);
+  line-height: 1;
+  color: var(--sand);
+  background-color: var(--sand);
+  background-position: center;
+  background-size: cover;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero__letter {
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.hero__video,
+.hero__canvas,
+.hero__shade {
+  display: none;
+}
+
+.hero__chip {
+  left: auto;
+  right: 0;
+  bottom: var(--space-1);
+}
+
+.hero__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-5);
+  margin-top: var(--space-4);
+}
+
+.hero__gloss p,
+.hero__cue {
+  margin: 0;
+}
+
+.hero__gloss {
+  line-height: 1.35;
+}
+
+.hero__title {
+  margin-top: var(--space-6);
+}
+
+.hero__line {
+  max-width: 34em;
+  margin: var(--space-4) 0 0;
+}
+
+/* The flight */
+
+html.hero-flight .site-main {
+  max-width: none;
+  padding: 0;
+}
+
+/* The header row sits over the letter and leaves with the frame (hero.js moves it). */
+html.hero-flight .site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  transition: color 0.3s ease;
+}
+
+html.hero-over .site-header {
+  color: var(--paper);
+}
+
+/* The open phone menu keeps its own ground, so its links keep the ink. */
+html.hero-over .nav-menu nav {
+  color: var(--ink);
+}
+
+html.hero-flight .hero {
+  height: 330vh;
+}
+
+html.hero-flight .hero__frame {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+
+html.hero-flight .hero__window {
+  position: static;
+}
+
+/* The canvas draws the letter; the one in the page stays for readers that do not see it. */
+html.hero-flight .hero__letter {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+html.hero-flight .hero__video {
+  display: block;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+html.hero-flight .hero__canvas,
+html.hero-flight .hero__shade {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+html.hero-flight .hero__shade {
+  background: linear-gradient(to top, rgba(20, 26, 22, 0.78), rgba(20, 26, 22, 0.18) 62%, rgba(20, 26, 22, 0.3));
+  opacity: var(--hero-title);
+}
+
+html.hero-flight .hero__foot,
+html.hero-flight .hero__title {
+  position: absolute;
+  left: max(var(--side), calc((100% - var(--content-max)) / 2 + var(--side)));
+  right: max(var(--side), calc((100% - var(--content-max)) / 2 + var(--side)));
+  margin: 0;
+}
+
+html.hero-flight .hero__foot {
+  bottom: var(--space-6);
+  opacity: var(--hero-foot);
+}
+
+html.hero-flight .hero__title {
+  bottom: var(--space-6);
+  color: var(--paper);
+  opacity: var(--hero-title);
+  transform: translateY(calc((1 - var(--hero-title)) * 30px));
+  pointer-events: none;
+}
+
+html.hero-flight .hero__chip {
+  right: var(--side);
+  bottom: var(--space-2);
+}
+
+/* Phones */
+
+@media (max-width: 760px) {
+  :root {
+    --size-headline: 60px;
+    --size-chapter: 96px;
+    --size-big: 44px;
+    --size-gloss: 22px;
+    --size-quote: 22px;
+    --section-gap: 72px;
+    --side: 18px;
+  }
+
+  .nav-row {
+    display: none;
+  }
+
+  .nav-menu {
+    display: block;
+  }
+
+  .button {
+    width: 100%;
+  }
+}
+
+/* Reduced motion: no colour transition, no video plays, the poster photo shows instead. */
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    transition: none;
+  }
+
+  .media video {
+    display: none;
+  }
+
+  .media__poster {
+    display: block;
+  }
 }

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block robots %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+{% block content %}
+<p class="label muted">404</p>
+{# Capitals by small capitals, as the labels in site.css, so the page text stays as written. #}
+<h1 style="text-transform: none; font-variant-caps: all-small-caps; font-size: calc(clamp(44px, 9vw, var(--size-headline)) / 0.7); line-height: 0.63; letter-spacing: -0.021em; margin: var(--space-2) 0 var(--space-4)">This path leads nowhere — the garden is this way.</h1>
+<p>The page you were looking for isn't here. It may have moved, or the link has a typo.</p>
+<p style="display: flex; flex-wrap: wrap; gap: var(--space-2)">
+  <a class="button" href="/">Back to the home page</a>
+  <a class="button button--secondary" href="/contact/">Contact Bún</a>
+</p>
+{% endblock %}
