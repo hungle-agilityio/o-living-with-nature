@@ -1,4 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Ở — Living with Nature</h1>
+{# Until the hero is built: a plain letter in Sand, sized as the hero letter of design.md. #}
+<p class="home-letter" style="margin: 0; text-align: center; font-family: var(--font-serif); font-weight: 500; font-size: var(--size-hero); line-height: 1; color: var(--sand)">Ở</p>
+{# Capitals by small capitals, as the labels in site.css, so the page text stays as written. #}
+<h1 style="text-transform: none; font-variant-caps: all-small-caps; font-size: calc(clamp(44px, 9vw, var(--size-headline)) / 0.7); line-height: 0.63; letter-spacing: -0.021em; margin-top: var(--space-4)">Living <em style="font-variant-caps: normal; font-size: 0.7em">with</em> nature</h1>
 {% endblock %}
