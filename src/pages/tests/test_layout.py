@@ -144,12 +144,14 @@ def test_menu_swaps_with_the_row_at_760px_in_the_stylesheet() -> None:
 def test_page_uses_no_javascript(client: Client) -> None:
     html = _home(client)
 
-    # The menu needs no script. The scripts of the home page are the hero's flight (AC22) and
-    # the photo dialog of the floor plan (one-page AC17).
+    # The menu needs no script. The scripts of the home page are the hero's flight (AC22), the
+    # photo dialog of the floor plan (one-page AC17) and the phone contact bar (one-page AC12,
+    # with the owner's channels, as in the test database).
     assert "<script" not in _section(html, "header")
     assert re.findall(r"<script[^>]*>", html) == [
         '<script src="/static/js/hero.js" defer>',
         '<script src="/static/js/floor-plan.js" defer>',
+        '<script src="/static/js/contact-bar.js" defer>',
     ]
     assert "onclick" not in html
 

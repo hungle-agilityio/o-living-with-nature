@@ -15,4 +15,9 @@
 {% include "pages/chapters/rent.html" %}
 {% include "pages/chapters/faq.html" %}
 {% include "pages/chapters/contact.html" %}
+{# The phone contact bar (one-page AC12), on phones only. No channel, no bar. #}
+{% if owner.channels %}<nav class="contact-bar" aria-label="Contact">
+  {% include "includes/contact_buttons.html" with place="bar" %}
+</nav>
+<script src="{% static 'js/contact-bar.js' %}" defer></script>{% endif %}
 {% endblock %}
