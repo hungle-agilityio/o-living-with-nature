@@ -124,7 +124,10 @@ def test_home_page_h1_is_under_the_letter_of_the_hero(client: Client) -> None:
     letter = re.search(r'<p class="hero__letter"[^>]*>\s*Ở\s*</p>', main)
     assert letter, "no letter Ở above the h1"
     assert main.index(letter.group(0)) < main.index("<h1")
-    assert not _parse(main).all("img")
+    # The house chapter's photos (one-page AC13) are below the hero; the hero itself has none.
+    hero = re.search(r'<section id="hero"[^>]*>.*?</section>', main, re.S)
+    assert hero, "no hero section"
+    assert not _parse(hero.group(0)).all("img")
 
 
 @pytest.mark.parametrize("address", ADDRESSES)
