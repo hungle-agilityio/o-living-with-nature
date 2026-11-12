@@ -18,6 +18,9 @@ from pytest_mock import MockerFixture
 from pages import hero
 from pages.daypart import THEMES
 
+# The home page reads the site settings (one query), so every test here may use the database.
+pytestmark = pytest.mark.django_db
+
 REPO = Path(settings.SRC_DIR).parent
 HERO_FILES = Path(settings.SRC_DIR) / "static" / "media" / "hero"
 LINE = "A garden house in Hòa Xuân, Đà Nẵng. Two bedrooms, two gardens, rented whole, by the month."
@@ -207,12 +210,19 @@ def test_media_credits_list_every_loop_and_its_files_exist(theme: str) -> None:
 def test_page_loads_the_one_plain_script_deferred(client: Client) -> None:
     page = _parse(_html(client))
 
-    (script,) = page.all("script")
-    assert script["src"] == "/static/js/hero.js"
-    assert "defer" in script
-    assert "async" not in script
-    # Nothing written into the page itself: the script file is all the JavaScript there is.
-    assert page.text["script"] == [""]
+    # The hero's flight, the photo dialog of the floor plan (one-page AC17), then the phone
+    # contact bar (one-page AC12).
+    scripts = page.all("script")
+    assert [script["src"] for script in scripts] == [
+        "/static/js/hero.js",
+        "/static/js/floor-plan.js",
+        "/static/js/contact-bar.js",
+    ]
+    for script in scripts:
+        assert "defer" in script
+        assert "async" not in script
+    # Nothing written into the page itself: the script files are all the JavaScript there is.
+    assert page.text["script"] == ["", "", ""]
 
 
 def test_script_is_small_and_uses_no_library() -> None:
@@ -366,15 +376,17 @@ def test_only_the_loop_of_the_current_theme_is_in_the_page(client: Client, theme
 
     named = set(re.findall(r"media/hero/(\w+)\.", html))
     assert named == {theme}
-    assert len(_parse(html).all("video")) == 1
+    # The page also holds the Hòa Xuân area loop (one-page AC14), so the count is the hero's.
+    assert len(_parse(_hero(client, f"/?t={theme}")).all("video")) == 1
 
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("address", ["/", "/?t=dusk"])
-def test_home_page_asks_the_database_nothing(
+def test_home_page_asks_the_database_one_query(
     client: Client, django_assert_num_queries: DjangoAssertNumQueries, address: str
 ) -> None:
-    with django_assert_num_queries(0):
+    # The one query reads the owner's site settings (one-page AC5).
+    with django_assert_num_queries(1):
         response = client.get(address)
 
     assert response.status_code == 200

@@ -21,14 +21,16 @@ ROOT = Path(__file__).resolve().parents[3]
 # A fake address: nothing ever connects to it.
 FAKE_POSTGRES = "postgres://owner:not-a-real-secret@db.example.invalid:5432/oliving"
 PASSWORD = "a-long-enough-pass"
+# Address, status and query count: `/` reads the site settings (one-page AC5), the old addresses
+# redirect to their chapter (one-page AC3).
 PUBLIC_ADDRESSES = [
-    "/",
-    "/house/",
-    "/hoa-xuan/",
-    "/faq/",
-    "/contact/",
-    "/sitemap.xml",
-    "/robots.txt",
+    ("/", 200, 1),
+    ("/house/", 301, 0),
+    ("/hoa-xuan/", 301, 0),
+    ("/faq/", 301, 0),
+    ("/contact/", 301, 0),
+    ("/sitemap.xml", 200, 0),
+    ("/robots.txt", 200, 0),
 ]
 UNKNOWN_ADDRESS = "/this-page-does-not-exist/"
 
@@ -403,14 +405,18 @@ def test_architecture_documents_the_variable_without_a_value(key: str) -> None:
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("address", PUBLIC_ADDRESSES)
+@pytest.mark.parametrize(("address", "status", "queries"), PUBLIC_ADDRESSES)
 def test_public_address_sends_no_cookie_and_asks_the_database_nothing(
-    client: Client, django_assert_num_queries: DjangoAssertNumQueries, address: str
+    client: Client,
+    django_assert_num_queries: DjangoAssertNumQueries,
+    address: str,
+    status: int,
+    queries: int,
 ) -> None:
-    with django_assert_num_queries(0):
+    with django_assert_num_queries(queries):
         response = client.get(address)
 
-    assert response.status_code == 200
+    assert response.status_code == status
     assert not response.has_header("Set-Cookie")
     assert not response.cookies
     assert not client.cookies

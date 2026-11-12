@@ -143,10 +143,10 @@ def test_every_entry_has_words_a_credit_and_a_pexels_source() -> None:
 def test_no_page_shows_the_photos_and_none_asks_the_database(
     client: Client, django_assert_num_queries: DjangoAssertNumQueries, address: str
 ) -> None:
-    with django_assert_num_queries(0):
+    # `/` reads the site settings in one query; the old addresses redirect to it (one-page AC5).
+    # Since the house chapter (one-page AC13) `/` shows the house photos, so only the query
+    # count is checked here; the photos themselves are tested in test_house_chapter.py.
+    with django_assert_num_queries(1):
         response = client.get(address, follow=True)
 
     assert response.status_code == 200
-    html = response.content.decode()
-    assert "media/photos/" not in html
-    assert "media/area/" not in html

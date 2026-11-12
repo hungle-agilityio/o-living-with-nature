@@ -1,0 +1,26 @@
+{% load static %}{% comment %}
+The walk through the house (one-page spec AC16, AC17): a schematic of the parts of the house in
+HTML and CSS, front garden first. A block with a photo is a link to the photo file; with a
+script (js/floor-plan.js) the photo opens in the dialog below instead. Rendered by the tag
+{% floor_plan %} of pages.templatetags.photos.
+{% endcomment %}<figure id="floor-plan" class="house__plan floor-plan" aria-labelledby="floor-plan-heading">
+  <h3 id="floor-plan-heading" class="label muted floor-plan__heading">Walk through the house</h3>
+  <div class="floor-plan__drawing">
+    <ol class="floor-plan__rooms">
+      {% for block in blocks %}<li class="floor-plan__part floor-plan__part--{{ block.kind }}">{% if block.href %}<a class="floor-plan__room" href="{{ block.href }}" data-alt="{{ block.photo.alt }}" data-credit="{{ block.photo.credit }}" data-width="{{ block.photo.width }}" data-height="{{ block.photo.height }}"{% if block.photo.illustrative %} data-illustrative{% endif %}>{{ block.name }}</a>{% else %}<span class="floor-plan__room">{{ block.name }}</span>{% endif %}</li>
+      {% endfor %}
+    </ol>
+    <span class="media__chip floor-plan__chip">Schematic</span>
+  </div>
+  <figcaption class="media__credit">Schematic until the architect's plan: the rooms of the house, not their real layout.</figcaption>
+</figure>
+<dialog class="floor-plan__dialog" aria-label="Photo">
+  <figure class="media">
+    <div class="media__box floor-plan__box"><span class="media__chip">Illustrative photo</span></div>
+    <figcaption class="media__credit"></figcaption>
+  </figure>
+  <form method="dialog">
+    <button class="button button--secondary floor-plan__close" type="submit">Close</button>
+  </form>
+</dialog>
+<script src="{% static 'js/floor-plan.js' %}" defer></script>

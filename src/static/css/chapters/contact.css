@@ -1,0 +1,88 @@
+/* Chapter 05, contact (#contact), the contact buttons and the phone contact bar. The shared
+   chapter rules (spacing, marker, word, heading) are in site.css.
+
+   Contact is the Ink band of design.md: full width, Paper text, the Call button in Paper fill
+   (site.css, ".band .button") and the others as outlines. The band reaches the screen's edges
+   with a shadow clipped to the sides, so nothing gets wider than the screen. */
+
+.chapter--contact {
+  position: relative;
+  padding: var(--section-gap) 0;
+  background: var(--band);
+  box-shadow: 0 0 0 100vmax var(--band);
+  clip-path: inset(0 -100vmax);
+  color: var(--paper);
+}
+
+.contact__line {
+  max-width: 34em;
+  margin: var(--space-4) 0;
+}
+
+.contact__empty {
+  margin: 0;
+}
+
+/* The buttons (includes/contact_buttons.html) */
+
+.contact-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* The phone contact bar: Ink at 96%, three equal 44px pills, above the phone's home bar. It
+   exists only at 760px or less. Without JavaScript it always shows there; contact-bar.js adds
+   "contact-bar--away" while the hero or the contact chapter is on screen. */
+
+.contact-bar {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .contact-bar {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 20;
+    display: block;
+    padding: var(--space-1) var(--side) calc(var(--space-1) + env(safe-area-inset-bottom, 0px));
+    background: rgba(31, 42, 34, 0.96);
+    transition: transform 0.3s ease;
+  }
+
+  .contact-bar--away {
+    transform: translateY(110%);
+  }
+
+  .contact-bar .contact-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    gap: var(--space-1);
+  }
+
+  .contact-bar .button {
+    min-height: 44px;
+    padding: 0 var(--space-1);
+    border-color: var(--paper);
+    background: transparent;
+    color: var(--paper);
+  }
+
+  .contact-bar .button:not(.button--secondary) {
+    background: var(--paper);
+    color: var(--band);
+  }
+
+  /* Room under the footer, so the bar never covers its last line. */
+  body:has(.contact-bar) {
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-bar {
+    transition: none;
+  }
+}

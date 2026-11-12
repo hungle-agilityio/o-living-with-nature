@@ -1,0 +1,27 @@
+{% load photos %}
+{# Chapter 02, Hòa Xuân (one-page spec AC14; texts as written in design.md, "Hòa Xuân"). #}
+<section id="hoa-xuan" class="chapter chapter--hoa-xuan" aria-labelledby="hoa-xuan-heading">
+  <p class="chapter-marker muted">&nbsp;&#x309; 02</p>
+  <p class="chapter-word" lang="vi">ở gần</p>
+  <h2 id="hoa-xuan-heading">Hòa Xuân</h2>
+
+  <div class="hoa-xuan__intro">
+    <div class="hoa-xuan__loop">{% area_loop ratio="16 / 9" %}</div>
+    <div class="hoa-xuan__text">
+      <p class="hoa-xuan__line quote">Everything you need day to day is close by.</p>
+      <ul class="hoa-xuan__travel">
+        <li>Supermarket · across the road</li>
+        <li>Market · about 10 min</li>
+        <li>Beach · about 10 min</li>
+        <li>Airport · about 15 min</li>
+      </ul>
+      <a class="button button--secondary hoa-xuan__maps" href="https://www.google.com/maps/search/?api=1&amp;query=H%C3%B2a%20Xu%C3%A2n%2C%20%C4%90%C3%A0%20N%E1%BA%B5ng" target="_blank" rel="noopener">Hòa Xuân on Google Maps ↗</a>
+    </div>
+  </div>
+
+  <ul class="hoa-xuan__photos">
+    <li>{% photo "market" ratio="4 / 3" %}</li>
+    <li>{% photo "street" ratio="4 / 3" %}</li>
+    <li>{% photo "beach-sunset" ratio="4 / 3" %}</li>
+  </ul>
+</section>

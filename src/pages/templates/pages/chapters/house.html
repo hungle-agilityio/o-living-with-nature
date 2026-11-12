@@ -1,0 +1,48 @@
+{% load photos %}
+{# Chapter 01, the house (one-page spec AC13; texts as written in design.md, "The house"). #}
+<section id="house" class="chapter chapter--house" aria-labelledby="house-heading">
+  <p class="chapter-marker muted">&nbsp;&#x309; 01</p>
+  <p class="chapter-word" lang="vi">ở nhà</p>
+  <h2 id="house-heading">The house</h2>
+
+  <div class="house__intro">
+    <div class="house__text">
+      <p class="house__owner quote">{{ owner.greeting }} I built a small garden house in Hòa Xuân, and I'd love for someone to make it home for a while.</p>
+      <p class="house__why">I wanted a house that feels good to live in every day, not just in photos: a little garden, morning light, a veranda to sit on. Ở is that house.</p>
+      <ol class="house__points">
+        <li><span class="house__number">01</span> A private garden and a covered veranda</li>
+        <li><span class="house__number">02</span> Light and air through a light well</li>
+        <li><span class="house__number">03</span> Live like at home, for a month or more</li>
+      </ol>
+    </div>
+    <div class="house__veranda">{% photo "veranda" ratio="4 / 3" %}</div>
+  </div>
+
+  <ul class="house__gallery">
+    <li>{% photo "lightwell" ratio="3 / 4" %}</li>
+    <li>{% photo "bedroom" ratio="3 / 4" %}</li>
+    <li>{% photo "kitchen" ratio="3 / 4" %}</li>
+    <li>{% photo "mezzanine" ratio="3 / 4" %}</li>
+  </ul>
+
+  <div class="house__details">
+    <div class="house__layout">
+      <p class="label muted">The layout</p>
+      <ul>
+        <li>Two bedrooms</li>
+        <li>One bathroom</li>
+        <li>Living room and kitchen</li>
+        <li>Mezzanine</li>
+        <li>Light well</li>
+        <li>Front and back gardens</li>
+        <li>Covered veranda</li>
+        <li>Laundry, drying and storage area</li>
+      </ul>
+    </div>
+    <div class="house__included">
+      <p class="label muted">Included</p>
+      <p>Basic furniture. Garden care once a week. Cleaning can be arranged.</p>
+    </div>
+    {% floor_plan %}
+  </div>
+</section>

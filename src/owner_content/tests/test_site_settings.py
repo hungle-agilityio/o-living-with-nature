@@ -420,7 +420,7 @@ def test_without_a_record_the_service_gives_the_defaults_in_one_query(
     assert value.reply_line == "I usually reply within an hour."
 
 
-# AC6: no page shows the values yet
+# AC6, as changed by the one page (issue #38): `/` shows the values in one query
 
 
 @pytest.mark.django_db
@@ -428,11 +428,17 @@ def test_without_a_record_the_service_gives_the_defaults_in_one_query(
 def test_no_page_shows_the_values_or_asks_the_database(
     client: Client, django_assert_num_queries: DjangoAssertNumQueries, address: str
 ) -> None:
-    with django_assert_num_queries(0):
+    # `/` reads the site settings in one query; the old addresses redirect to it (one-page AC5).
+    with django_assert_num_queries(1):
         response = client.get(address, follow=True)
 
     html = response.content.decode()
     assert response.status_code == 200
-    # The fixed description texts of the pages stay; the owner's number and links are not shown.
-    for text in ("0945", "945384500", "945 384 500", "wa.me", "zalo.me", "tel:"):
-        assert text not in html, f"{address} shows {text!r}"
+    # The price line, and the Call, WhatsApp and Zalo links in the rent chapter, the contact
+    # chapter and the phone bar.
+    assert "From 13–14 million VND a month" in html
+    for channel in OWNER_CHANNELS:
+        for place in ("rent", "contact", "bar"):
+            assert (
+                f'href="{channel.link}" data-channel="{channel.key}" data-place="{place}"' in html
+            ), f"{address} has no {channel.label} link in {place}"

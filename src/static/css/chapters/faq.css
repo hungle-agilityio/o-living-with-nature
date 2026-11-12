@@ -1,0 +1,74 @@
+/* Chapter 04, FAQ (#faq). It has no chapter word; its heading "FAQ" is drawn at 150px on
+   desktop and 60px on phones (design.md), / 0.7 for small capitals. The questions are a column
+   at most 880px wide; each is a row with a "+" (closed) or "–" (open) in Cormorant on the right.
+   The details element opens and closes on its own, with no script. */
+
+.chapter--faq h2 {
+  margin-top: var(--space-4);
+  font-size: calc(150px / 0.7);
+  line-height: 0.63;
+  letter-spacing: -0.021em;
+}
+
+.faq-list {
+  max-width: 880px;
+  margin-top: var(--space-6);
+  border-top: 1px solid var(--line);
+}
+
+.faq-item {
+  border-bottom: 1px solid var(--line);
+}
+
+.faq-item summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  cursor: pointer;
+  list-style: none;
+  font-size: 18px;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary::after {
+  content: "+";
+  flex: none;
+  font-family: var(--font-serif);
+  font-size: 32px;
+  line-height: 1;
+}
+
+.faq-item[open] > summary::after {
+  content: "–";
+}
+
+.faq-item summary:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+
+.faq-item p {
+  margin: 0 0 var(--space-3);
+  max-width: 64ch;
+  color: var(--muted);
+  line-height: var(--line-body);
+}
+
+@media (max-width: 760px) {
+  .chapter--faq h2 {
+    font-size: calc(60px / 0.7);
+  }
+
+  .faq-list {
+    margin-top: var(--space-5);
+  }
+
+  .faq-item summary {
+    font-size: 16px;
+  }
+}

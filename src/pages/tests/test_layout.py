@@ -3,15 +3,21 @@
 import re
 from html.parser import HTMLParser
 
+import pytest
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.test import Client
 
+# The home page reads the site settings (one query), so every test here may use the database.
+pytestmark = pytest.mark.django_db
+
+# The menu jumps to the chapters of the one page (one-page AC2).
 NAV_LINKS = [
-    ("The house", "/house/"),
-    ("Hòa Xuân", "/hoa-xuan/"),
-    ("FAQ", "/faq/"),
-    ("Contact", "/contact/"),
+    ("The house", "/#house"),
+    ("Hòa Xuân", "/#hoa-xuan"),
+    ("Rent", "/#rent"),
+    ("FAQ", "/#faq"),
+    ("Contact", "/#contact"),
 ]
 STAND_IN_LINE = (
     "Photos and videos marked &quot;Illustrative&quot; are stand-ins until the house is finished."
@@ -97,23 +103,12 @@ def test_header_has_the_wordmark_linking_home(client: Client) -> None:
     assert re.search(r'class="wordmark"[^>]*>\s*Ở\s*</a>', header)
 
 
-def test_header_row_has_the_four_links(client: Client) -> None:
+def test_header_row_has_the_five_chapter_links(client: Client) -> None:
     header = _section(_home(client), "header")
     row = _section(header, "nav")
 
     for label, href in NAV_LINKS:
         assert re.search(rf'<a href="{href}"[^>]*>{label}</a>', row), label
-
-
-def test_link_of_the_page_being_shown_is_current(client: Client) -> None:
-    # The four pages come with a later task, so the header is rendered for their address here.
-    for _label, href in NAV_LINKS:
-        request = client.get(href).wsgi_request
-        header = render_to_string("includes/header.html", {"request": request})
-
-        current = [a for a in _parse(header).all("a") if a.get("aria-current") == "page"]
-        assert current, href
-        assert {a["href"] for a in current} == {href}
 
 
 def test_no_link_is_current_on_the_home_page(client: Client) -> None:
@@ -125,7 +120,7 @@ def test_no_link_is_current_on_the_home_page(client: Client) -> None:
 # AC3
 
 
-def test_phone_menu_is_a_details_element_with_the_four_links(client: Client) -> None:
+def test_phone_menu_is_a_details_element_with_the_five_chapter_links(client: Client) -> None:
     header = _section(_home(client), "header")
     details = _section(header, "details")
 
@@ -149,9 +144,15 @@ def test_menu_swaps_with_the_row_at_760px_in_the_stylesheet() -> None:
 def test_page_uses_no_javascript(client: Client) -> None:
     html = _home(client)
 
-    # The menu needs no script. The one script of the home page is the hero's flight (AC22).
+    # The menu needs no script. The scripts of the home page are the hero's flight (AC22), the
+    # photo dialog of the floor plan (one-page AC17) and the phone contact bar (one-page AC12,
+    # with the owner's channels, as in the test database).
     assert "<script" not in _section(html, "header")
-    assert re.findall(r"<script[^>]*>", html) == ['<script src="/static/js/hero.js" defer>']
+    assert re.findall(r"<script[^>]*>", html) == [
+        '<script src="/static/js/hero.js" defer>',
+        '<script src="/static/js/floor-plan.js" defer>',
+        '<script src="/static/js/contact-bar.js" defer>',
+    ]
     assert "onclick" not in html
 
 

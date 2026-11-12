@@ -1,4 +1,23 @@
 {% extends "base.html" %}
+{% load static %}
+{% block styles %}
+  <link rel="stylesheet" href="{% static 'css/chapters/house.css' %}">
+  <link rel="stylesheet" href="{% static 'css/chapters/hoa_xuan.css' %}">
+  <link rel="stylesheet" href="{% static 'css/chapters/rent.css' %}">
+  <link rel="stylesheet" href="{% static 'css/chapters/faq.css' %}">
+  <link rel="stylesheet" href="{% static 'css/chapters/contact.css' %}">
+{% endblock %}
 {% block content %}
 {% include "includes/hero.html" %}
+{# The five chapters of the one page (docs/specs/one-page/spec.md); the menu jumps to their ids. #}
+{% include "pages/chapters/house.html" %}
+{% include "pages/chapters/hoa_xuan.html" %}
+{% include "pages/chapters/rent.html" %}
+{% include "pages/chapters/faq.html" %}
+{% include "pages/chapters/contact.html" %}
+{# The phone contact bar (one-page AC12), on phones only. No channel, no bar. #}
+{% if owner.channels %}<nav class="contact-bar" aria-label="Contact">
+  {% include "includes/contact_buttons.html" with place="bar" %}
+</nav>
+<script src="{% static 'js/contact-bar.js' %}" defer></script>{% endif %}
 {% endblock %}

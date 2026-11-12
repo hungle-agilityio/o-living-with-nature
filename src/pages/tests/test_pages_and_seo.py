@@ -1,11 +1,10 @@
-"""The five pages, their search tags, `sitemap.xml` and `robots.txt` (AC13 to AC18)."""
+"""The home page, its search tags, `sitemap.xml` and `robots.txt` (AC13 to AC18)."""
 
 import json
 import os
 import re
 import subprocess
 import sys
-from html import unescape
 from html.parser import HTMLParser
 from pathlib import Path
 from xml.etree import ElementTree
@@ -15,6 +14,9 @@ from django.test import Client
 from pytest_django import DjangoAssertNumQueries, Settings
 
 from pages import seo
+
+# The home page reads the site settings (one query), so every test here may use the database.
+pytestmark = pytest.mark.django_db
 
 SRC = Path(__file__).resolve().parents[2]
 BASE = "https://o.example"
@@ -28,39 +30,10 @@ PAGES = [
         "A whole garden house with two bedrooms, rented by the month in Hòa Xuân, Đà Nẵng. "
         "From 13–14 million VND a month, minimum stay one month.",
     ),
-    (
-        "/house/",
-        "The house · Ở, a garden house for rent in Đà Nẵng",
-        "Two bedrooms, a mezzanine, a light well, front and back gardens and a covered veranda. "
-        "Rented whole, by the month.",
-    ),
-    (
-        "/hoa-xuan/",
-        "Hòa Xuân, Đà Nẵng · Living at Ở",
-        "A supermarket across the road, the market and the beach about 10 minutes away, "
-        "the airport about 15 minutes.",
-    ),
-    (
-        "/faq/",
-        "FAQ · Renting Ở in Hòa Xuân, Đà Nẵng",
-        "Minimum stay, deposit, electricity and water, pets, and residence registration "
-        "for foreigners.",
-    ),
-    (
-        "/contact/",
-        "Contact Bún · Ở garden house, Đà Nẵng",
-        "Call, WhatsApp or Zalo. I usually reply within an hour.",
-    ),
 ]
 ADDRESSES = [address for address, _title, _description in PAGES]
-# The inner pages: address, h1, chapter number, chapter word (FAQ has none in design.md).
-INNER_PAGES = [
-    ("/house/", "The house", "01", "ở nhà"),
-    ("/hoa-xuan/", "Hòa Xuân", "02", "ở gần"),
-    ("/faq/", "FAQ", "03", None),
-    ("/contact/", "Contact", "04", "ở lại?"),
-]
-EVERY_ADDRESS = [*ADDRESSES, "/sitemap.xml", "/robots.txt"]
+# The old inner pages: they now answer 301 to their chapter of `/` (one-page AC3).
+OLD_ADDRESSES = ["/house/", "/hoa-xuan/", "/faq/", "/contact/"]
 
 
 class _Page(HTMLParser):
@@ -151,28 +124,10 @@ def test_home_page_h1_is_under_the_letter_of_the_hero(client: Client) -> None:
     letter = re.search(r'<p class="hero__letter"[^>]*>\s*Ở\s*</p>', main)
     assert letter, "no letter Ở above the h1"
     assert main.index(letter.group(0)) < main.index("<h1")
-    assert not _parse(main).all("img")
-
-
-@pytest.mark.parametrize(("address", "heading", "number", "word"), INNER_PAGES)
-def test_inner_page_has_the_chapter_marker_the_chapter_word_and_the_h1(
-    client: Client, address: str, heading: str, number: str, word: str | None
-) -> None:
-    main = _main(_get(client, address))
-    page = _parse(main)
-
-    assert page.text["h1"] == [heading]
-    # The marker: the hook of the letter ở (U+0309, on a no-break space), then the number.
-    marker = re.search(r'<p class="chapter-marker[^"]*"[^>]*>(.*?)</p>', main, re.DOTALL)
-    assert marker, "no chapter marker"
-    assert unescape(marker.group(1)) == f" ̉ {number}"
-    assert main.index(marker.group(0)) < main.index("<h1")
-    words = re.findall(r'<p class="chapter-word"[^>]*>\s*(.*?)\s*</p>', main, re.DOTALL)
-    if word is None:
-        assert words == []
-    else:
-        assert words == [word]
-        assert main.index(marker.group(0)) < main.index(word) < main.index("<h1")
+    # The house chapter's photos (one-page AC13) are below the hero; the hero itself has none.
+    hero = re.search(r'<section id="hero"[^>]*>.*?</section>', main, re.S)
+    assert hero, "no hero section"
+    assert not _parse(hero.group(0)).all("img")
 
 
 @pytest.mark.parametrize("address", ADDRESSES)
@@ -184,16 +139,6 @@ def test_h1_is_drawn_in_capitals_without_changing_its_text(client: Client, addre
 
     assert "text-transform: none" in style
     assert "font-variant-caps: all-small-caps" in style
-
-
-@pytest.mark.parametrize(("address", "heading", "_number", "_word"), INNER_PAGES)
-def test_inner_page_marks_its_link_in_the_header(
-    client: Client, address: str, heading: str, _number: str, _word: str | None
-) -> None:
-    current = [a for a in _parse(_get(client, address)).all("a") if a.get("aria-current")]
-
-    assert current
-    assert {a["href"] for a in current} == {address}
 
 
 # AC14
@@ -238,7 +183,7 @@ def test_page_has_the_open_graph_tags(
 
 
 def test_query_is_never_echoed_into_the_search_tags(client: Client) -> None:
-    html = _get(client, '/house/?t="><b>x</b>&next=//evil.example')
+    html = _get(client, '/?t="><b>x</b>&next=//evil.example')
 
     assert "evil.example" not in html
     assert "<b>x</b>" not in html
@@ -252,7 +197,7 @@ def test_canonical_of_an_unknown_page_is_refused() -> None:
 # AC16
 
 
-def test_sitemap_lists_the_five_canonical_addresses_and_nothing_else(
+def test_sitemap_lists_the_canonical_address_of_the_home_page_and_nothing_else(
     client: Client, settings: Settings
 ) -> None:
     settings.SITE_BASE_URL = BASE
@@ -264,14 +209,14 @@ def test_sitemap_lists_the_five_canonical_addresses_and_nothing_else(
     root = ElementTree.fromstring(response.content)
     namespace = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
     assert root.tag == f"{namespace}urlset"
-    assert [child.tag for child in root] == [f"{namespace}url"] * 5
-    assert [loc.text for loc in root.iter(f"{namespace}loc")] == [BASE + a for a in ADDRESSES]
+    assert [child.tag for child in root] == [f"{namespace}url"]
+    assert [loc.text for loc in root.iter(f"{namespace}loc")] == [BASE + "/"]
 
 
 def test_sitemap_escapes_the_base_url() -> None:
     xml = seo.sitemap_xml("https://o.example/a&b")
 
-    assert "<loc>https://o.example/a&amp;b/house/</loc>" in xml
+    assert "<loc>https://o.example/a&amp;b/</loc>" in xml
     ElementTree.fromstring(xml.encode())
 
 
@@ -382,11 +327,15 @@ def test_not_found_page_stays_out_of_search_results_when_indexing_is_on(
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("address", EVERY_ADDRESS)
+@pytest.mark.parametrize(
+    ("address", "status"),
+    [("/sitemap.xml", 200), ("/robots.txt", 200), *[(old, 301) for old in OLD_ADDRESSES]],
+)
 def test_page_asks_the_database_nothing(
-    client: Client, django_assert_num_queries: DjangoAssertNumQueries, address: str
+    client: Client, django_assert_num_queries: DjangoAssertNumQueries, address: str, status: int
 ) -> None:
+    # `/` reads the site settings in one query; test_one_page.py checks it.
     with django_assert_num_queries(0):
         response = client.get(address)
 
-    assert response.status_code == 200
+    assert response.status_code == status
