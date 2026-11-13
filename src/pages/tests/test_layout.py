@@ -146,9 +146,11 @@ def test_page_uses_no_javascript(client: Client) -> None:
 
     # The menu needs no script. The scripts of the home page are the hero's flight (AC22), the
     # photo dialog of the floor plan (one-page AC17) and the phone contact bar (one-page AC12,
-    # with the owner's channels, as in the test database).
+    # with the owner's channels, as in the test database), after the load and reveal motion that
+    # base.html links (design-match AC13).
     assert "<script" not in _section(html, "header")
     assert re.findall(r"<script[^>]*>", html) == [
+        '<script src="/static/js/reveal.js" defer>',
         '<script src="/static/js/hero.js" defer>',
         '<script src="/static/js/floor-plan.js" defer>',
         '<script src="/static/js/contact-bar.js" defer>',

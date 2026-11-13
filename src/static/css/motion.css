@@ -1,0 +1,59 @@
+/* Load and reveal motion (design.md, "Load and reveal motion").
+
+   Every rule needs the class "motion" on <html>, set by js/reveal.js only when the visitor has
+   not asked for less motion. Without the script, or under reduced motion, everything shows at
+   once, with no transform and no animation. */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The header fades in and moves 12px down into place. "backwards" leaves no end state, so the
+     hero script can still move the header once this is done. */
+  html.motion .site-header {
+    animation: motion-header-in 0.9s ease-out 0.2s backwards;
+  }
+
+  @keyframes motion-header-in {
+    from {
+      opacity: 0;
+      transform: translateY(-12px);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* A block of a chapter waits 42px lower, hidden, until 12% of it is on screen. */
+  html.motion .reveal {
+    opacity: 0;
+    transform: translateY(42px);
+    transition:
+      opacity 1.1s cubic-bezier(0.2, 0.7, 0.2, 1),
+      transform 1.1s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  html.motion .reveal.is-revealed {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* On screen when the page opens: shown at once. */
+  html.motion .reveal.is-revealed-now {
+    transition: none;
+  }
+
+  /* Photos in media slots zoom slowly, clipped by the slot (overflow: hidden in site.css). */
+  html.motion .media__box img {
+    animation: motion-zoom 22s ease-in-out infinite alternate;
+  }
+
+  @keyframes motion-zoom {
+    from {
+      transform: scale(1.02);
+    }
+
+    to {
+      transform: scale(1.09);
+    }
+  }
+}
