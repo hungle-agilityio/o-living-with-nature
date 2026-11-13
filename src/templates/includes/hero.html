@@ -1,13 +1,14 @@
 {% load static %}{% comment %}
 The home hero "Through the Ở" (design.md, Components).
 
-  hero  the files of the current theme's loop (poster, mp4, webm), or nothing when they are missing
+  hero        the files of the current theme's loop (poster, mp4, webm), or nothing when they are missing
+  hero_loops  the files of every theme that has all three, for the live switch of hero.js
 
 As sent, this is the still hero: the letter filled with the poster photo, then the dictionary
 line, the cue, the heading and its line, all in the page flow. hero.js turns it into the intro
 (one screen, the video drawn through the growing letter on the canvas, then the heading) when
 motion is fine. With no files the letter is Sand and there is no video, no chip and no intro.
-{% endcomment %}<section id="hero" class="hero">
+{% endcomment %}<section id="hero" class="hero"{% for name, loop in hero_loops.items %} data-loop-{{ name }}="{% static loop.poster %} {% static loop.webm %} {% static loop.mp4 %}"{% endfor %}>
   <div class="hero__frame">
     <div class="hero__window">
       <p class="hero__letter"{% if hero %} style="background-image: url('{% static hero.poster %}')"{% endif %}>Ở</p>

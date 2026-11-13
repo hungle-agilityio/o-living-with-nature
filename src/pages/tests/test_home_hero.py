@@ -216,6 +216,7 @@ def test_page_loads_the_one_plain_script_deferred(client: Client) -> None:
     scripts = page.all("script")
     assert [script["src"] for script in scripts] == [
         "/static/js/reveal.js",
+        "/static/js/daypart.js",
         "/static/js/hero.js",
         "/static/js/floor-plan.js",
         "/static/js/area-band.js",
@@ -225,7 +226,7 @@ def test_page_loads_the_one_plain_script_deferred(client: Client) -> None:
         assert "defer" in script
         assert "async" not in script
     # Nothing written into the page itself: the script files are all the JavaScript there is.
-    assert page.text["script"] == ["", "", "", "", ""]
+    assert page.text["script"] == ["", "", "", "", "", ""]
 
 
 def test_script_is_small_and_uses_no_library() -> None:
@@ -355,7 +356,9 @@ def test_missing_files_give_a_sand_letter_and_no_chip(
     assert not page.all("video")
     assert not page.all("source")
     assert "Illustrative" not in section
-    assert "media/hero" not in section
+    # The other themes' files may be listed for the live switch (time-of-day-live AC13); no
+    # file of the night loop is.
+    assert "media/hero/night" not in section
     # Nothing else breaks: the words and the heading are all there.
     assert "to be at home." in section
     assert page.text["h1"] == ["Living with nature"]
@@ -378,12 +381,19 @@ def test_video_loads_only_its_metadata(client: Client) -> None:
 
 @pytest.mark.parametrize("theme", THEMES)
 def test_only_the_loop_of_the_current_theme_is_in_the_page(client: Client, theme: str) -> None:
-    html = _html(client, f"/?t={theme}")
-
-    named = set(re.findall(r"media/hero/(\w+)\.", html))
-    assert named == {theme}
+    # The video, its sources and the letter name only the current theme's files; the data
+    # attributes of the hero section may list the other themes' files for the live switch
+    # (time-of-day-live AC13).
+    section = _hero(client, f"/?t={theme}")
+    page = _parse(section)
+    (video,) = page.all("video")
+    (letter,) = page.with_class("hero__letter")
+    named = [video["poster"], letter["style"]] + [source["src"] for source in page.all("source")]
+    assert {name for text in named for name in re.findall(r"media/hero/(\w+)\.", text or "")} == {
+        theme
+    }
     # The page also holds the Hòa Xuân area loop (one-page AC14), so the count is the hero's.
-    assert len(_parse(_hero(client, f"/?t={theme}")).all("video")) == 1
+    assert len(page.all("video")) == 1
 
 
 @pytest.mark.django_db

@@ -18,7 +18,8 @@
   <link rel="stylesheet" href="{% static 'css/site.css' %}">
   {% block styles %}{% endblock %}
   <link rel="stylesheet" href="{% static 'css/motion.css' %}">
-  {% block motion_script %}<script src="{% static 'js/reveal.js' %}" defer></script>{% endblock %}
+  {% block motion_script %}<script src="{% static 'js/reveal.js' %}" defer></script>
+  <script src="{% static 'js/daypart.js' %}" defer></script>{% endblock %}
 </head>
 <body{% if daypart %} data-daypart="{{ daypart.theme }}"{% endif %}>
   {% include "includes/header.html" %}

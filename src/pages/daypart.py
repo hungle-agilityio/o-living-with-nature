@@ -1,6 +1,6 @@
 """The time of day in Hòa Xuân: which colour theme a moment gets, and what a page shows for it."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -21,11 +21,17 @@ _STARTS: tuple[tuple[int, str], ...] = ((5, DAWN), (8, DAY), (17, DUSK), (19, NI
 
 @dataclass(frozen=True)
 class Daypart:
-    """What a page shows: the theme name, its label and the clock in Hòa Xuân."""
+    """What a page shows: the theme name, its label and the clock in Hòa Xuân.
+
+    `now_ms` (the moment in milliseconds since 1970-01-01 UTC) and `preview` (a valid `?t=`) are
+    for the script that keeps the page on time; two Dayparts that show the same are equal.
+    """
 
     theme: str
     label: str
     clock: str
+    now_ms: int = field(default=0, compare=False)
+    preview: bool = field(default=False, compare=False)
 
 
 class PreviewForm(forms.Form):
@@ -60,9 +66,12 @@ def preview_theme(query: dict[str, str]) -> str | None:
 
 def daypart_for(moment: datetime, query: dict[str, str]) -> Daypart:
     """The theme to show (the preview when one is asked, else the real one) and the real clock."""
-    theme = preview_theme(query) or theme_for(moment)
+    preview = preview_theme(query)
+    theme = preview or theme_for(moment)
     return Daypart(
         theme=theme,
         label=theme.capitalize(),
         clock=_in_da_nang(moment).strftime("%H:%M"),
+        now_ms=int(moment.timestamp() * 1000),
+        preview=preview is not None,
     )
