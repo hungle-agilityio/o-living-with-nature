@@ -22,10 +22,11 @@ WHY = (
     "I wanted a house that feels good to live in every day, not just in photos: a little "
     "garden, morning light, a veranda to sit on. Ở is that house."
 )
-POINTS = [
-    ("01", "A private garden and a covered veranda"),
-    ("02", "Light and air through a light well"),
-    ("03", "Live like at home, for a month or more"),
+FACTS = [
+    ("2", "bedrooms"),
+    ("2", "gardens"),
+    ("1", "light well"),
+    ("1", "household at a time"),
 ]
 LAYOUT = [
     "Two bedrooms",
@@ -38,7 +39,8 @@ LAYOUT = [
     "Laundry, drying and storage area",
 ]
 INCLUDED = "Basic furniture. Garden care once a week. Cleaning can be arranged."
-GALLERY = ["lightwell", "bedroom", "kitchen", "mezzanine"]
+COLLAGE = ["bedroom", "lightwell", "veranda", "kitchen", "garden-evening"]
+LABELS = ["Bedrooms · two", "Light well", "Veranda", "Living & kitchen", "Back garden"]
 
 
 def _text(html: str) -> str:
@@ -70,62 +72,68 @@ def test_owner_line_starts_with_the_owners_greeting(client: Client) -> None:
     SiteSettings.objects.all().delete()
     SiteSettings.objects.create(owner_first_name="Lan", price_from_million=9)
 
-    line = _block(_house(client), "house__owner quote")
+    line = _block(_house(client), "house__owner quote reveal")
 
     assert _text(line) == f"Hi, I'm Lan. {OWNER_LINE}"
 
 
 def test_why_paragraph_is_shown_as_written(client: Client) -> None:
-    assert _text(_block(_house(client), "house__why")) == WHY
+    assert _text(_block(_house(client), "house__why reveal")) == WHY
 
 
-def test_three_numbered_points_in_order(client: Client) -> None:
-    points = _block(_house(client), "house__points")
+def test_facts_row_takes_the_place_of_the_three_points(client: Client) -> None:
+    house = _house(client)
+    facts = _block(house, "house__facts reveal")
 
-    assert points.startswith("<ol")
-    items = re.findall(r"<li>(.*?)</li>", points, re.S)
-    numbers = re.findall(r'<span class="house__number"[^>]*>(.*?)</span>', points)
-    assert numbers == [number for number, _ in POINTS]
-    assert [_text(item) for item in items] == [f"{number} {text}" for number, text in POINTS]
+    assert "house__points" not in house
+    assert facts.startswith("<ul")
+    items = re.findall(r"<li>(.*?)</li>", facts, re.S)
+    assert [_text(item) for item in items] == [f"{number} {label}" for number, label in FACTS]
 
 
-def test_veranda_photo_comes_before_the_gallery(client: Client) -> None:
+def test_collage_holds_the_five_rooms_in_order(client: Client) -> None:
     house = _house(client)
 
-    paths = _photo_paths(house)
-    assert paths == ["veranda", *GALLERY]
+    assert _photo_paths(house[: house.index('id="floor-plan"')]) == COLLAGE
     assert f'alt="{photos.PHOTOS["veranda"].alt}"' in house
 
 
-def test_gallery_holds_the_four_photos_in_3_by_4(client: Client) -> None:
-    gallery = _block(_house(client), "house__gallery")
+def test_collage_holds_the_five_photos_with_their_labels(client: Client) -> None:
+    collage = _block(_house(client), "house__collage")
 
-    assert _photo_paths(gallery) == GALLERY
-    assert gallery.count("aspect-ratio: 3 / 4") == 4
-    assert gallery.count("Illustrative photo") == 4
+    assert _photo_paths(collage) == COLLAGE
+    labels = re.findall(r'<p class="house__room-label label">(.*?)</p>', collage, re.S)
+    assert [_text(label) for label in labels] == LABELS
+    assert collage.count("Illustrative photo") == 5
 
 
-def test_gallery_scrolls_sideways_inside_its_box_on_narrow_screens() -> None:
+def test_collage_scrolls_sideways_inside_its_box_on_narrow_screens() -> None:
     css = CSS.read_text(encoding="utf-8")
 
     narrow = re.search(r"@media \(max-width: 760px\)\s*\{(.*)\}\s*$", css, re.S)
     assert narrow, "no rule for 760px or less"
-    gallery = re.search(r"\.house__gallery\s*\{([^}]*)\}", narrow.group(1))
-    assert gallery, "no gallery rule at 760px or less"
-    assert re.search(r"overflow-x:\s*auto", gallery.group(1))
-    assert re.search(r"grid-auto-columns:\s*240px", gallery.group(1))
+    collage = re.search(r"\.house__collage\s*\{([^}]*)\}", narrow.group(1))
+    assert collage, "no collage rule at 760px or less"
+    assert re.search(r"overflow-x:\s*auto", collage.group(1))
+    assert re.search(r"scroll-snap-type:\s*x mandatory", collage.group(1))
+    room = re.search(r"\.house__room\s*\{([^}]*)\}", narrow.group(1))
+    assert room, "no card rule at 760px or less"
+    assert re.search(r"240px", room.group(1))
+    box = re.search(r"\.house__room \.media__box\s*\{([^}]*)\}", narrow.group(1))
+    assert box, "no card height at 760px or less"
+    assert re.search(r"height:\s*320px", box.group(1))
     assert "100vw" not in css
 
 
 def test_layout_list_has_its_label_and_eight_lines(client: Client) -> None:
-    layout = _block(_house(client), "house__layout")
+    layout = _block(_house(client), "house__layout reveal")
 
     assert _text(_block(layout, "label muted")) == "The layout"
     assert [_text(item) for item in re.findall(r"<li>(.*?)</li>", layout, re.S)] == LAYOUT
 
 
 def test_included_line_has_its_label(client: Client) -> None:
-    included = _block(_house(client), "house__included")
+    included = _block(_house(client), "house__included reveal")
 
     assert _text(_block(included, "label muted")) == "Included"
     assert _text(included) == f"Included {INCLUDED}"
@@ -134,7 +142,7 @@ def test_included_line_has_its_label(client: Client) -> None:
 def test_texts_come_in_the_order_of_the_design(client: Client) -> None:
     text = _text(_house(client))
 
-    order = [OWNER_LINE, WHY, POINTS[0][1], "The layout", LAYOUT[-1], INCLUDED]
+    order = [OWNER_LINE, WHY, f"{FACTS[0][0]} {FACTS[0][1]}", "The layout", LAYOUT[-1], INCLUDED]
     positions = [text.index(part) for part in order]
     assert positions == sorted(positions)
 

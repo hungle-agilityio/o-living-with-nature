@@ -1,64 +1,158 @@
-/* Chapter 01, the house (#house). The shared chapter rules (spacing, marker, word, heading) are
-   in site.css. Desktop: a 12-column grid with 24px gaps (one-page design.md, Layout): the intro
-   text (columns 1–5) beside the veranda photo (columns 7–12), then the four-photo gallery, then
-   the layout list and "Included" (columns 1–5) beside the walk through the house (columns
-   7–12). Phones: one column, the gallery a sideways row of 240px cards in its own box. */
+/* Chapter 01, the house (#house; design-match design.md, "01 ở nhà"). The shared chapter rules
+   (spacing, marker, word, heading) are in site.css. Desktop, on 12 columns: the head (columns
+   1–7) beside the owner line and "Why Ở" (columns 8–12, at the bottom); the room collage (18px
+   gaps, 72px below), each photo at its own height and shift; the facts row (96px below); then the
+   layout list and "Included" (columns 1–5) beside the walk through the house (columns 7–12).
+   Phones: one column, the collage a sideways row of 240px by 320px cards in its own box, the
+   facts row on two columns. */
 
 .chapter--house {
   position: relative;
 }
 
-.house__intro,
+.house__top,
 .house__details {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 24px;
-  margin-top: var(--space-6);
 }
 
-.house__text,
+.house__head {
+  grid-column: 1 / span 7;
+}
+
+.house__intro {
+  grid-column: 8 / span 5;
+  align-self: end;
+}
+
+.house__owner {
+  margin: 0 0 var(--space-3);
+  font-size: 28px;
+  line-height: 1.3;
+}
+
+.house__owner .accent {
+  font-style: italic;
+}
+
+.house__why {
+  margin: 0;
+  color: var(--muted);
+}
+
+/* The room collage */
+
+.house__collage {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 18px;
+  align-items: start;
+  margin: 72px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.house__room {
+  min-width: 0;
+}
+
+.house__room .media__box {
+  width: 100%;
+}
+
+.house__room--bedroom {
+  grid-column: 1 / 6;
+}
+
+.house__room--bedroom .media__box {
+  height: 620px;
+}
+
+.house__room--lightwell {
+  grid-column: 6 / 10;
+  margin-top: 160px;
+}
+
+.house__room--lightwell .media__box {
+  height: 460px;
+}
+
+.house__room--veranda {
+  grid-column: 10 / 13;
+  margin-top: 60px;
+}
+
+.house__room--veranda .media__box {
+  height: 340px;
+}
+
+.house__room--kitchen {
+  grid-column: 2 / 7;
+}
+
+.house__room--kitchen .media__box {
+  height: 380px;
+}
+
+.house__room--garden-evening {
+  grid-column: 8 / 13;
+  margin-top: -120px;
+}
+
+.house__room--garden-evening .media__box {
+  height: 460px;
+}
+
+.house__room-label {
+  margin: 12px 0 0;
+}
+
+/* The facts row */
+
+.house__facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  margin: 96px 0 0;
+  padding: var(--space-3) 0 0;
+  border-top: 1px solid var(--ink);
+  list-style: none;
+}
+
+.house__fact-number {
+  display: block;
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: 80px;
+  line-height: 1;
+}
+
+.house__fact-label {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--muted);
+}
+
+/* The layout list, "Included" and the walk through the house */
+
+.house__details {
+  margin-top: 96px;
+}
+
 .house__details > div {
   grid-column: 1 / span 5;
 }
 
-.house__veranda {
-  grid-column: 7 / span 6;
-}
-
-.house__owner {
-  margin: 0 0 var(--space-4);
-}
-
-.house__why {
-  margin: 0 0 var(--space-4);
-}
-
-.house__points,
 .house__layout ul {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.house__points li,
 .house__layout li {
   padding: var(--space-2) 0;
   border-top: 1px solid var(--line);
-}
-
-.house__number {
-  margin-right: var(--space-2);
-  font-family: var(--font-serif);
-  color: var(--muted);
-}
-
-.house__gallery {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 24px;
-  margin: var(--space-6) 0 0;
-  padding: 0;
-  list-style: none;
 }
 
 .house__included p {
@@ -185,31 +279,45 @@ a.floor-plan__room:focus-visible {
 }
 
 @media (max-width: 760px) {
-  .house__intro,
+  .house__top,
   .house__details {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .house__text,
-  .house__veranda,
+  .house__head,
+  .house__intro,
   .house__details > div,
   .house__plan {
     grid-column: 1;
     grid-row: auto;
   }
 
-  .house__gallery {
-    grid-template-columns: none;
-    grid-auto-flow: column;
-    grid-auto-columns: 240px;
-    gap: 18px;
+  .house__collage {
+    display: flex;
+    gap: 12px;
     max-width: 100%;
+    margin-top: var(--space-5);
+    padding-bottom: var(--space-1);
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
   }
 
-  .house__gallery li {
+  .house__room {
+    flex: 0 0 240px;
+    margin-top: 0;
     scroll-snap-align: start;
+  }
+
+  .house__room .media__box {
+    height: 320px;
+  }
+
+  .house__facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .house__fact-number {
+    font-size: 56px;
   }
 }
