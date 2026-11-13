@@ -33,3 +33,9 @@ def media_for(theme: str) -> HeroMedia | None:
     if any(finders.find(path) is None for path in (media.poster, media.mp4, media.webm)):
         return None
     return media
+
+
+def loops() -> dict[str, HeroMedia]:
+    """The files of every theme that has all three, in the order of a day, for the live switch."""
+    found = {theme: media_for(theme) for theme in THEMES}
+    return {theme: media for theme, media in found.items() if media is not None}

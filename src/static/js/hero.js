@@ -306,6 +306,55 @@
   if (lessMotion.addEventListener) {
     lessMotion.addEventListener("change", choose);
   }
+
+  /* A new theme while the page is open (daypart.js): its poster first, then its loop. Until the
+     poster has loaded the old picture stays. A theme with no files: Sand, no chip. */
+  var letter = hero.querySelector(".hero__letter");
+  var chip = hero.querySelector(".hero__chip");
+  var sources = video.querySelectorAll("source"); // webm, then mp4
+  var next = null;
+  function load(files) {
+    files.forEach(function (file, index) {
+      if (file) {
+        sources[index].src = file;
+      } else {
+        sources[index].removeAttribute("src");
+      }
+    });
+    video.load();
+  }
+  function sand() {
+    next = poster = null;
+    letter.style.backgroundImage = "";
+    video.removeAttribute("poster");
+    chip && (chip.style.display = "none");
+    load(["", ""]);
+  }
+  document.addEventListener("daypart", function (event) {
+    var files = (hero.getAttribute("data-loop-" + event.detail.theme) || "").split(" ");
+    var image = (next = new Image());
+    if (files.length < 3) {
+      return sand();
+    }
+    image.onerror = function () {
+      image === next && sand(); // a poster that cannot load: as a theme with no files
+    };
+    image.onload = function () {
+      if (image !== next) {
+        return; // a newer theme came first
+      }
+      poster = image;
+      letter.style.backgroundImage = "url('" + files[0] + "')";
+      video.poster = files[0];
+      chip && (chip.style.display = "");
+      load(files.slice(1));
+      if (request && shown.playing) {
+        var playing = video.play();
+        playing && playing.catch && playing.catch(function () {});
+      }
+    };
+    image.src = files[0];
+  });
   // The letter is drawn in the fallback font until Cormorant Garamond has loaded.
   if (document.fonts && document.fonts.load) {
     document.fonts.load(font(64), LETTER + "O").then(
