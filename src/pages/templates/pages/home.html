@@ -21,4 +21,6 @@
   {% include "includes/contact_buttons.html" with place="bar" %}
 </nav>
 <script src="{% static 'js/contact-bar.js' %}" defer></script>{% endif %}
+{# The counter (contact-counter AC9): a view on load, a click per contact button; also with no channel. #}
+<script src="{% static 'js/count.js' %}" defer></script>
 {% endblock %}
