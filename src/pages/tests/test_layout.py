@@ -156,6 +156,7 @@ def test_page_uses_no_javascript(client: Client) -> None:
         '<script src="/static/js/floor-plan.js" defer>',
         '<script src="/static/js/area-band.js" defer>',
         '<script src="/static/js/contact-bar.js" defer>',
+        '<script src="/static/js/count.js" defer>',
     ]
     assert "onclick" not in html
 
