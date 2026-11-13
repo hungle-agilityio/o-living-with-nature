@@ -1,40 +1,50 @@
 {% comment %}
-Chapter 04, FAQ (one-page spec, design.md): no chapter word; eight questions, each a details
-element that opens and closes without a script, the first one open.
+Chapter 04, FAQ (one-page spec, design.md; two columns, issue #83): on the left the head, the
+owner's line and the contact buttons (sticky on desktop); on the right the eight questions, each
+a details element that opens and closes without a script, the first one open. name="faq" keeps
+one question open at a time. On phones: head, questions, then the owner's line and buttons.
 {% endcomment %}
 <section id="faq" class="chapter chapter--faq" aria-labelledby="faq-heading">
-  <p class="chapter-marker label muted">&nbsp;&#x309; 04 · questions</p>
-  <h2 id="faq-heading">FAQ</h2>
+  <div class="faq-side reveal">
+    <div class="faq-side__head">
+      <p class="chapter-marker label muted">&nbsp;&#x309; 04 · questions</p>
+      <h2 id="faq-heading">FAQ</h2>
+    </div>
+    <div class="faq-side__invite">
+      <p class="faq-side__line">{{ owner.greeting }} <span class="accent">{{ owner.reply_line }}</span></p>
+      {% include "includes/contact_buttons.html" with place="faq" %}
+    </div>
+  </div>
   <div class="faq-list reveal">
-    <details class="faq-item" open>
+    <details class="faq-item" name="faq" open>
       <summary>What is the minimum stay?</summary>
       <p>One month.</p>
     </details>
-    <details class="faq-item">
+    <details class="faq-item" name="faq">
       <summary>Can I rent a room, not the whole house?</summary>
       <p>No. The house is rented whole.</p>
     </details>
-    <details class="faq-item">
+    <details class="faq-item" name="faq">
       <summary>How much is the rent?</summary>
       <p>{% if owner.price_line %}{{ owner.price_line }}.{% else %}Ask me about the rent.{% endif %}</p>
     </details>
-    <details class="faq-item">
+    <details class="faq-item" name="faq">
       <summary>How much is the deposit?</summary>
       <p>Two months' rent.</p>
     </details>
-    <details class="faq-item">
+    <details class="faq-item" name="faq">
       <summary>Are electricity and water included?</summary>
       <p>Up to 300 kWh of electricity and 10 m³ of water each month. Anything above is charged at the official rate.</p>
     </details>
-    <details class="faq-item">
+    <details class="faq-item" name="faq">
       <summary>Can I bring a pet?</summary>
       <p>Let's talk. Tell me about your pet.</p>
     </details>
-    <details class="faq-item">
+    <details class="faq-item" name="faq">
       <summary>Do you help with temporary residence registration?</summary>
       <p>Yes. I take care of temporary residence registration for you.</p>
     </details>
-    <details class="faq-item">
+    <details class="faq-item" name="faq">
       <summary>Can I visit before I decide?</summary>
       <p>Yes. Send me a message and we'll find a time.</p>
     </details>
