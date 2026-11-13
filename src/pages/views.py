@@ -10,9 +10,11 @@ from pages.daypart import daypart_for
 def home(request: HttpRequest) -> HttpResponse:
     """The whole site: the hero and the five chapters, with the owner's settings (one query)."""
     theme = daypart_for(timezone.now(), request.GET.dict()).theme
+    loops = hero.loops()
     context = {
         "seo": seo.head_for("home"),
-        "hero": hero.media_for(theme),
+        "hero": loops.get(theme),
+        "hero_loops": loops,
         "owner": site_settings(),
     }
     return render(request, "pages/home.html", context)

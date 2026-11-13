@@ -151,6 +151,7 @@ def test_page_uses_no_javascript(client: Client) -> None:
     assert "<script" not in _section(html, "header")
     assert re.findall(r"<script[^>]*>", html) == [
         '<script src="/static/js/reveal.js" defer>',
+        '<script src="/static/js/daypart.js" defer>',
         '<script src="/static/js/hero.js" defer>',
         '<script src="/static/js/floor-plan.js" defer>',
         '<script src="/static/js/area-band.js" defer>',

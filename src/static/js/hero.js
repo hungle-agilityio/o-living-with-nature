@@ -7,15 +7,15 @@
   "use strict";
 
   var MAX_SCALE = 70; // the letter grows up to about 70 times
-  var POWER = 2.4; // scale rises with progress to this power
-  var GROW_START = 0.4; // seconds: the letter rests until here
-  var GROW_END = 3.2; // the loop fills the screen here
-  var INTRO_END = 4.0; // the shade and the heading are in by here
+  var GROW_START = 0.6; // seconds: the letter rests until here
+  var GROW_END = 5.6; // the loop fills the screen here
+  var INTRO_END = 7.0; // the shade and the heading are in by here
   var LINE_DELAY = 0.15; // each heading line starts this long after the one before
-  var LINE_TIME = 0.7; // how long one line takes to rise
-  var CUE_START = 3.9; // the cue fades in from here, in half a second
+  var LINE_TIME = 1.0; // how long one line takes to rise
+  var CUE_START = 6.9; // the cue fades in from here, in half a second
   var FOOT_END = 1 / 6; // the dictionary line is gone after the first sixth of the growth
   var SAND = "#e9e2d3";
+  var OUTLINE = "rgba(233, 226, 211, "; // Paper: the outline of the letter at night
   var LETTER = "Ở";
   var FONT = '500 SIZEpx "Cormorant Garamond", Georgia, serif';
 
@@ -51,8 +51,9 @@
     return Math.min(1, Math.max(0, value));
   }
 
+  /* The sine ease-in-out: with the size maxScale to this power, the zoom is even. */
   function easeInOut(t) {
-    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    return -(Math.cos(Math.PI * t) - 1) / 2;
   }
 
   function font(pixels) {
@@ -135,24 +136,33 @@
     ctx.fillRect(0, 0, width, height);
   }
 
-  function draw(progress) {
+  /* e: the eased time of the growth; time: its plain time; night: the theme of this frame. */
+  function draw(e, time, night) {
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
     ctx.globalCompositeOperation = "source-over";
     ctx.clearRect(0, 0, width, height);
     paint();
-    if (progress >= 0.999) {
+    if (e >= 0.999) {
       return; // the loop fills the screen
     }
     // Keep the picture only inside the letter, grown around the anchor, which moves to the
-    // centre of the screen.
-    var scale = 1 + (maxScale - 1) * Math.pow(progress, POWER);
-    var move = 1 - Math.pow(1 - progress, 3);
+    // centre of the screen by the same e; the size is multiplied by the same ratio every moment.
+    var scale = Math.pow(maxScale, e);
     ctx.globalCompositeOperation = "destination-in";
-    ctx.translate(anchorX + (width / 2 - anchorX) * move, anchorY + (height / 2 - anchorY) * move);
+    ctx.translate(anchorX + (width / 2 - anchorX) * e, anchorY + (height / 2 - anchorY) * e);
     ctx.scale(scale, scale);
     ctx.translate(-anchorX, -anchorY);
     ctx.font = font(size);
     ctx.fillText(LETTER, originX, originY);
+    // At night a Paper outline keeps the dark top of the letter visible; 1.5px wide on screen,
+    // it fades out over the first fifth of the growth.
+    var alpha = 0.55 * clamp(1 - time / 0.2);
+    if (night && alpha > 0) {
+      ctx.globalCompositeOperation = "source-over";
+      ctx.strokeStyle = OUTLINE + alpha.toFixed(3) + ")";
+      ctx.lineWidth = 1.5 / scale;
+      ctx.strokeText(LETTER, originX, originY);
+    }
   }
 
   /* Write a value to the page only when it changed. */
@@ -192,7 +202,8 @@
       skipped = true; // the intro is over; input no longer matters
     }
     var time = clamp((seconds - GROW_START) / (GROW_END - GROW_START));
-    var progress = easeInOut(time);
+    var e = easeInOut(time);
+    var night = document.body.getAttribute("data-daypart") === "night";
     var box = hero.getBoundingClientRect();
     var onScreen = box.bottom > 0 && box.top < window.innerHeight;
     var past = !header || box.bottom < header.offsetHeight;
@@ -219,7 +230,7 @@
     show("past", past, function (value) {
       root.classList.toggle("hero-past", value);
     });
-    show("over", !past && progress > 0.75, function (value) {
+    show("over", !past && e > 0.75, function (value) {
       root.classList.toggle("hero-over", value);
     });
     show("playing", onScreen, function (value) {
@@ -233,7 +244,7 @@
       }
     });
     if (onScreen) {
-      draw(progress);
+      draw(e, time, night);
     }
   }
 
@@ -295,6 +306,55 @@
   if (lessMotion.addEventListener) {
     lessMotion.addEventListener("change", choose);
   }
+
+  /* A new theme while the page is open (daypart.js): its poster first, then its loop. Until the
+     poster has loaded the old picture stays. A theme with no files: Sand, no chip. */
+  var letter = hero.querySelector(".hero__letter");
+  var chip = hero.querySelector(".hero__chip");
+  var sources = video.querySelectorAll("source"); // webm, then mp4
+  var next = null;
+  function load(files) {
+    files.forEach(function (file, index) {
+      if (file) {
+        sources[index].src = file;
+      } else {
+        sources[index].removeAttribute("src");
+      }
+    });
+    video.load();
+  }
+  function sand() {
+    next = poster = null;
+    letter.style.backgroundImage = "";
+    video.removeAttribute("poster");
+    chip && (chip.style.display = "none");
+    load(["", ""]);
+  }
+  document.addEventListener("daypart", function (event) {
+    var files = (hero.getAttribute("data-loop-" + event.detail.theme) || "").split(" ");
+    var image = (next = new Image());
+    if (files.length < 3) {
+      return sand();
+    }
+    image.onerror = function () {
+      image === next && sand(); // a poster that cannot load: as a theme with no files
+    };
+    image.onload = function () {
+      if (image !== next) {
+        return; // a newer theme came first
+      }
+      poster = image;
+      letter.style.backgroundImage = "url('" + files[0] + "')";
+      video.poster = files[0];
+      chip && (chip.style.display = "");
+      load(files.slice(1));
+      if (request && shown.playing) {
+        var playing = video.play();
+        playing && playing.catch && playing.catch(function () {});
+      }
+    };
+    image.src = files[0];
+  });
   // The letter is drawn in the fallback font until Cormorant Garamond has loaded.
   if (document.fonts && document.fonts.load) {
     document.fonts.load(font(64), LETTER + "O").then(
