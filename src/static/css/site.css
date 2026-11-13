@@ -522,6 +522,11 @@ body {
   }
 }
 
+/* At night the dark top of the letter would melt into the ground: a thin Paper outline. */
+body[data-daypart="night"] .hero__letter {
+  -webkit-text-stroke: 1.5px rgba(233, 226, 211, 0.55);
+}
+
 .hero__video,
 .hero__canvas,
 .hero__shade {
