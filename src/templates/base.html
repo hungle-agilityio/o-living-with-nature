@@ -11,7 +11,9 @@
   <meta property="og:description" content="{{ seo.description }}">
   <meta property="og:url" content="{{ seo.canonical }}">
   <meta property="og:type" content="{{ seo.og_type }}">
-  <meta property="og:site_name" content="{{ seo.site_name }}">{% endif %}
+  <meta property="og:site_name" content="{{ seo.site_name }}">
+  {% block structured_data %}{% endblock %}
+  {% if seo.site_verification %}<meta name="google-site-verification" content="{{ seo.site_verification }}">{% endif %}{% endif %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400&amp;family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300&amp;display=swap">
