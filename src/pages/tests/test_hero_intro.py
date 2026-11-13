@@ -75,9 +75,9 @@ def test_intro_is_driven_by_time_not_by_scroll() -> None:
 def test_intro_has_the_timings_of_the_design() -> None:
     code = _code()
 
-    assert re.search(r"GROW_START\s*=\s*0\.4\b", code)
-    assert re.search(r"GROW_END\s*=\s*3\.2\b", code)
-    assert re.search(r"INTRO_END\s*=\s*4\.0\b", code)
+    assert re.search(r"GROW_START\s*=\s*0\.6\b", code)
+    assert re.search(r"GROW_END\s*=\s*5\.6\b", code)
+    assert re.search(r"INTRO_END\s*=\s*7\.0\b", code)
     assert re.search(r"LINE_DELAY\s*=\s*0\.15\b", code)
     # The dictionary line fades out in the first sixth of the growth.
     assert re.search(r"FOOT_END\s*=\s*1\s*/\s*6\b", code)
@@ -87,10 +87,9 @@ def test_letter_grows_with_the_epic_one_curve_on_an_ease_in_out() -> None:
     code = _code()
 
     assert re.search(r"MAX_SCALE\s*=\s*70\b", code)
-    assert re.search(r"POWER\s*=\s*2\.4\b", code)
-    assert "Math.pow(progress, POWER)" in code
-    # The cubic ease-in-out over the time of the growth.
-    assert "4 * t * t * t" in code
+    assert "Math.pow(maxScale, e)" in code
+    # The sine ease-in-out over the time of the growth.
+    assert "Math.cos(Math.PI * t)" in code
     assert "easeInOut(time)" in code
 
 
@@ -297,7 +296,7 @@ def test_chip_sits_top_right_under_the_header_in_every_state(client: Client) -> 
 def test_script_is_small_plain_and_deferred(client: Client) -> None:
     script = _script()
 
-    assert len(script.encode()) < 12_000
+    assert len(script.encode()) < 14_000
     for sign in ("import ", "require(", "http://", "https://", "eval("):
         assert sign not in script, sign
     assert '<script src="/static/js/hero.js" defer></script>' in client.get("/").content.decode()

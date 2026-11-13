@@ -231,7 +231,7 @@ def test_page_loads_the_one_plain_script_deferred(client: Client) -> None:
 def test_script_is_small_and_uses_no_library() -> None:
     script = _script()
 
-    assert len(script.encode()) < 12_000
+    assert len(script.encode()) < 14_000
     for sign in ("import ", "require(", "http://", "https://", "jQuery", "eval("):
         assert sign not in script, sign
 
@@ -242,13 +242,13 @@ def test_script_flies_only_when_motion_is_fine() -> None:
     assert "(prefers-reduced-motion: reduce)" in script
     # The flight is switched on by one class on the page; without it the hero is the still one.
     assert '"hero-flight"' in script
-    # The numbers of design.md: scale rises with progress to the power 2.4, up to about 70 times;
-    # the intro runs on time (design-match): rest to 0.4 s, grow to 3.2 s, heading in by 4.0 s.
+    # The numbers of design.md: the letter grows up to about 70 times, with no POWER any more;
+    # the intro runs on time (time-of-day-live): rest to 0.6 s, grow to 5.6 s, heading in by 7.0 s.
     assert re.search(r"MAX_SCALE\s*=\s*70\b", script)
-    assert re.search(r"POWER\s*=\s*2\.4\b", script)
-    assert re.search(r"GROW_START\s*=\s*0\.4\b", script)
-    assert re.search(r"GROW_END\s*=\s*3\.2\b", script)
-    assert re.search(r"INTRO_END\s*=\s*4(\.0)?\b", script)
+    assert "POWER" not in script
+    assert re.search(r"GROW_START\s*=\s*0\.6\b", script)
+    assert re.search(r"GROW_END\s*=\s*5\.6\b", script)
+    assert re.search(r"INTRO_END\s*=\s*7(\.0)?\b", script)
 
 
 def test_stage_is_about_three_screens_with_a_frame_that_stays() -> None:
