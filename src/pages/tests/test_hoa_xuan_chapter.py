@@ -49,6 +49,13 @@ def _block(html: str, css_class: str) -> str:
     return match.group(0)
 
 
+def _css_rule(selector: str) -> str:
+    css = CSS.read_text(encoding="utf-8")
+    match = re.search(rf"(?m)^{re.escape(selector)}\s*\{{([^}}]*)\}}", css)
+    assert match, f"no {selector} rule"
+    return match.group(1)
+
+
 def _loop(html: str) -> str:
     # The slot is one <figure>; its box is a nested <div>, so the block ends at </figure>.
     match = re.search(r'<div class="hoa-xuan__loop">.*?</figure>', html, re.S)
@@ -62,8 +69,10 @@ def _loop(html: str) -> str:
 def test_area_loop_is_a_16_by_9_video_of_the_area_files(client: Client) -> None:
     loop = _loop(_chapter(client))
 
+    # The loop now covers the full-width band (design-match AC22): no fixed ratio of its own.
     assert loop.count("<video") == 1
-    assert "aspect-ratio: 16 / 9" in loop
+    assert "aspect-ratio: 16 / 9" not in loop
+    assert "height: 100%" in _css_rule(".hoa-xuan__loop .media__box")
     assert '<source src="/static/media/area/area.webm" type="video/webm"' in loop
     assert '<source src="/static/media/area/area.mp4" type="video/mp4"' in loop
     assert 'poster="/static/media/area/area.jpg"' in loop
@@ -98,7 +107,9 @@ def test_area_loop_shows_the_empty_state_when_a_file_is_missing(
 
     assert "<video" not in loop
     assert "media--empty" in loop
-    assert "aspect-ratio: 16 / 9" in loop
+    # The empty state takes the band's size, as the loop does.
+    assert "aspect-ratio: 16 / 9" not in loop
+    assert "height: 100%" in _css_rule(".hoa-xuan__loop .media__box")
 
 
 # AC1: the line, the travel list and the link
@@ -154,7 +165,16 @@ def test_three_area_photos_in_order(client: Client) -> None:
 def test_texts_come_in_the_order_of_the_design(client: Client) -> None:
     text = _text(_chapter(client))
 
-    order = ["Illustrative video", LINE, TRAVEL[0], TRAVEL[-1], MAPS_TEXT]
+    # The band: head, line, travel facts, then the loop's chip; under it the photos and Maps.
+    order = [
+        "Hòa Xuân",
+        LINE,
+        TRAVEL[0],
+        TRAVEL[-1],
+        "Illustrative video",
+        "Illustrative photo",
+        MAPS_TEXT,
+    ]
     positions = [text.index(part) for part in order]
     assert positions == sorted(positions)
 
@@ -164,7 +184,11 @@ def test_chapter_is_one_column_on_narrow_screens() -> None:
 
     narrow = re.search(r"@media \(max-width: 760px\)\s*\{(.*)\}\s*$", css, re.S)
     assert narrow, "no rule for 760px or less"
-    assert re.search(r"grid-template-columns:\s*minmax\(0, 1fr\)", narrow.group(1))
+    # The travel facts take two columns at 760px or less (design-match AC23).
+    assert re.search(
+        r"\.hoa-xuan__travel\s*\{[^}]*grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\)",
+        narrow.group(1),
+    )
     assert "100vw" not in css
 
 
