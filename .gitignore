@@ -9,6 +9,7 @@ out/
 .playwright-mcp/
 *.log
 .claude/settings.local.json
+# The loop settings of this machine.
 .flow/loop/agent.env
 # Python
 .venv/
