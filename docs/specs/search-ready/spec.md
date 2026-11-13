@@ -55,7 +55,7 @@ As the owner, I want to verify my site in Google Search Console and have the hom
 
 ### Every task
 
-- **AC13.** `bash scripts/check.sh` passes. Every test on `main` passes unchanged, except the one listed under "Existing tests that change": `src/pages/tests/test_layout.py::test_page_uses_no_javascript`, whose list of `<script…>` tags gains `'<script type="application/ld+json">'` as its first entry (the block sits in the `<head>`, before the scripts `base.html` links). It still asserts no `onclick` and no script in the header.
+- **AC13.** `bash scripts/check.sh` passes. Every test on `main` passes unchanged, except the two listed under "Existing tests that change": `src/pages/tests/test_layout.py::test_page_uses_no_javascript`, whose list of `<script…>` tags gains `'<script type="application/ld+json">'` as its first entry (the block sits in the `<head>`, before the scripts `base.html` links), and `src/pages/tests/test_home_hero.py::test_page_loads_the_one_plain_script_deferred`, which checks only the scripts that have a `src` (the seven files, all `defer`, no text) and leaves the JSON-LD block to the new tests. Both still assert what they assert today about the script files.
 
 ## Edge cases
 
