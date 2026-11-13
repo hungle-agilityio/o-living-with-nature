@@ -21,6 +21,8 @@ class SiteSettingsValue:
     channels: tuple[Channel, ...]
     greeting: str
     reply_line: str
+    # The owner's first name alone, for the signature under the rent quote.
+    first_name: str = ""
 
 
 def site_settings() -> SiteSettingsValue:
@@ -31,6 +33,7 @@ def site_settings() -> SiteSettingsValue:
         channels=_channels(record),
         greeting=f"Hi, I'm {record.owner_first_name}.",
         reply_line=f"I usually reply {record.reply_time}.",
+        first_name=record.owner_first_name,
     )
 
 

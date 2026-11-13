@@ -1,8 +1,16 @@
-{# Chapter 05, contact (one-page spec AC11): the Ink band with the owner's line and the buttons. #}
+{% comment %}
+Chapter 05, contact (design-match design.md, "05 ở lại?"): the Ink band with the label, the
+word, then one row that wraps: the heading and the owner's line on the left, the buttons on the
+right. With no channel, the line that the details are on their way, and no button.
+{% endcomment %}
 <section id="contact" class="chapter chapter--contact band" aria-labelledby="contact-heading">
   <p class="chapter-marker label">&nbsp;&#x309; 05</p>
   <p class="chapter-word" lang="vi">ở lại?</p>
-  <h2 id="contact-heading">Will you <span class="accent">stay?</span></h2>
-  <p class="contact__line quote">{{ owner.greeting }} {{ owner.reply_line }}</p>
-  {% if owner.channels %}{% include "includes/contact_buttons.html" with place="contact" %}{% else %}<p class="contact__empty">Contact details are on their way.</p>{% endif %}
+  <div class="contact__row reveal">
+    <div class="contact__lead">
+      <h2 id="contact-heading">Will you <span class="accent">stay?</span></h2>
+      <p class="contact__line">{{ owner.greeting }} <span class="accent">{{ owner.reply_line }}</span></p>
+    </div>
+    {% if owner.channels %}{% include "includes/contact_buttons.html" with place="contact" %}{% else %}<p class="contact__empty">Contact details are on their way.</p>{% endif %}
+  </div>
 </section>

@@ -1,7 +1,10 @@
-/* Chapter 03, the rent (#rent). The shared chapter rules (spacing, marker, word, heading) are in
-   site.css. Desktop: a 12-column grid with 24px gaps (one-page design.md, Layout): the price line
-   in the "big" size with the buttons under it (columns 1–6), beside the terms (columns 8–12).
-   Phones: one column. The buttons themselves are in contact.css. */
+/* Chapter 03, the rent (#rent), design-match design.md "03 ở lâu". The shared chapter rules
+   (container, marker, word, heading) are in site.css. Desktop: a 12-column grid with 24px gaps.
+   Columns 1–6: the head, the price line in Be Vietnam Pro 300 capitals at 84px (56px under the
+   heading), the buttons (36px under it) and the terms (48px under them). Columns 8–12: the tea
+   photo, 560px high, then the owner's quote in Cormorant 24px. The photo and quote come first
+   in the source; on phones (one column) they move under the terms, the photo at 4 / 5.
+   The buttons themselves are in contact.css. */
 
 .chapter--rent {
   position: relative;
@@ -11,20 +14,48 @@
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 24px;
-  margin-top: var(--space-6);
+  align-items: start;
 }
 
 .rent__price {
   grid-column: 1 / span 6;
+  grid-row: 1;
 }
 
+.rent__aside {
+  grid-column: 8 / span 5;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* 84px capitals drawn as small capitals (so the text stays as written): 84 / 0.7. The line
+   height is 0.95 of the 84px capitals. The accent words stay lower case at their real size. */
 .rent__line {
-  margin: 0 0 var(--space-4);
-  font-family: var(--font-serif);
+  margin: 56px 0 0;
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-variant-caps: all-small-caps;
+  font-size: calc(var(--size-big) / 0.7);
+  line-height: calc(var(--size-big) * 0.95);
+  letter-spacing: var(--spacing-headline);
+}
+
+.rent__line .accent {
+  font-variant-caps: normal;
+  font-size: 0.7em;
+}
+
+.rent__buttons {
+  margin-top: 36px;
+}
+
+.rent__terms-block {
+  margin-top: var(--space-5);
 }
 
 .rent__terms {
-  grid-column: 8 / span 5;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -35,13 +66,47 @@
   border-top: 1px solid var(--line);
 }
 
+.rent__photo .media__box {
+  height: 560px;
+}
+
+.rent__quote {
+  margin: 0;
+}
+
+.rent__quote blockquote {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: 24px;
+  line-height: 1.35;
+}
+
+.rent__quote blockquote p {
+  margin: 0;
+}
+
+.rent__quote figcaption {
+  margin-top: var(--space-1);
+}
+
 @media (max-width: 760px) {
   .rent__grid {
     grid-template-columns: minmax(0, 1fr);
   }
 
   .rent__price,
-  .rent__terms {
+  .rent__aside {
     grid-column: 1;
+    grid-row: auto;
+  }
+
+  .rent__aside {
+    order: 1;
+    margin-top: var(--space-5);
+  }
+
+  .rent__photo .media__box {
+    height: auto;
   }
 }
