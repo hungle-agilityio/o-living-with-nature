@@ -1,7 +1,12 @@
 /* Chapter 04, FAQ (#faq). It has no chapter word; its heading "FAQ" is drawn at 150px on
-   desktop and 60px on phones (design.md), / 0.7 for small capitals. The questions are a column
-   at most 880px wide; each is a row with a "+" (closed) or "–" (open) in Cormorant on the right.
-   The details element opens and closes on its own, with no script. */
+   desktop and 60px on phones (design.md), / 0.7 for small capitals.
+
+   Two columns (issue #83): a 12-column grid with 40px gaps. The side block (columns 1–4) holds
+   the head, a Line rule, the owner's line and the contact buttons, and stays in place while the
+   questions (columns 6–12) scroll. Each question is a row with a "+" (closed) or "–" (open) in
+   Cormorant on the right; the details element opens and closes on its own, with no script, and
+   name="faq" keeps one open at a time. On phones the chapter is one column: head, questions,
+   then the owner's line and the buttons. */
 
 .chapter--faq h2 {
   margin-top: var(--space-4);
@@ -10,9 +15,48 @@
   letter-spacing: -0.021em;
 }
 
-.faq-list {
-  max-width: 880px;
+.chapter--faq {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: 40px;
+  align-items: start;
+}
+
+.faq-side {
+  grid-column: 1 / 5;
+  position: sticky;
+  top: 96px;
+  min-width: 0;
+}
+
+/* The narrow side column (about 250px at 900px wide) is less wide than the 150px heading:
+   the word never breaks ("FA/Q") and may reach over the empty column 5 instead. */
+.faq-side h2 {
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+
+.faq-side__invite {
   margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+}
+
+.faq-side__line {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: 26px;
+  line-height: 1.3;
+}
+
+.faq-side__line:last-child {
+  margin-bottom: 0;
+}
+
+.faq-list {
+  grid-column: 6 / 13;
+  min-width: 0;
   border-top: 1px solid var(--line);
 }
 
@@ -28,7 +72,10 @@
   padding: var(--space-3) 0;
   cursor: pointer;
   list-style: none;
-  font-size: 18px;
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: 30px;
+  line-height: 1.2;
 }
 
 .faq-item summary::-webkit-details-marker {
@@ -54,7 +101,7 @@
 
 .faq-item p {
   margin: 0 0 var(--space-3);
-  max-width: 64ch;
+  max-width: 56ch;
   color: var(--muted);
   line-height: var(--line-body);
 }
@@ -64,11 +111,32 @@
     font-size: calc(60px / 0.7);
   }
 
+  /* One column; the side block lets its two parts take their own places around the list. */
+  .chapter--faq {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .faq-side {
+    display: contents;
+  }
+
+  .faq-side__head {
+    order: 1;
+  }
+
   .faq-list {
+    order: 2;
+    min-width: 0;
+    margin-top: var(--space-5);
+  }
+
+  .faq-side__invite {
+    order: 3;
     margin-top: var(--space-5);
   }
 
   .faq-item summary {
-    font-size: 16px;
+    font-size: 22px;
   }
 }

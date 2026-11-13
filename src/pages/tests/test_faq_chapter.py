@@ -153,7 +153,6 @@ def test_faq_keeps_one_query_for_the_page(
 def test_faq_rows_show_plus_when_closed_and_dash_when_open() -> None:
     css = FAQ_CSS.read_text(encoding="utf-8")
 
-    assert re.search(r"max-width:\s*880px", css)
     assert re.search(r"summary::after\s*\{[^}]*content:\s*\"\+\"", css)
     assert re.search(r"\[open\]\s*>?\s*summary::after\s*\{[^}]*content:\s*\"–\"", css)
     assert re.search(r"summary::after\s*\{[^}]*font-family:\s*var\(--font-serif\)", css)

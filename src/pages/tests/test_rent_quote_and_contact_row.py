@@ -194,7 +194,7 @@ def test_faq_list_is_at_most_880px_under_the_head(client: Client) -> None:
 
     assert faq.index("<h2") < faq.index("faq-list")
     assert faq.count("<details") == 8
-    assert "max-width: 880px" in _rule(FAQ_CSS.read_text(encoding="utf-8"), ".faq-list")
+    assert "grid-column: 6 / 13" in _rule(FAQ_CSS.read_text(encoding="utf-8"), ".faq-list")
 
 
 # AC5: the contact row
