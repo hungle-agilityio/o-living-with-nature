@@ -78,7 +78,7 @@ Loop commands. When I ask for these here, a thread on the Mac mini does it throu
 - "loop sao rồi": read tmux, `~/.o-living/runs/` and the GitHub labels, and report.
 - "chạy tick": run one tick now (`uv run python .flow/loop/agent_tick.py`).
 - "pull main": `git pull --ff-only` in the main checkout on the Mac mini.
-- "rollback": follow "Rollback" in `.flow/loop/release-steps.md` on `main` (ADR-032).
+- "rollback": off while `.flow/flow.toml` has no `[live]` table; say so (ADR-032).
 
 After the hand over:
 
@@ -86,8 +86,8 @@ After the hand over:
 - **Approve a plan.** A `risk:high` build posts its plan on the issue and waits with `agent:plan-review` (ADR-027). When I approve that plan here, a thread posts the comment `lgtm` on the issue and runs `gh issue edit <n> --add-label agent:ready --remove-label agent:plan-review` through the same Remote Control route, with my login. When I ask to change the plan, it posts my words as a plain comment on the issue instead, then makes the same label change; the next build plans again and stops again.
 - **Assign.** An issue assigned to anyone other than me, directly or through its epic, is that member's work and the loop skips it (ADR-028). When I ask here to give an issue or an epic to a member, take it back or hand it off, a thread runs `gh issue edit <n> --add-assignee <login>` or `gh issue edit <n> --remove-assignee <login>` through the same Remote Control route, with my login, and reports the issue's member after the change. A member's pull request for a task of an epic goes into the epic branch; I click Merge.
 - **Redo.** When I ask to change a pull request, post my words as a plain comment on it through the same Remote Control route (or the draft file); no `/redo` prefix is needed. Then run one tick at once.
-- **Release ("phát hành").** When I ask for a release, a thread on the Mac mini follows `.flow/loop/release-steps.md` on `main`, step by step, with its choice cards: dry-run, security review (ADR-031), `release.py`, release notes page, live check, rollback, live AC check (ADR-017, ADR-032). Only `release.py` pushes `release/sprint-N`, the `v*` tags and `deploy`.
-- **One-time setup for the live check:** in `.flow/loop/release-steps.md`.
+- **Release ("phát hành").** When I ask for a release, a thread on the Mac mini follows `.flow/loop/release-steps.md` on `main`, step by step, with its choice cards: dry-run, security review (ADR-031), `release.py` (ADR-017). Only `release.py` pushes `release/sprint-N`, the `v*` tags and `deploy`.
+- **Live check, rollback and the live AC check are off:** `.flow/flow.toml` has no `[live]` table (ADR-032).
 - **Status.** When I ask how things stand (for example "#N sao rồi"), read the issues and pull requests on GitHub (read only). For each issue, give its labels (`agent:ready`, `agent:running`, `agent:review`, `agent:failed`, `agent:in-epic`, `agent:plan-review`, and `area:flow` or `area:app`; there is no `agent:manual` or `agent:needs-permission`), the pull request, the pull request's status label (`pr:ready-for-review`, `pr:changes-requested`, `pr:blocked`, `pr:ci-failed`, or none yet), its member (the first assignee other than me, on the issue or its epic; "loop" when it has none), and its report link. Loop pull requests carry a `## Guard files changed` section.
 
 How to run: at most 2 threads at a time. Start threads without asking, except wait for my "Merge PR spec" or "OK" at step 4 and before any merge. Post only when a thread finishes or is blocked. A blocked thread takes the narrowest reading, says so in its report and goes on; it does not stall.
