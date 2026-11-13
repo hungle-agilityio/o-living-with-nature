@@ -1,0 +1,85 @@
+{% extends "admin/base_site.html" %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+  .counter-report { max-width: 100%; }
+  .counter-summary { display: flex; flex-wrap: wrap; gap: 16px; margin: 0 0 24px; }
+  .counter-summary section { flex: 1 1 200px; min-width: 0; border: 1px solid var(--hairline-color); padding: 12px 16px; }
+  .counter-summary h2 { margin: 0 0 8px; font-size: 1rem; }
+  .counter-summary dl { margin: 0; }
+  .counter-summary dt { color: var(--body-quiet-color); font-weight: normal; }
+  .counter-summary dd { margin: 0 0 8px; font-size: 1.25rem; font-weight: bold; }
+  .counter-report h2.counter-heading { margin: 24px 0 8px; }
+  .counter-scroll { max-width: 100%; overflow-x: auto; }
+  .counter-scroll table { min-width: 100%; }
+  .counter-scroll td.num, .counter-scroll th.num { text-align: right; }
+  .counter-note { margin-top: 24px; color: var(--body-quiet-color); }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Home</a>
+  &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+  &rsaquo; Contact counts
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main" class="counter-report">
+  {% if report.is_empty %}
+  <p>Nothing counted yet. Counts start when someone opens the site.</p>
+  {% else %}
+  <div class="counter-summary">
+    {% for totals in report.summary %}
+    <section>
+      <h2>{{ totals.label }}</h2>
+      <dl>
+        <dt>Page views</dt><dd>{{ totals.views }}</dd>
+        <dt>Contact clicks</dt><dd>{{ totals.clicks }}</dd>
+        <dt>clicks per 100 views</dt><dd>{{ totals.rate }}</dd>
+      </dl>
+    </section>
+    {% endfor %}
+  </div>
+
+  <h2 class="counter-heading">By channel</h2>
+  <div class="counter-scroll">
+    <table>
+      <thead><tr><th scope="col">Channel</th><th scope="col" class="num">This month</th><th scope="col" class="num">Last month</th><th scope="col" class="num">All time</th></tr></thead>
+      <tbody>
+        {% for row in report.by_channel %}
+        <tr><th scope="row">{{ row.label }}</th><td class="num">{{ row.this_month }}</td><td class="num">{{ row.last_month }}</td><td class="num">{{ row.all_time }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="counter-heading">By place</h2>
+  <div class="counter-scroll">
+    <table>
+      <thead><tr><th scope="col">Place</th><th scope="col" class="num">This month</th><th scope="col" class="num">Last month</th><th scope="col" class="num">All time</th></tr></thead>
+      <tbody>
+        {% for row in report.by_place %}
+        <tr><th scope="row">{{ row.label }}</th><td class="num">{{ row.this_month }}</td><td class="num">{{ row.last_month }}</td><td class="num">{{ row.all_time }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="counter-heading">By month</h2>
+  <div class="counter-scroll">
+    <table>
+      <thead><tr><th scope="col">Month</th><th scope="col" class="num">Views</th><th scope="col" class="num">Call</th><th scope="col" class="num">WhatsApp</th><th scope="col" class="num">Zalo</th><th scope="col" class="num">Total clicks</th></tr></thead>
+      <tbody>
+        {% for row in report.by_month %}
+        <tr><th scope="row">{{ row.month }}</th><td class="num">{{ row.views }}</td><td class="num">{{ row.call }}</td><td class="num">{{ row.whatsapp }}</td><td class="num">{{ row.zalo }}</td><td class="num">{{ row.clicks }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  <p class="counter-note">Daily totals only: no IP address, no cookie. Your own visits while you are logged in are not counted.</p>
+</div>
+{% endblock %}
