@@ -1,32 +1,35 @@
 {% load photos %}
-{# Chapter 01, the house (one-page spec AC13; texts as written in design.md, "The house"). #}
+{# Chapter 01, the house (design-match spec AC18 to AC21; design.md, "01 ở nhà"). #}
 <section id="house" class="chapter chapter--house" aria-labelledby="house-heading">
-  <p class="chapter-marker label muted">&nbsp;&#x309; 01 · at home</p>
-  <p class="chapter-word" lang="vi">ở nhà</p>
-  <h2 id="house-heading">The <span class="accent">house</span></h2>
-
-  <div class="house__intro">
-    <div class="house__text">
-      <p class="house__owner quote">{{ owner.greeting }} I built a small garden house in Hòa Xuân, and I'd love for someone to make it home for a while.</p>
-      <p class="house__why">I wanted a house that feels good to live in every day, not just in photos: a little garden, morning light, a veranda to sit on. Ở is that house.</p>
-      <ol class="house__points">
-        <li><span class="house__number">01</span> A private garden and a covered veranda</li>
-        <li><span class="house__number">02</span> Light and air through a light well</li>
-        <li><span class="house__number">03</span> Live like at home, for a month or more</li>
-      </ol>
+  <div class="house__top">
+    <div class="house__head">
+      <p class="chapter-marker label muted">&nbsp;&#x309; 01 · at home</p>
+      <p class="chapter-word" lang="vi">ở nhà</p>
+      <h2 id="house-heading">The <span class="accent">house</span></h2>
     </div>
-    <div class="house__veranda">{% photo "veranda" ratio="4 / 3" %}</div>
+    <div class="house__intro">
+      <p class="house__owner quote reveal">{{ owner.greeting }} I built a small garden house in Hòa Xuân, and I'd love for someone to make it <span class="accent">home for a while.</span></p>
+      <p class="house__why reveal">I wanted a house that feels good to live in every day, not just in photos: a little garden, morning light, a veranda to sit on. Ở is that house.</p>
+    </div>
   </div>
 
-  <ul class="house__gallery">
-    <li>{% photo "lightwell" ratio="3 / 4" %}</li>
-    <li>{% photo "bedroom" ratio="3 / 4" %}</li>
-    <li>{% photo "kitchen" ratio="3 / 4" %}</li>
-    <li>{% photo "mezzanine" ratio="3 / 4" %}</li>
+  <ul class="house__collage">
+    <li class="house__room house__room--bedroom reveal">{% photo "bedroom" ratio="4 / 5" %}<p class="house__room-label label">Bedrooms · two</p></li>
+    <li class="house__room house__room--lightwell reveal">{% photo "lightwell" ratio="3 / 4" %}<p class="house__room-label label">Light well</p></li>
+    <li class="house__room house__room--veranda reveal">{% photo "veranda" ratio="3 / 4" %}<p class="house__room-label label">Veranda</p></li>
+    <li class="house__room house__room--kitchen reveal">{% photo "kitchen" ratio="4 / 3" %}<p class="house__room-label label">Living &amp; kitchen</p></li>
+    <li class="house__room house__room--garden-evening reveal">{% photo "garden-evening" ratio="4 / 3" %}<p class="house__room-label label">Back garden</p></li>
+  </ul>
+
+  <ul class="house__facts reveal">
+    <li><span class="house__fact-number">2</span> <span class="house__fact-label">bedrooms</span></li>
+    <li><span class="house__fact-number">2</span> <span class="house__fact-label">gardens</span></li>
+    <li><span class="house__fact-number">1</span> <span class="house__fact-label">light well</span></li>
+    <li><span class="house__fact-number">1</span> <span class="house__fact-label">household at a time</span></li>
   </ul>
 
   <div class="house__details">
-    <div class="house__layout">
+    <div class="house__layout reveal">
       <p class="label muted">The layout</p>
       <ul>
         <li>Two bedrooms</li>
@@ -39,7 +42,7 @@
         <li>Laundry, drying and storage area</li>
       </ul>
     </div>
-    <div class="house__included">
+    <div class="house__included reveal">
       <p class="label muted">Included</p>
       <p>Basic furniture. Garden care once a week. Cleaning can be arranged.</p>
     </div>
