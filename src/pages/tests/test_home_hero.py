@@ -242,20 +242,23 @@ def test_script_flies_only_when_motion_is_fine() -> None:
     # The flight is switched on by one class on the page; without it the hero is the still one.
     assert '"hero-flight"' in script
     # The numbers of design.md: scale rises with progress to the power 2.4, up to about 70 times;
-    # the dictionary line is gone after the first sixth, the heading rises in the last fifth.
+    # the intro runs on time (design-match): rest to 0.4 s, grow to 3.2 s, heading in by 4.0 s.
     assert re.search(r"MAX_SCALE\s*=\s*70\b", script)
     assert re.search(r"POWER\s*=\s*2\.4\b", script)
-    assert re.search(r"FOOT_END\s*=\s*1\s*/\s*6\b", script)
-    assert re.search(r"TITLE_START\s*=\s*0\.8\b", script)
+    assert re.search(r"GROW_START\s*=\s*0\.4\b", script)
+    assert re.search(r"GROW_END\s*=\s*3\.2\b", script)
+    assert re.search(r"INTRO_END\s*=\s*4(\.0)?\b", script)
 
 
 def test_stage_is_about_three_screens_with_a_frame_that_stays() -> None:
+    # design-match: the stage is now one screen, with no sticky frame.
     css = _css()
 
-    assert re.search(r"html\.hero-flight \.hero\s*\{[^}]*height:\s*330vh", css)
-    assert re.search(r"html\.hero-flight \.hero__frame\s*\{[^}]*position:\s*sticky", css)
-    # The heading and its line rise 30px into place.
-    assert re.search(r"html\.hero-flight \.hero__title\s*\{[^}]*30px", css)
+    flight = _rule(css, "html.hero-flight .hero")
+    assert "height: 100svh" in flight
+    assert "min-height: 560px" in flight
+    assert "330vh" not in css
+    assert "position: sticky" not in css.split("/* Home hero", 1)[1]
     # The header row turns Paper once the loop covers the screen.
     assert re.search(r"html\.hero-over \.site-header\s*\{[^}]*color:\s*var\(--paper\)", css)
 

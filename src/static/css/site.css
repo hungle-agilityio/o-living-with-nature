@@ -23,6 +23,7 @@
   --size-chapter: 200px;
   --size-big: 84px;
   --size-gloss: 26px;
+  --size-hero-line: 26px;
   --size-quote: clamp(24px, 2.2vw, 30px);
   --size-body: 16px;
   --size-label: 11px;
@@ -44,6 +45,7 @@
   --section-gap: 136px;
   --content-max: 1360px;
   --side: 40px;
+  --header-height: 64px;
 
   /* Buttons */
   --button-height: 48px;
@@ -179,14 +181,26 @@ h2 em,
   color: var(--muted);
 }
 
-/* Header */
+/* Header (design-match design.md, "Header"): fixed to the top, a 64px row in the container.
+   As sent it is the solid bar (Paper at 94%, a Line border, Ink text): so it stays without the
+   script and under reduced motion. Over the hero of the intro it is clear (below, the flight). */
+
+body {
+  padding-top: var(--header-height);
+}
 
 .site-header {
-  position: relative;
-  width: 100%;
-  max-width: var(--content-max);
-  margin: 0 auto;
-  padding: var(--space-3) var(--side);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  padding: 0 max(var(--side), calc((100% - var(--content-max)) / 2 + var(--side)));
+  border-bottom: 1px solid var(--line);
+  background: var(--ground);
+  background: color-mix(in srgb, var(--ground) 94%, transparent);
+  color: var(--ink);
+  transition: color 0.4s ease, background-color 0.4s ease, border-color 0.4s ease;
 }
 
 .site-header__row {
@@ -194,6 +208,7 @@ h2 em,
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
+  min-height: calc(var(--header-height) - 1px);
 }
 
 .site-header__left {
@@ -307,8 +322,8 @@ h2 em,
   padding-left: var(--side);
   padding-right: var(--side);
   overflow-wrap: anywhere;
-  /* The menu's jump leaves room above the marker. */
-  scroll-margin-top: var(--space-4);
+  /* The menu's jump leaves room above the marker, under the fixed header. */
+  scroll-margin-top: calc(var(--header-height) + var(--space-4));
 }
 
 /* The head: label (hook, number and gloss, 11px capitals in Stone), chapter word, h2. */
@@ -467,22 +482,21 @@ h2 em,
 /* Home hero "Through the Ở" (design.md, Components).
 
    As sent by the server it is the still hero: the letter filled with the theme's poster photo,
-   then the dictionary line, the heading and its line, all in the page flow. The flight (a tall
-   stage whose frame stays on screen while the letter grows) exists only under the class that
-   hero.js sets on <html> when the visitor has JavaScript and has not asked for less motion. */
+   then the dictionary line, the cue, the heading and its line, all in the page flow. The intro
+   (one screen where the letter grows by itself) exists only under the class that hero.js sets
+   on <html> when the visitor has JavaScript, the hero has its files and the visitor has not
+   asked for less motion. */
 
 /* Full width, with its text in the container (the sides at least, centred past 1360px). */
 .hero {
   --hero-foot: 1;
   --hero-title: 0;
+  --hero-cue: 0;
+  position: relative;
   padding-top: var(--space-6);
   padding-left: max(var(--side), calc((100% - var(--content-max)) / 2 + var(--side)));
   padding-right: max(var(--side), calc((100% - var(--content-max)) / 2 + var(--side)));
   overflow-x: clip;
-}
-
-.hero__window {
-  position: relative;
 }
 
 /* The poster photo shows through the letter; with no poster the letter is Sand. */
@@ -514,18 +528,16 @@ h2 em,
   display: none;
 }
 
+/* Top right of the hero, under the header, in every state (84px from the top of the screen,
+   16px from the right; the still hero starts under the header bar). */
 .hero__chip {
+  top: calc(84px - var(--header-height));
+  right: var(--space-2);
   left: auto;
-  right: 0;
-  bottom: var(--space-1);
+  bottom: auto;
 }
 
 .hero__foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--space-2) var(--space-5);
   margin-top: var(--space-4);
 }
 
@@ -538,6 +550,10 @@ h2 em,
   line-height: 1.35;
 }
 
+.hero__cue {
+  margin-top: var(--space-3);
+}
+
 .hero__title {
   margin-top: var(--space-6);
 }
@@ -545,18 +561,22 @@ h2 em,
 .hero__line {
   max-width: 34em;
   margin: var(--space-4) 0 0;
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: var(--size-hero-line);
+  line-height: 1.35;
 }
 
-/* The flight */
+/* The intro */
 
-/* The header row sits over the letter and leaves with the frame (hero.js moves it). */
-html.hero-flight .site-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 20;
-  transition: color 0.3s ease;
+/* Over the hero the header is clear; it is the solid bar again once the hero has left. */
+html.hero-flight body {
+  padding-top: 0;
+}
+
+html.hero-flight:not(.hero-past) .site-header {
+  border-bottom-color: transparent;
+  background: transparent;
 }
 
 html.hero-over .site-header {
@@ -568,22 +588,23 @@ html.hero-over .nav-menu nav {
   color: var(--ink);
 }
 
-/* The stage runs edge to edge; its text keeps the container through .hero__foot and .hero__title. */
+/* One screen, edge to edge; its text keeps the container through .hero__foot and .hero__title. */
 html.hero-flight .hero {
-  height: 330vh;
+  height: 100vh;
+  height: 100svh;
+  min-height: 560px;
   padding: 0;
 }
 
 html.hero-flight .hero__frame {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  height: 100svh;
+  position: relative;
+  height: 100%;
   overflow: hidden;
 }
 
-html.hero-flight .hero__window {
-  position: static;
+html.hero-flight .hero__chip {
+  top: 84px;
+  z-index: 3;
 }
 
 /* The canvas draws the letter; the one in the page stays for readers that do not see it. */
@@ -629,21 +650,46 @@ html.hero-flight .hero__title {
 }
 
 html.hero-flight .hero__foot {
-  bottom: var(--space-6);
+  bottom: 44px;
   opacity: var(--hero-foot);
+}
+
+html.hero-flight .hero__cue {
+  position: absolute;
+  right: max(var(--side), calc((100% - var(--content-max)) / 2 + var(--side)));
+  bottom: var(--space-3);
+  margin: 0;
+  color: var(--paper);
+  opacity: var(--hero-cue);
 }
 
 html.hero-flight .hero__title {
   bottom: var(--space-6);
   color: var(--paper);
   opacity: var(--hero-title);
-  transform: translateY(calc((1 - var(--hero-title)) * 30px));
   pointer-events: none;
 }
 
-html.hero-flight .hero__chip {
-  right: var(--side);
-  bottom: var(--space-2);
+/* Two lines, "Living" on the left and "with nature" on the right, at 150px capitals (60px on
+   phones); hero.js puts each line in a .hero__ln and moves it up from hidden. */
+html.hero-flight .hero__title h1 {
+  display: flex;
+  flex-direction: column;
+  font-size: calc(var(--size-headline) / 0.7) !important;
+}
+
+html.hero-flight .hero__ln {
+  display: block;
+  overflow: hidden;
+  padding: 0.04em 0 0.06em;
+}
+
+html.hero-flight .hero__ln > span {
+  display: block;
+}
+
+html.hero-flight .hero__ln:last-child {
+  align-self: flex-end;
 }
 
 /* Phones */
@@ -654,6 +700,7 @@ html.hero-flight .hero__chip {
     --size-chapter: 96px;
     --size-big: 44px;
     --size-gloss: 22px;
+    --size-hero-line: 20px;
     --size-quote: 22px;
     --section-gap: 72px;
     --side: 18px;
