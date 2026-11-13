@@ -40,6 +40,9 @@ SITE_BASE_URL = os.environ.get("SITE_BASE_URL", "http://localhost:8000").rstrip(
 # off until real photos replace the stand-ins.
 INDEXING_ENABLED = os.environ.get("INDEXING_ENABLED", "") == "1"
 
+# The Google Search Console verification value (the content of the meta tag); empty means no tag.
+GOOGLE_SITE_VERIFICATION = os.environ.get("GOOGLE_SITE_VERIFICATION", "").strip()
+
 INSTALLED_APPS = [
     # The owner's admin (at /owner/) and what it needs: accounts, sessions, messages.
     "django.contrib.admin",

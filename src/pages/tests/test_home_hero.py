@@ -213,7 +213,8 @@ def test_page_loads_the_one_plain_script_deferred(client: Client) -> None:
     # The hero's flight, the photo dialog of the floor plan (one-page AC17), then the phone
     # contact bar (one-page AC12), after the load and reveal motion that base.html links
     # (design-match AC13).
-    scripts = page.all("script")
+    # The JSON-LD block of the head has no src and is left to test_search_ready.py.
+    scripts = [script for script in page.all("script") if "src" in script]
     assert [script["src"] for script in scripts] == [
         "/static/js/reveal.js",
         "/static/js/daypart.js",
@@ -227,7 +228,7 @@ def test_page_loads_the_one_plain_script_deferred(client: Client) -> None:
         assert "defer" in script
         assert "async" not in script
     # Nothing written into the page itself: the script files are all the JavaScript there is.
-    assert page.text["script"] == ["", "", "", "", "", "", ""]
+    assert page.text["script"][-len(scripts) :] == [""] * len(scripts)
 
 
 def test_script_is_small_and_uses_no_library() -> None:

@@ -1,6 +1,7 @@
 from django.http import HttpRequest, HttpResponse, HttpResponsePermanentRedirect
 from django.shortcuts import render
 from django.utils import timezone
+from django.utils.safestring import mark_safe
 
 from owner_content.services import site_settings
 from pages import hero, seo
@@ -11,11 +12,15 @@ def home(request: HttpRequest) -> HttpResponse:
     """The whole site: the hero and the five chapters, with the owner's settings (one query)."""
     theme = daypart_for(timezone.now(), request.GET.dict()).theme
     loops = hero.loops()
+    head = seo.head_for("home")
+    owner = site_settings()
     context = {
-        "seo": seo.head_for("home"),
+        "seo": head,
         "hero": loops.get(theme),
         "hero_loops": loops,
-        "owner": site_settings(),
+        "owner": owner,
+        # seo.structured_data already escaped <, > and & for a script element.
+        "structured_data": mark_safe(seo.structured_data(head, owner)),
     }
     return render(request, "pages/home.html", context)
 
