@@ -4,9 +4,9 @@ The home hero "Through the Ở" (design.md, Components).
   hero  the files of the current theme's loop (poster, mp4, webm), or nothing when they are missing
 
 As sent, this is the still hero: the letter filled with the poster photo, then the dictionary
-line, the heading and its line, all in the page flow. hero.js turns it into the flight (a stage
-with a fixed frame, the video drawn through the letter on the canvas) when motion is fine.
-With no files the letter is Sand and there is no video and no chip.
+line, the cue, the heading and its line, all in the page flow. hero.js turns it into the intro
+(one screen, the video drawn through the growing letter on the canvas, then the heading) when
+motion is fine. With no files the letter is Sand and there is no video, no chip and no intro.
 {% endcomment %}<section id="hero" class="hero">
   <div class="hero__frame">
     <div class="hero__window">
@@ -24,8 +24,8 @@ With no files the letter is Sand and there is no video and no chip.
         <p><i lang="vi">ở</i> · verb · Vietnamese · say "uh?"</p>
         <p>1. to stay. 2. to live somewhere. 3. <i>to be at home.</i></p>
       </div>
-      <p class="hero__cue label">Scroll, and come in ↓</p>
     </div>
+    <p class="hero__cue label">Scroll, and come in ↓</p>
     <div class="hero__title">
       {# Capitals by small capitals, as the labels in site.css, so the page text stays as written. #}
       <h1 style="text-transform: none; font-variant-caps: all-small-caps; font-size: calc(clamp(44px, 9vw, var(--size-headline)) / 0.7); line-height: 0.63; letter-spacing: -0.021em">Living <em style="font-variant-caps: normal; font-size: 0.7em">with</em> nature</h1>

@@ -1,19 +1,34 @@
-{# Chapter 03, the rent (one-page spec AC10): the owner's price line, the buttons and the terms. #}
+{% load photos price %}
+{% comment %}
+Chapter 03, the rent (design-match design.md, "03 ở lâu"): in columns 1–6 the head, the caps
+price line, the buttons and the terms; in columns 8–12 the tea photo and the owner's quote.
+The photo and quote come first in the source so the chapter's text still ends with the terms;
+the grid places them on the right (under the terms on phones).
+{% endcomment %}
 <section id="rent" class="chapter chapter--rent" aria-labelledby="rent-heading">
-  <p class="chapter-marker muted">&nbsp;&#x309; 03</p>
-  <p class="chapter-word" lang="vi">ở lâu</p>
-  <h2 id="rent-heading">The rent</h2>
   <div class="rent__grid">
-    <div class="rent__price">
-      <p class="rent__line big">{% if owner.price_line %}{{ owner.price_line }}{% else %}Ask me about the rent{% endif %}</p>
-      {% include "includes/contact_buttons.html" with place="rent" %}
+    <div class="rent__aside">
+      <div class="rent__photo reveal">{% photo "tea" ratio="4 / 5" %}</div>
+      <figure class="rent__quote reveal">
+        <blockquote><p>I wanted a house that feels good to live in every day, <span class="accent">not just in photos.</span></p></blockquote>
+        {% if owner.first_name %}<figcaption class="label muted">— {{ owner.first_name }}</figcaption>{% endif %}
+      </figure>
     </div>
-    <ul class="rent__terms">
-      <li>Whole house, by the month</li>
-      <li>Minimum stay one month</li>
-      <li>Two months' deposit</li>
-      <li>Included each month: up to 300 kWh of electricity and 10 m³ of water. Anything above is charged at the official rate.</li>
-      <li>I take care of temporary residence registration for you</li>
-    </ul>
+    <div class="rent__price">
+      <p class="chapter-marker label muted">&nbsp;&#x309; 03 · to stay a long while</p>
+      <p class="chapter-word" lang="vi">ở lâu</p>
+      <h2 id="rent-heading">The <span class="accent">rent</span></h2>
+      <div class="rent__line-block reveal"><p class="rent__line big">{% if owner.price_line %}{{ owner.price_line|price_accents }}{% else %}Ask me about the rent{% endif %}</p></div>
+      {% if owner.channels %}<div class="rent__buttons reveal">{% include "includes/contact_buttons.html" with place="rent" %}</div>{% endif %}
+      <div class="rent__terms-block reveal">
+        <ul class="rent__terms">
+          <li>Whole house, by the month</li>
+          <li>Minimum stay one month</li>
+          <li>Two months' deposit</li>
+          <li>Included each month: up to 300 kWh of electricity and 10 m³ of water. Anything above is charged at the official rate.</li>
+          <li>I take care of temporary residence registration for you</li>
+        </ul>
+      </div>
+    </div>
   </div>
 </section>

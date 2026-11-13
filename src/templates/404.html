@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% block robots %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+{# The page uses no script: it shows at once, with no load motion. #}
+{% block motion_script %}{% endblock %}
 {% block content %}
 <p class="label muted">404</p>
 {# Capitals by small capitals, as the labels in site.css, so the page text stays as written. #}

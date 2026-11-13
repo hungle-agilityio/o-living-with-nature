@@ -99,7 +99,7 @@ def _links(plan: str) -> dict[str, str]:
 def test_plan_comes_after_the_layout_list_in_the_house_chapter(client: Client) -> None:
     house = _house(client)
 
-    assert house.index('class="house__layout"') < house.index('id="floor-plan"')
+    assert house.index('class="house__layout reveal"') < house.index('id="floor-plan"')
 
 
 def test_plan_has_its_heading_chip_and_caption(client: Client) -> None:

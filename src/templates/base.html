@@ -17,10 +17,12 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400&amp;family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300&amp;display=swap">
   <link rel="stylesheet" href="{% static 'css/site.css' %}">
   {% block styles %}{% endblock %}
+  <link rel="stylesheet" href="{% static 'css/motion.css' %}">
+  {% block motion_script %}<script src="{% static 'js/reveal.js' %}" defer></script>{% endblock %}
 </head>
 <body{% if daypart %} data-daypart="{{ daypart.theme }}"{% endif %}>
   {% include "includes/header.html" %}
-  <main class="site-main">{% block content %}{% endblock %}</main>
+  <main class="{% block main_class %}site-main{% endblock %}">{% block content %}{% endblock %}</main>
   {% include "includes/footer.html" %}
 </body>
 </html>

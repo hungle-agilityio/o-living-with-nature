@@ -2,21 +2,39 @@
    chapter rules (spacing, marker, word, heading) are in site.css.
 
    Contact is the Ink band of design.md: full width, Paper text, the Call button in Paper fill
-   (site.css, ".band .button") and the others as outlines. The band reaches the screen's edges
-   with a shadow clipped to the sides, so nothing gets wider than the screen. */
+   (site.css, ".band .button") and the others as outlines. The band is as wide as the page
+   (the one-page main has no sides) and keeps its text in the container with its own padding:
+   the sides, or centred past 1360px. It is the last part of the page, so it meets the footer. */
 
 .chapter--contact {
   position: relative;
-  padding: var(--section-gap) 0;
+  width: 100%;
+  padding-top: 128px;
+  padding-bottom: 112px;
+  padding-left: max(var(--side), calc((100% - var(--content-max)) / 2 + var(--side)));
+  padding-right: max(var(--side), calc((100% - var(--content-max)) / 2 + var(--side)));
   background: var(--band);
-  box-shadow: 0 0 0 100vmax var(--band);
-  clip-path: inset(0 -100vmax);
   color: var(--paper);
 }
 
+/* One row that wraps (design-match design.md, "05 ở lại?"): on the left the heading and the
+   owner's line, on the right the buttons, both resting on the bottom of the row. */
+.contact__row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 28px;
+  margin-top: var(--space-4);
+}
+
 .contact__line {
-  max-width: 34em;
-  margin: var(--space-4) 0;
+  max-width: 640px;
+  margin: 20px 0 0;
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: 30px;
+  line-height: 1.3;
 }
 
 .contact__empty {

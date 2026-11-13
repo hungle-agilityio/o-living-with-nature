@@ -183,8 +183,11 @@ def test_rent_grid_follows_the_design() -> None:
     css = RENT_CSS.read_text(encoding="utf-8")
 
     assert "repeat(12, minmax(0, 1fr))" in _rule(css, ".rent__grid")
+    # Design-match (#63): the terms sit in columns 1–6 under the buttons (inside .rent__price);
+    # the tea photo and the quote take columns 8–12.
     assert "1 / span 6" in _rule(css, ".rent__price")
-    assert "8 / span 5" in _rule(css, ".rent__terms")
+    assert "grid-column" not in _rule(css, ".rent__terms")
+    assert "8 / span 5" in _rule(css, ".rent__aside")
     assert "minmax(0, 1fr)" in _phone_part(css)
 
 

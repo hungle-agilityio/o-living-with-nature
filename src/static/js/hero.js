@@ -1,16 +1,20 @@
-/* Home hero "Through the Ở": the flight through the letter (design.md, Components).
-
-   The page works without this file: it then shows the still hero. With JavaScript, and when the
-   visitor has not asked for less motion, the class "hero-flight" on <html> turns the hero into
-   a tall stage. A canvas draws the loop (the poster photo until the video can play) through the
-   shape of the letter, and scrolling grows the letter until the loop fills the screen. */
+/* Home hero "Through the Ở": the intro that plays by itself (design-match design.md, "Hero").
+   Without this file the still hero shows under a solid header. With hero files and motion, the
+   class "hero-flight" makes the hero one screen; a canvas draws the loop through the letter,
+   which grows on time until the loop fills the screen, then the heading rises line by line.
+   Any input jumps to the end. Nothing is stored. */
 (function () {
   "use strict";
 
   var MAX_SCALE = 70; // the letter grows up to about 70 times
-  var POWER = 2.4; // scale rises with scroll progress to this power
-  var FOOT_END = 1 / 6; // the dictionary line is gone after the first sixth
-  var TITLE_START = 0.8; // the heading rises in the last fifth
+  var POWER = 2.4; // scale rises with progress to this power
+  var GROW_START = 0.4; // seconds: the letter rests until here
+  var GROW_END = 3.2; // the loop fills the screen here
+  var INTRO_END = 4.0; // the shade and the heading are in by here
+  var LINE_DELAY = 0.15; // each heading line starts this long after the one before
+  var LINE_TIME = 0.7; // how long one line takes to rise
+  var CUE_START = 3.9; // the cue fades in from here, in half a second
+  var FOOT_END = 1 / 6; // the dictionary line is gone after the first sixth of the growth
   var SAND = "#e9e2d3";
   var LETTER = "Ở";
   var FONT = '500 SIZEpx "Cormorant Garamond", Georgia, serif';
@@ -18,22 +22,27 @@
   var hero = document.getElementById("hero");
   var frame = hero && hero.querySelector(".hero__frame");
   var canvas = hero && hero.querySelector(".hero__canvas");
+  var video = hero && hero.querySelector(".hero__video");
   var ctx = canvas && canvas.getContext && canvas.getContext("2d");
-  if (!frame || !ctx || !window.requestAnimationFrame || !window.matchMedia) {
+  // No hero files: the still hero stays.
+  if (!frame || !video || !ctx || !window.requestAnimationFrame || !window.matchMedia) {
     return;
   }
 
   var root = document.documentElement;
   var header = document.querySelector(".site-header");
-  var video = hero.querySelector(".hero__video");
+  var heading = hero.querySelector("h1");
   var lessMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   var poster = null;
   var request = 0;
+  var begun = 0; // the time the intro started
+  var skipped = false;
+  var lines = [];
   var shown = {};
-  // Set by measure(): the frame, the letter at rest, and the point the flight goes through.
+  // Set by measure(): the frame, the letter at rest, and the point the letter grows around.
   var ratio, width, height, size, originX, originY, anchorX, anchorY, maxScale;
 
-  if (video && video.poster) {
+  if (video.poster) {
     poster = new Image();
     poster.src = video.poster;
   }
@@ -42,8 +51,16 @@
     return Math.min(1, Math.max(0, value));
   }
 
+  function easeInOut(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
   function font(pixels) {
     return FONT.replace("SIZE", String(pixels));
+  }
+
+  function now() {
+    return window.performance && performance.now ? performance.now() : Date.now();
   }
 
   /* The left side of the bowl of the letter, where its stroke is thickest: [centre, width] in
@@ -83,18 +100,11 @@
     var bowl = ctx.measureText("O").actualBoundingBoxAscent;
     originX = width / 2 - (box.actualBoundingBoxRight - box.actualBoundingBoxLeft) / 2;
     originY = 0.47 * height + (box.actualBoundingBoxAscent - box.actualBoundingBoxDescent) / 2;
+    anchorY = originY - bowl / 2;
     var side = stroke();
-    maxScale = MAX_SCALE;
-    if (side) {
-      anchorX = originX + side[0] * size;
-      anchorY = originY - bowl / 2;
-      // On a very wide screen 70 times is not enough for the stroke to cover it in time.
-      var needed = (1.15 * width) / (side[1] * size);
-      maxScale = Math.max(MAX_SCALE, 1 + (needed - 1) / Math.pow(TITLE_START, POWER));
-    } else {
-      anchorX = width / 2;
-      anchorY = originY - bowl / 2;
-    }
+    anchorX = side ? originX + side[0] * size : width / 2;
+    // On a very wide screen 70 times may not be enough for the stroke to cover it.
+    maxScale = side ? Math.max(MAX_SCALE, (1.15 * width) / (side[1] * size)) : MAX_SCALE;
     shown = {};
   }
 
@@ -103,7 +113,7 @@
     var source = null;
     var w = 0;
     var h = 0;
-    if (video && video.readyState >= 2 && video.videoWidth) {
+    if (video.readyState >= 2 && video.videoWidth) {
       source = video;
       w = video.videoWidth;
       h = video.videoHeight;
@@ -118,7 +128,7 @@
         ctx.drawImage(source, (width - w * fit) / 2, (height - h * fit) / 2, w * fit, h * fit);
         return;
       } catch (error) {
-        // A file the browser cannot draw: the Sand letter below.
+        // A file the browser cannot draw: the Sand below.
       }
     }
     ctx.fillStyle = SAND;
@@ -130,7 +140,7 @@
     ctx.globalCompositeOperation = "source-over";
     ctx.clearRect(0, 0, width, height);
     paint();
-    if (progress >= TITLE_START) {
+    if (progress >= 0.999) {
       return; // the loop fills the screen
     }
     // Keep the picture only inside the letter, grown around the anchor, which moves to the
@@ -153,36 +163,66 @@
     }
   }
 
+  /* Two lines that rise, "Living" and "with nature"; the words stay as written. */
+  function split() {
+    if (!heading || lines.length) {
+      return;
+    }
+    var first = document.createElement("span");
+    var second = document.createElement("span");
+    first.className = second.className = "hero__ln";
+    first.appendChild(document.createElement("span"));
+    second.appendChild(document.createElement("span"));
+    var em = heading.querySelector("em");
+    while (heading.firstChild && heading.firstChild !== em) {
+      first.firstChild.appendChild(heading.firstChild);
+    }
+    while (heading.firstChild) {
+      second.firstChild.appendChild(heading.firstChild);
+    }
+    heading.appendChild(first);
+    heading.appendChild(second);
+    lines = [first.firstChild, second.firstChild];
+  }
+
   function tick() {
     request = window.requestAnimationFrame(tick);
+    var seconds = skipped ? INTRO_END + 1 : (now() - begun) / 1000;
+    if (seconds >= INTRO_END + 1) {
+      skipped = true; // the intro is over; input no longer matters
+    }
+    var time = clamp((seconds - GROW_START) / (GROW_END - GROW_START));
+    var progress = easeInOut(time);
     var box = hero.getBoundingClientRect();
-    var travel = box.height - height;
-    var progress = travel > 0 ? clamp(-box.top / travel) : 0;
-    var onScreen = box.bottom > 0 && box.top < height;
+    var onScreen = box.bottom > 0 && box.top < window.innerHeight;
+    var past = !header || box.bottom < header.offsetHeight;
 
-    show("foot", clamp(1 - progress / FOOT_END).toFixed(3), function (value) {
+    show("foot", clamp(1 - time / FOOT_END).toFixed(3), function (value) {
       hero.style.setProperty("--hero-foot", value);
     });
-    show("title", clamp((progress - TITLE_START) / (1 - TITLE_START)).toFixed(3), function (value) {
+    show("title", clamp((seconds - GROW_END) / (INTRO_END - GROW_END)).toFixed(3), function (value) {
       hero.style.setProperty("--hero-title", value);
     });
-    // The header row turns Paper once the loop covers most of the screen.
-    var scale = 1 + (maxScale - 1) * Math.pow(progress, POWER);
-    // With no loop the screen fills with Sand, where Paper could not be read: the row keeps its ink.
-    var covered = scale >= 0.55 * maxScale * Math.pow(TITLE_START, POWER);
-    show("over", !!video && onScreen && covered, function (value) {
+    show("cue", clamp((seconds - CUE_START) / 0.5).toFixed(3), function (value) {
+      hero.style.setProperty("--hero-cue", value);
+    });
+    lines.forEach(function (line, index) {
+      var rise = clamp((seconds - GROW_END - LINE_DELAY * index) / LINE_TIME);
+      rise = 1 - Math.pow(1 - rise, 3);
+      show("line" + index, rise.toFixed(3), function () {
+        line.style.transform = rise < 1 ? "translateY(" + (105 * (1 - rise)).toFixed(1) + "%)" : "";
+        line.style.opacity = rise < 1 ? rise.toFixed(3) : "";
+      });
+    });
+    // Over the hero the header is clear, and its text turns Paper once the loop covers it;
+    // once the hero has left the screen it is the solid bar again.
+    show("past", past, function (value) {
+      root.classList.toggle("hero-past", value);
+    });
+    show("over", !past && progress > 0.75, function (value) {
       root.classList.toggle("hero-over", value);
     });
-    // The header row stays with the frame and leaves the screen with it.
-    show("lift", Math.round(Math.min(0, box.bottom - height)), function (value) {
-      if (header) {
-        header.style.transform = value ? "translateY(" + value + "px)" : "";
-      }
-    });
     show("playing", onScreen, function (value) {
-      if (!video) {
-        return;
-      }
       if (value) {
         var playing = video.play();
         if (playing && playing.catch) {
@@ -197,27 +237,42 @@
     }
   }
 
+  /* Any input during the intro jumps to its end; nothing is ever prevented. */
+  function skip() {
+    skipped = true;
+  }
+
   function start() {
     if (request) {
       return;
     }
     root.classList.add("hero-flight");
+    split();
     measure();
+    // Opened lower down or at a chapter address: the end state at once, and the chapter kept
+    // in view now that the hero is one screen high.
+    var target = location.hash.length > 1 && document.getElementById(location.hash.slice(1));
+    skipped = window.pageYOffset > 40 || !!target;
+    if (target && target.scrollIntoView) {
+      target.scrollIntoView();
+    }
+    begun = now();
     tick();
   }
 
   function stop() {
     window.cancelAnimationFrame(request);
     request = 0;
-    root.classList.remove("hero-flight", "hero-over");
-    hero.style.removeProperty("--hero-foot");
-    hero.style.removeProperty("--hero-title");
-    if (header) {
-      header.style.transform = "";
-    }
-    if (video) {
-      video.pause();
-    }
+    root.classList.remove("hero-flight", "hero-over", "hero-past");
+    ["--hero-foot", "--hero-title", "--hero-cue"].forEach(function (name) {
+      hero.style.removeProperty(name);
+    });
+    lines.forEach(function (line) {
+      line.style.transform = "";
+      line.style.opacity = "";
+    });
+    shown = {};
+    video.pause();
   }
 
   function choose() {
@@ -228,6 +283,9 @@
     }
   }
 
+  ["wheel", "touchstart", "keydown", "pointerdown", "scroll"].forEach(function (name) {
+    window.addEventListener(name, skip, { passive: true });
+  });
   window.addEventListener("resize", function () {
     // A phone's toolbar sliding away also fires this; measure only when the frame changed.
     if (request && (frame.clientWidth !== width || frame.clientHeight !== height)) {
