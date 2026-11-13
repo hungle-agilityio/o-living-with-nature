@@ -2,15 +2,18 @@
    chapter rules (spacing, marker, word, heading) are in site.css.
 
    Contact is the Ink band of design.md: full width, Paper text, the Call button in Paper fill
-   (site.css, ".band .button") and the others as outlines. The band reaches the screen's edges
-   with a shadow clipped to the sides, so nothing gets wider than the screen. */
+   (site.css, ".band .button") and the others as outlines. The band is as wide as the page
+   (the one-page main has no sides) and keeps its text in the container with its own padding:
+   the sides, or centred past 1360px. It is the last part of the page, so it meets the footer. */
 
 .chapter--contact {
   position: relative;
-  padding: var(--section-gap) 0;
+  width: 100%;
+  padding-top: var(--section-gap);
+  padding-bottom: var(--section-gap);
+  padding-left: max(var(--side), calc((100% - var(--content-max)) / 2 + var(--side)));
+  padding-right: max(var(--side), calc((100% - var(--content-max)) / 2 + var(--side)));
   background: var(--band);
-  box-shadow: 0 0 0 100vmax var(--band);
-  clip-path: inset(0 -100vmax);
   color: var(--paper);
 }
 

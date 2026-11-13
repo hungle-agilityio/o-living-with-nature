@@ -20,7 +20,7 @@
 </head>
 <body{% if daypart %} data-daypart="{{ daypart.theme }}"{% endif %}>
   {% include "includes/header.html" %}
-  <main class="site-main">{% block content %}{% endblock %}</main>
+  <main class="{% block main_class %}site-main{% endblock %}">{% block content %}{% endblock %}</main>
   {% include "includes/footer.html" %}
 </body>
 </html>

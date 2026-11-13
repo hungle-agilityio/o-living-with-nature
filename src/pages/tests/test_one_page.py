@@ -20,12 +20,13 @@ from pages import photos
 pytestmark = pytest.mark.django_db
 
 BASE = "https://o.example"
-# id, marker number, chapter word (FAQ has none), heading: the table of the spec.
+# id, marker label after the hook, chapter word (FAQ has none), heading: the table of the
+# spec (the label with its gloss: design-match AC4).
 CHAPTERS = [
-    ("house", "01", "ở nhà", "The house"),
-    ("hoa-xuan", "02", "ở gần", "Hòa Xuân"),
-    ("rent", "03", "ở lâu", "The rent"),
-    ("faq", "04", None, "FAQ"),
+    ("house", "01 · at home", "ở nhà", "The house"),
+    ("hoa-xuan", "02 · close by", "ở gần", "Hòa Xuân"),
+    ("rent", "03 · to stay a long while", "ở lâu", "The rent"),
+    ("faq", "04 · questions", None, "FAQ"),
     ("contact", "05", "ở lại?", "Will you stay?"),
 ]
 NAV_LINKS = [
@@ -101,7 +102,7 @@ def test_chapter_has_its_marker_word_and_h2(
 ) -> None:
     section = _section(_home(client), chapter_id)
 
-    # The marker: the hook of the letter ở (U+0309, on a no-break space), then the number.
+    # The marker: the hook of the letter ở (U+0309, on a no-break space), then the label.
     marker = re.search(r'<p class="chapter-marker[^"]*"[^>]*>(.*?)</p>', section, re.DOTALL)
     assert marker, "no chapter marker"
     assert unescape(marker.group(1)) == f" ̉ {number}"
