@@ -140,7 +140,7 @@ h2 em,
   font-style: italic;
   font-weight: 300;
   font-size: var(--size-chapter);
-  line-height: 1;
+  line-height: 0.8;
 }
 
 .big {
@@ -286,25 +286,38 @@ h2 em,
   padding: var(--space-6) var(--side) var(--section-gap);
 }
 
+/* The one page (design-match, "Frame"): the main is as wide as the page and adds no space, so
+   each part sets its own width. The chapters sit in the container; the hero and the contact
+   band run full width with their text in the container (the hero and contact.css). With no
+   bottom padding, the contact band meets the footer. */
+.site-main--one-page {
+  max-width: none;
+  padding: 0;
+}
+
 /* Chapters of the one page (each chapter's own rules are in css/chapters/) */
 
+/* The container: at most 1360px, centred, with the sides (40px, 18px on phones). */
 .chapter {
+  width: min(100%, var(--content-max));
   max-width: 100%;
   margin-top: var(--section-gap);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--side);
+  padding-right: var(--side);
   overflow-wrap: anywhere;
   /* The menu's jump leaves room above the marker. */
   scroll-margin-top: var(--space-4);
 }
 
+/* The head: label (hook, number and gloss, 11px capitals in Stone), chapter word, h2. */
 .chapter-marker {
   margin: 0;
-  font-family: var(--font-serif);
-  font-size: 28px;
-  line-height: 1;
 }
 
 .chapter .chapter-word {
-  margin: 0 0 var(--space-4);
+  margin: var(--space-2) 0 var(--space-3);
 }
 
 /* Capitals by small capitals, as the h1, so the heading text stays as written. */
@@ -458,9 +471,13 @@ h2 em,
    stage whose frame stays on screen while the letter grows) exists only under the class that
    hero.js sets on <html> when the visitor has JavaScript and has not asked for less motion. */
 
+/* Full width, with its text in the container (the sides at least, centred past 1360px). */
 .hero {
   --hero-foot: 1;
   --hero-title: 0;
+  padding-top: var(--space-6);
+  padding-left: max(var(--side), calc((100% - var(--content-max)) / 2 + var(--side)));
+  padding-right: max(var(--side), calc((100% - var(--content-max)) / 2 + var(--side)));
   overflow-x: clip;
 }
 
@@ -532,11 +549,6 @@ h2 em,
 
 /* The flight */
 
-html.hero-flight .site-main {
-  max-width: none;
-  padding: 0;
-}
-
 /* The header row sits over the letter and leaves with the frame (hero.js moves it). */
 html.hero-flight .site-header {
   position: fixed;
@@ -556,8 +568,10 @@ html.hero-over .nav-menu nav {
   color: var(--ink);
 }
 
+/* The stage runs edge to edge; its text keeps the container through .hero__foot and .hero__title. */
 html.hero-flight .hero {
   height: 330vh;
+  padding: 0;
 }
 
 html.hero-flight .hero__frame {
