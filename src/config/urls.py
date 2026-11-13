@@ -8,5 +8,6 @@ admin.site.index_title = "Site administration"
 
 urlpatterns = [
     path("owner/", admin.site.urls),
+    path("", include("counter.urls")),
     path("", include("pages.urls")),
 ]
