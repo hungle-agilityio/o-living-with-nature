@@ -9,8 +9,8 @@ nothing is retyped. It writes report.html (one self-contained page, screenshots 
 report.json to out/verify/<time>/, and opens the page unless --no-open is given.
 
 A task that changes a screen passes --browser with the issue's "Screens to capture" as --spec;
-each step shows its full page next to its close-up. A task that changes no screen passes --no-ui
-and gets no screenshots.
+a step with a capture selector shows only its close-up, and a step without one shows its full
+page. A task that changes no screen passes --no-ui and gets no screenshots.
 
 Exit code: 0 PASS, 1 FAIL, 2 INCOMPLETE (some axis is NOT CONFIGURED, none failed).
 """
@@ -298,9 +298,6 @@ CSS = (
     ".NOT\\ CONFIGURED,.INCOMPLETE{color:var(--warn);font-weight:700}"
     ".NOT\\ APPLICABLE{color:var(--muted);font-weight:700}"
     ".shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}"
-    ".shots .pair{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:12px;"
-    "align-items:start}"
-    ".shots .pair figure+figure img{width:auto;max-width:100%}"
     ".shots figure{margin:0;background:var(--card);padding:8px;border-radius:8px}"
     ".shots img{width:100%;height:auto;border:1px solid var(--line);cursor:zoom-in}"
     "[hidden]{display:none!important}"
@@ -342,14 +339,8 @@ def render_body(report: dict[str, Any]) -> str:
     close_ups: dict[str, str] = report.get("close_ups", {})
     shots = ""
     for path in report.get("screenshots", []):
-        name = Path(path).stem
-        if path in close_ups:
-            shots += (
-                f'<div class="pair">{figure(path, name)}'
-                f"{figure(close_ups[path], f'{name} (close-up)')}</div>"
-            )
-        else:
-            shots += figure(path, name)
+        # A step that names a part shows only that close-up; one without shows its full page.
+        shots += figure(close_ups.get(path, path), Path(path).stem)
     check = "".join(f"<li>{esc(item)}</li>" for item in report.get("check_yourself", []))
     review = f"<h2>Review</h2><pre>{esc(report['review'])}</pre>" if report.get("review") else ""
     return (

@@ -11,7 +11,7 @@ Use the `build-verify-report` skill. In short:
 2. If the review step ran, save its summary with `Status: PASS` or `Status: FAIL` on the first line.
 3. Run the report builder. It runs every axis, writes the report and opens it. Pick the screens mode from the issue:
    - **No UI** (no `needs-ui` label, nothing users see): `--no-ui`. No browser, the Browser axis reads `NOT APPLICABLE`, no screenshots.
-   - **UI** (`needs-ui`): copy the issue's `## Screens to capture` block unchanged into a file and pass `--browser --spec <file>`. The report shows each step's full page next to its close-up. There are no default pages: `--browser` without `--spec` fails the Browser axis.
+   - **UI** (`needs-ui`): copy the issue's `## Screens to capture` block unchanged into a file and pass `--browser --spec <file>`. The report shows only the close-up of a step that gives `capture`, and the full page of a step that gives none. There are no default pages: `--browser` without `--spec` fails the Browser axis.
 
 | Axis | How |
 |---|---|
@@ -23,7 +23,7 @@ Use the `build-verify-report` skill. In short:
 | Issue | each criterion of the issue, from the criteria file |
 | Query count | asserted for list and dashboard pages |
 | Security | no secret-like string in the diff (`.claude/rules/security.md`) |
-| Browser | the `check-in-browser` skill on the issue's "Screens to capture": full page and close-up per step, console and network clean; `NOT APPLICABLE` with `--no-ui` |
+| Browser | the `check-in-browser` skill on the issue's "Screens to capture": the close-up of each step (the full page when a step gives no `capture`), console and network clean; `NOT APPLICABLE` with `--no-ui` |
 
 If an axis cannot be checked, the report says `NOT CONFIGURED` and why; never write PASS without evidence.
 
