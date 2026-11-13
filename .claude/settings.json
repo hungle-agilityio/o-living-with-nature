@@ -57,7 +57,23 @@
       "Bash(uv sync:*)",
       "Bash(git mv:*)",
       "Bash(git cherry-pick:*)",
-      "Bash(bash scripts/check.sh)"
+      "Bash(bash scripts/check.sh)",
+      "Bash(uv run python .flow/loop/release.py --dry-run)",
+      "Bash(uv run python .flow/loop/release.py)",
+      "Bash(uv run python .flow/loop/agent_tick.py)",
+      "Bash(uv run python .flow/loop/pinned_tests.py --unlisted *)",
+      "Bash(python3 -I .flow/plugin/skills/create-issue/route_issue.py *)",
+      "Bash(.flow/loop/start-loop.sh)",
+      "Bash(bash .flow/loop/start-loop.sh)",
+      "Bash(tmux kill-session -t o-living-loop)",
+      "Bash(tmux has-session -t o-living-loop)",
+      "Bash(tmux capture-pane -p -t o-living-loop*)",
+      "Bash(tmux ls)",
+      "Bash(git stash push -u)",
+      "Bash(git stash push -u -m *)",
+      "Bash(git stash list)",
+      "Bash(git pull --ff-only)",
+      "Bash(git pull --ff-only origin main)"
     ],
     "ask": [
       "Bash(gh issue close:*)",
@@ -101,7 +117,17 @@
       "Bash(git push --no-verify:*)",
       "Edit(./.git/**)",
       "Bash(gh pr review:*)",
-      "Read(**/*DO-NOT-OPEN*)"
+      "Read(**/*DO-NOT-OPEN*)",
+      "Bash(gh pr merge *--admin*)",
+      "Bash(git push *--force*)",
+      "Bash(git push * -f)",
+      "Bash(git push * -f *)",
+      "Bash(git push *--delete*)",
+      "Bash(git push *--mirror*)",
+      "Bash(git stash drop*)",
+      "Bash(git stash clear*)",
+      "Bash(git clean *)",
+      "Bash(git branch -D *)"
     ],
     "additionalDirectories": [
       ".."
