@@ -37,6 +37,7 @@
       "Edit(./.flow/loop/**)",
       "Edit(./docs/intent/**)",
       "Edit(./docs/specs/**)",
+      "Edit(./docs/design/**)",
       "Edit(./.gitignore)",
       "Edit(./README.md)",
       "Edit(./render.yaml)",
