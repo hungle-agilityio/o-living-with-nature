@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "pages",
     "owner_content",
+    "counter",
 ]
 
 # Sessions, accounts and messages are for the admin only. They are lazy: a public page never
