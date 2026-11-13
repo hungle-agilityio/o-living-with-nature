@@ -1,50 +1,138 @@
-/* Chapter 02, Hòa Xuân (#hoa-xuan). The shared chapter rules (spacing, marker, word, heading)
-   are in site.css. Desktop: a 12-column grid with 24px gaps (one-page design.md, Layout): the
-   area loop (16 / 9, columns 1–7) beside the line, the travel list and the Maps button (columns
-   9–12), then three photos (4 / 3). Phones: one column. */
+/* Chapter 02, Hòa Xuân (#hoa-xuan), design-match design.md "02 ở gần". The shared chapter rules
+   (spacing, marker, word, heading) are in site.css.
+
+   A full-width band, 100vh high and at least 680px: the area loop covers it under a veil, the
+   head sits 72px from its top, and the line and the four travel facts sit 56px from its bottom,
+   in Paper. Its text keeps the container (the sides, or centred past 1360px). Under the band,
+   48px below, in the container: three photos (4 / 3, columns of 4), then the Maps button.
+   Phones: two travel columns and one photo column. */
 
 .chapter--hoa-xuan {
   position: relative;
+  width: 100%;
+  padding-left: 0;
+  padding-right: 0;
 }
 
-.hoa-xuan__intro,
-.hoa-xuan__photos {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 24px;
-  margin-top: var(--space-6);
+.hoa-xuan__band {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-5);
+  height: 100vh;
+  min-height: 680px;
+  padding-top: 72px;
+  padding-bottom: 56px;
+  padding-left: max(var(--side), calc((100% - var(--content-max)) / 2 + var(--side)));
+  padding-right: max(var(--side), calc((100% - var(--content-max)) / 2 + var(--side)));
+  overflow: hidden;
+  background: var(--band);
+  color: var(--paper);
 }
 
+.hoa-xuan__head,
+.hoa-xuan__foot {
+  position: relative;
+  z-index: 1;
+}
+
+/* The label is Stone on Paper; on the band it is Paper, as on the Ink band. */
+.hoa-xuan__band .chapter-marker {
+  color: var(--paper);
+}
+
+/* The loop covers the band, behind the text, under the veil. */
 .hoa-xuan__loop {
-  grid-column: 1 / span 7;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
 }
 
-.hoa-xuan__text {
-  grid-column: 9 / span 4;
-  align-self: center;
+.hoa-xuan__loop .media {
+  position: relative;
+  height: 100%;
+}
+
+.hoa-xuan__loop .media__box {
+  height: 100%;
+}
+
+.hoa-xuan__loop .media__box::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(to bottom, rgba(31, 42, 34, 0.55) 0%, rgba(31, 42, 34, 0.15) 40%, rgba(31, 42, 34, 0.72) 100%);
+  pointer-events: none;
+}
+
+.hoa-xuan__loop .media__chip {
+  z-index: 2;
+  left: auto;
+  right: max(var(--side), calc((100% - var(--content-max)) / 2 + var(--side)));
+}
+
+.hoa-xuan__loop .media__credit {
+  position: absolute;
+  left: max(var(--side), calc((100% - var(--content-max)) / 2 + var(--side)));
+  bottom: var(--space-2);
+  z-index: 2;
+  margin: 0;
+  color: var(--paper);
+  opacity: 0.8;
 }
 
 .hoa-xuan__line {
+  max-width: 34em;
   margin: 0 0 var(--space-4);
+  font-size: 28px;
+  line-height: 1.3;
 }
 
-.hoa-xuan__travel,
-.hoa-xuan__photos {
+.hoa-xuan__travel {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.hoa-xuan__travel {
-  margin: 0 0 var(--space-4);
+.hoa-xuan__travel li {
+  display: flex;
+  flex-direction: column;
+  padding-top: 14px;
+  border-top: 1px solid rgba(244, 240, 232, 0.6);
 }
 
-.hoa-xuan__travel li {
-  padding: var(--space-2) 0;
-  border-top: 1px solid var(--line);
+/* The " · " stays in the text of each row for copying and reading; it is not drawn. */
+.hoa-xuan__dot {
+  display: none;
+}
+
+.hoa-xuan__time {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 32px;
+  line-height: 1.2;
+}
+
+/* Under the band, in the container. */
+.hoa-xuan__after {
+  width: min(100%, var(--content-max));
+  margin: 48px auto 0;
+  padding: 0 var(--side);
 }
 
 .hoa-xuan__photos {
-  margin-bottom: 0;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 24px;
+  margin: 0 0 var(--space-5);
+  padding: 0;
+  list-style: none;
 }
 
 .hoa-xuan__photos li {
@@ -52,13 +140,18 @@
 }
 
 @media (max-width: 760px) {
-  .hoa-xuan__intro,
+  .hoa-xuan__travel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hoa-xuan__time {
+    font-size: 24px;
+  }
+
   .hoa-xuan__photos {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .hoa-xuan__loop,
-  .hoa-xuan__text,
   .hoa-xuan__photos li {
     grid-column: 1;
   }

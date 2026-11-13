@@ -218,13 +218,14 @@ def test_page_loads_the_one_plain_script_deferred(client: Client) -> None:
         "/static/js/reveal.js",
         "/static/js/hero.js",
         "/static/js/floor-plan.js",
+        "/static/js/area-band.js",
         "/static/js/contact-bar.js",
     ]
     for script in scripts:
         assert "defer" in script
         assert "async" not in script
     # Nothing written into the page itself: the script files are all the JavaScript there is.
-    assert page.text["script"] == ["", "", "", ""]
+    assert page.text["script"] == ["", "", "", "", ""]
 
 
 def test_script_is_small_and_uses_no_library() -> None:
