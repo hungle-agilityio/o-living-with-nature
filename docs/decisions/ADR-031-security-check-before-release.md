@@ -28,6 +28,8 @@ Spec `docs/specs/security-check/spec.md` (pull request #494); epic #504 (pull re
 | Q5 Is the live site checked after a deploy? | Yes, after every release, by the post-release epic (ADR-032) | No | Some settings only show on the live site behind Render's proxy |
 | HSTS warnings W005, W021 | Silence exactly these two | Turn on subdomains and preload | Q3 chose no subdomains and no preload; preload cannot be undone quickly |
 
+2026-11-16 (#112): HSTS is now built as item 1 says (one year with `DJANGO_DEBUG=0`, no subdomains, no preload; `security.W005` and `security.W021` silenced). The warning `config.W001` (no `DATABASE_URL`) now fires only on Render, where the environment variable `RENDER` is set: the release check runs `check --deploy --fail-level WARNING` on the Mac mini, which has no `DATABASE_URL`, and the warning is about Render's wiped disk. Owner's choice on the release card.
+
 ## Consequences
 
 - A release can be refused by a tool that cannot run (no network for `pip-audit`); the fix is to run it again, not to skip the check.
