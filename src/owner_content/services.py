@@ -60,7 +60,7 @@ def site_settings(language: str = "en") -> SiteSettingsValue:
     """The owner's settings in the page language (`"vi"`; anything else is English), read in
     one query; the model defaults when there is no record."""
     record = SiteSettings.objects.order_by("pk").first() or SiteSettings()
-    vietnamese = language == "vi"
+    vietnamese = language.lower().split("-")[0] == "vi"
     words = _WORDS["vi" if vietnamese else "en"]
     return SiteSettingsValue(
         price_line=_price_line(record.price_from_million, record.price_to_million, words),
