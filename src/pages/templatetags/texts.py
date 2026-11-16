@@ -33,14 +33,10 @@ def alt_text(entry: Photo | AreaLoop, lang: str = "") -> str:
     """The alt text of a photo (or label of the loop), Vietnamese on `/vi/` when it has one."""
     english: str = entry.alt if isinstance(entry, Photo) else entry.label
     vietnamese: str = entry.alt_vi if isinstance(entry, Photo) else entry.label_vi
-    return (
-        vietnamese
-        if language.normalise(lang or language.current()) == "vi" and vietnamese
-        else english
-    )
+    return vietnamese if language.normalise(lang) == "vi" and vietnamese else english
 
 
 @register.filter
 def credit_text(credit: str, lang: str = "") -> str:
     """A credit in the page language (`Photo: ` becomes `Ảnh: ` on `/vi/`)."""
-    return language.credit_for(str(credit), lang or language.current())
+    return language.credit_for(str(credit), language.normalise(lang))
