@@ -2,32 +2,33 @@
 
 A schematic until the architect's plan exists: the parts of the house from the front garden to
 the back garden, not their real layout. A block whose photo is in `pages.photos` (and whose file
-is found) links to it.
+is found) links to it. The block names live in `pages.texts.house` (keys `block_*`).
 """
 
 from dataclasses import dataclass
 
 from pages import photos
+from pages.language import EN, texts
 
 
 @dataclass(frozen=True)
 class _Part:
-    name: str
+    key: str  # the key of the block's name in `pages.texts.house`
     kind: str  # "garden", "room" or "wide" (a room drawn across the whole plan)
     photo_key: str | None = None
 
 
 _PARTS = (
-    _Part("Front garden", "garden"),
-    _Part("Living room and kitchen", "wide", "kitchen"),
-    _Part("Light well", "room", "lightwell"),
-    _Part("Bedroom 1", "room", "bedroom"),
-    _Part("Bedroom 2", "room", "bedroom"),
-    _Part("Bathroom", "room"),
-    _Part("Mezzanine", "room", "mezzanine"),
-    _Part("Covered veranda", "wide", "veranda"),
-    _Part("Back garden", "garden"),
-    _Part("Laundry, drying and storage", "wide"),
+    _Part("block_front_garden", "garden"),
+    _Part("block_living_kitchen", "wide", "kitchen"),
+    _Part("block_light_well", "room", "lightwell"),
+    _Part("block_bedroom_1", "room", "bedroom"),
+    _Part("block_bedroom_2", "room", "bedroom"),
+    _Part("block_bathroom", "room"),
+    _Part("block_mezzanine", "room", "mezzanine"),
+    _Part("block_veranda", "wide", "veranda"),
+    _Part("block_back_garden", "garden"),
+    _Part("block_laundry", "wide"),
 )
 
 
@@ -40,11 +41,13 @@ class Block:
     photo: photos.Photo | None
 
 
-def blocks() -> list[Block]:
-    """The blocks in walking order, front garden first; a missing photo file gives no photo."""
+def blocks(language: str = EN) -> list[Block]:
+    """The blocks in walking order, front garden first, named in `language` (English by
+    default); a missing photo file gives no photo."""
+    names = texts("house", language)
     return [
         Block(
-            name=part.name,
+            name=names[part.key],
             kind=part.kind,
             photo=photos.photo(part.photo_key) if part.photo_key else None,
         )
