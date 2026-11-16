@@ -28,7 +28,7 @@ The site is written **as if the house is finished (Q15)**, in **English only (Q5
 - **Voice (Q9):** the owner speaking in the first person, introduced by first name only (Q14). For example: "Hi, I'm <first name>. I built a small garden house in Hoa Xuan…"
 - **Price (Q2):** an expected range, for example "from <X> million VND / month", set by the owner in the admin.
 - **Photos (Q15):** licensed stock photos (Unsplash or Pexels) stand in for the house until real ones exist. Each has a visible "Illustrative photo" label, and its source and licence are recorded in the repository (`docs/specs/*/media-credits.md` and the photo list in the code). Photos and videos are static files in the repository; changing them is an issue. Never use images taken from search results.
-- **Contact (domain rule):** phone, WhatsApp, Zalo and email, shown as buttons. The site does not send messages for the visitor.
+- **Contact (domain rule):** phone, WhatsApp, Zalo and email, shown as buttons. The site does not send messages for the visitor. Since 2026-11-16 an enquiry form in the contact chapter also keeps a visitor's message for the owner to read in the admin; the site still sends nothing to the visitor (`docs/intent/enquiry-form.md`).
 - **Counting (Q10):** a small cookieless counter in Django records page views and clicks on each contact channel. The owner reads it in the admin. No Google Analytics, no cookie banner.
 - **Owner-editable in the admin (Q11, narrowed 2026-11-12):** price range, contact values, owner first name and reply time. Page texts and photos stay in the repository and change through issues.
 - **SEO groundwork:** a title and description per page aimed at niche local keywords (Q12), such as "house for rent Hoa Xuan", "garden house Da Nang" and "monthly house rental Da Nang". Also a canonical URL from `SITE_BASE_URL`, `sitemap.xml`, Open Graph tags, and one switch (`INDEXING_ENABLED`) that keeps `robots.txt` and the meta robots tag on "noindex" until the owner turns it on.
@@ -46,7 +46,7 @@ The site is written **as if the house is finished (Q15)**, in **English only (Q5
 ## Out of scope for phase 1
 
 - Vietnamese pages (a later phase).
-- Booking, availability calendar, online payment, enquiry form.
+- Booking, availability calendar, online payment. (The enquiry form was added on 2026-11-16: `docs/intent/enquiry-form.md`.)
 - Blog or journal, and a CMS for page texts.
 - Being indexed by search engines before real photos exist.
 - Own domain and paid hosting (kept on the free plans for now).
@@ -80,7 +80,7 @@ Order: 1 → 2 → 3, then 4. Epic 4 depends only on 1 and 2, so it can run besi
 
 - **Phase 2: real photos and going public.** Replace the stand-ins with real photos and remove their labels. Turn on `INDEXING_ENABLED`, submit the sitemap to Google Search Console, and add `LodgingBusiness` structured data with real details. Decide whether to leave Render's free plan (cold starts), then run a speed check.
 - **Phase 3: Vietnamese.** Add `/vi/` pages with the same content, a language switch and hreflang. Vietnamese keywords, for example "thuê nhà nguyên căn Hòa Xuân" and "nhà vườn cho thuê Đà Nẵng".
-- **Phase 4 (optional, by need).** Own domain with 301 redirects from onrender.com, an enquiry form, a journal.
+- **Phase 4 (optional, by need).** Own domain with 301 redirects from onrender.com, a journal. (The enquiry form moved earlier: `docs/intent/enquiry-form.md`, 2026-11-16.)
 
 ## Content from the owner (2026-11-11)
 
