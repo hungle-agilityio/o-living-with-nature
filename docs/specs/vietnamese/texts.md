@@ -114,7 +114,7 @@ Every photo of `src/pages/photos.py`; a photo added later without a Vietnamese a
 | English | Vietnamese |
 |---|---|
 | 03 · to stay a long while | 03 · thuê dài lâu |
-| rent (heading) | giá thuê |
+| The *rent* (heading) | Giá *thuê* |
 | Price line: From 13–14 *million* VND *a month* (one price: From 13 *million* VND *a month*) | Từ 13–14 *triệu* đồng *mỗi tháng* (một giá: Từ 13 *triệu* đồng *mỗi tháng*) |
 | Ask me about the rent (no price) | Hỏi mình về giá thuê nhé |
 | Call (button) | Gọi điện |
