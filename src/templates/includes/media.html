@@ -1,4 +1,4 @@
-{% comment %}
+{% load texts %}{% comment %}
 The media slot: one fixed-ratio place for a photo or a muted looping video.
 
   ratio         CSS aspect ratio, for example "4 / 3" (default "3 / 2")
@@ -20,13 +20,13 @@ With no photo and no video the slot shows the empty state.
       <source src="{{ video }}" type="video/mp4" media="(prefers-reduced-motion: no-preference)">{% else %}<source src="{{ video }}" media="(prefers-reduced-motion: no-preference)">{% endif %}
     </video>
     {% if photo %}<img class="media__poster" src="{{ photo }}" alt="{{ alt }}"{% if width %} width="{{ width }}"{% endif %}{% if height %} height="{{ height }}"{% endif %}{% if not eager %} loading="lazy"{% endif %}>{% endif %}
-    {% if illustrative %}<span class="media__chip">Illustrative video</span>{% endif %}
+    {% if illustrative %}<span class="media__chip">{% text "shell" "chip_video" %}</span>{% endif %}
   </div>
   {% if illustrative and credit %}<figcaption class="media__credit">{{ credit }}</figcaption>{% endif %}
 {% elif photo %}
   <div class="media__box" style="aspect-ratio: {{ ratio|default:'3 / 2' }}">
     <img src="{{ photo }}" alt="{{ alt }}"{% if width %} width="{{ width }}"{% endif %}{% if height %} height="{{ height }}"{% endif %}{% if not eager %} loading="lazy"{% endif %}>
-    {% if illustrative %}<span class="media__chip">Illustrative photo</span>{% endif %}
+    {% if illustrative %}<span class="media__chip">{% text "shell" "chip_photo" %}</span>{% endif %}
   </div>
   {% if illustrative and credit %}<figcaption class="media__credit">{{ credit }}</figcaption>{% endif %}
 {% else %}

@@ -7,7 +7,8 @@ from django import template
 from django.templatetags.static import static
 
 from pages import floor_plan as floor_plan_service
-from pages import photos
+from pages import language, photos
+from pages.templatetags.texts import alt_text
 
 register = template.Library()
 
@@ -22,43 +23,48 @@ def photo(context: template.Context, key: str, ratio: str = "3 / 2") -> dict[str
     entry = photos.photo(key)
     if entry is None:
         return {"ratio": ratio}
+    lang = language.of_context(context)
     return {
         "ratio": ratio,
+        "lang": lang,
         "photo": static(entry.path),
-        "alt": entry.alt,
+        "alt": alt_text(entry, lang),
         "width": entry.width,
         "height": entry.height,
         "eager": _first_photo_of_the_page(context),
         "illustrative": entry.illustrative,
-        "credit": entry.credit,
+        "credit": language.credit_for(entry.credit, lang),
     }
 
 
-@register.inclusion_tag("includes/media.html")
-def area_loop(ratio: str = "16 / 9") -> dict[str, Any]:
+@register.inclusion_tag("includes/media.html", takes_context=True)
+def area_loop(context: template.Context, ratio: str = "16 / 9") -> dict[str, Any]:
     """The slot's values for the Hòa Xuân loop; a missing file gives the empty state. The
     poster stands in for the video under reduced motion, so it always loads lazily."""
     loop = photos.area_loop()
     if loop is None:
         return {"ratio": ratio}
+    lang = language.of_context(context)
     return {
         "ratio": ratio,
+        "lang": lang,
         "video": static(loop.mp4),
         "webm": static(loop.webm),
         "photo": static(loop.poster),
-        "alt": loop.label,
+        "alt": alt_text(loop, lang),
         "width": loop.width,
         "height": loop.height,
         "eager": False,
         "illustrative": loop.illustrative,
-        "credit": loop.credit,
+        "credit": language.credit_for(loop.credit, lang),
     }
 
 
-@register.inclusion_tag("includes/floor_plan.html")
-def floor_plan() -> dict[str, Any]:
+@register.inclusion_tag("includes/floor_plan.html", takes_context=True)
+def floor_plan(context: template.Context) -> dict[str, Any]:
     """The blocks of the walk through the house, each with the address of its photo, if any."""
     return {
+        "lang": language.of_context(context),
         "blocks": [
             {
                 "name": block.name,
@@ -67,7 +73,7 @@ def floor_plan() -> dict[str, Any]:
                 "href": static(block.photo.path) if block.photo else None,
             }
             for block in floor_plan_service.blocks()
-        ]
+        ],
     }
 
 

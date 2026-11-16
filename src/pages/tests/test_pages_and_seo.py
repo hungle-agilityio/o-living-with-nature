@@ -209,8 +209,8 @@ def test_sitemap_lists_the_canonical_address_of_the_home_page_and_nothing_else(
     root = ElementTree.fromstring(response.content)
     namespace = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
     assert root.tag == f"{namespace}urlset"
-    assert [child.tag for child in root] == [f"{namespace}url"]
-    assert [loc.text for loc in root.iter(f"{namespace}loc")] == [BASE + "/"]
+    assert [child.tag for child in root] == [f"{namespace}url"] * 2
+    assert [loc.text for loc in root.iter(f"{namespace}loc")] == [BASE + "/", BASE + "/vi/"]
 
 
 def test_sitemap_escapes_the_base_url() -> None:

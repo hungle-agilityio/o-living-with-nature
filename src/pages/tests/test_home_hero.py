@@ -222,6 +222,7 @@ def test_page_loads_the_one_plain_script_deferred(client: Client) -> None:
         "/static/js/floor-plan.js",
         "/static/js/area-band.js",
         "/static/js/contact-bar.js",
+        "/static/js/lang-switch.js",
         "/static/js/count.js",
     ]
     for script in scripts:
