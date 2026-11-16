@@ -63,8 +63,9 @@ def area_loop(context: template.Context, ratio: str = "16 / 9") -> dict[str, Any
 @register.inclusion_tag("includes/floor_plan.html", takes_context=True)
 def floor_plan(context: template.Context) -> dict[str, Any]:
     """The blocks of the walk through the house, each with the address of its photo, if any."""
+    lang = language.of_context(context)
     return {
-        "lang": language.of_context(context),
+        "lang": lang,
         "blocks": [
             {
                 "name": block.name,
@@ -72,7 +73,7 @@ def floor_plan(context: template.Context) -> dict[str, Any]:
                 "photo": block.photo,
                 "href": static(block.photo.path) if block.photo else None,
             }
-            for block in floor_plan_service.blocks()
+            for block in floor_plan_service.blocks(language=lang)
         ],
     }
 
