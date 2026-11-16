@@ -174,6 +174,7 @@ def test_by_channel_and_by_place_rows_in_order_with_zeros() -> None:
     assert places == [
         ("Phone bar", 5, 0, 5),
         ("Rent chapter", 0, 2, 3),
+        ("FAQ chapter", 0, 0, 0),
         ("Contact chapter", 4, 0, 4),
     ]
 
