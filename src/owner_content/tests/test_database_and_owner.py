@@ -137,6 +137,7 @@ def test_debug_off_without_any_database_value_warns(
     settings: Settings, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     settings.DEBUG = False
+    monkeypatch.setenv("RENDER", "true")
     monkeypatch.delenv("DATABASE_URL", raising=False)
     monkeypatch.delenv("DJANGO_DB_NAME", raising=False)
 
@@ -151,6 +152,7 @@ def test_database_url_of_spaces_only_counts_as_not_set_and_warns(
     settings: Settings, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     settings.DEBUG = False
+    monkeypatch.setenv("RENDER", "true")
     monkeypatch.setenv("DATABASE_URL", "  ")
     monkeypatch.delenv("DJANGO_DB_NAME", raising=False)
 
@@ -174,6 +176,7 @@ def test_debug_on_or_either_value_set_does_not_warn(
     value: str | None,
 ) -> None:
     settings.DEBUG = debug
+    monkeypatch.setenv("RENDER", "true")
     monkeypatch.delenv("DATABASE_URL", raising=False)
     monkeypatch.delenv("DJANGO_DB_NAME", raising=False)
     if name and value:
@@ -183,7 +186,7 @@ def test_debug_on_or_either_value_set_does_not_warn(
 
 
 def test_manage_check_shows_the_warning_and_still_passes() -> None:
-    done = _manage("check", DJANGO_DEBUG="0", DJANGO_SECRET_KEY="only-for-this-test")
+    done = _manage("check", DJANGO_DEBUG="0", DJANGO_SECRET_KEY="only-for-this-test", RENDER="true")
 
     assert done.returncode == 0, done.stderr
     assert f"(config.W001) {W001_MESSAGE}" in done.stderr

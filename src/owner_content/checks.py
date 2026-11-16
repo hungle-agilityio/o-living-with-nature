@@ -21,10 +21,13 @@ def database_url_is_set(
     """Warn when production (debug off) would run on the default SQLite file.
 
     A warning, not an error: the app still starts. `DJANGO_DB_NAME` means someone chose the
-    SQLite file on purpose (a local check with debug off), so it is quiet too.
+    SQLite file on purpose (a local check with debug off), so it is quiet too. It also stays
+    quiet unless `RENDER` is set: the release check runs on the Mac mini, not on Render.
     """
     # Stripped like the settings do: a DATABASE_URL of spaces only is not a database address.
     database_url = os.environ.get("DATABASE_URL", "").strip()
     if settings.DEBUG or database_url or os.environ.get("DJANGO_DB_NAME"):
+        return []
+    if not os.environ.get("RENDER", "").strip():
         return []
     return [Warning(W001_MESSAGE, id="config.W001")]

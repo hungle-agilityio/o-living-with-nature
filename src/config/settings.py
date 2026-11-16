@@ -141,7 +141,13 @@ STORAGES = {
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# HSTS for subdomains and preload is a choice for later (ADR-031), so these two warnings stay quiet.
+SILENCED_SYSTEM_CHECKS = ["security.W005", "security.W021"]
+
 if not DEBUG:
+    SECURE_HSTS_SECONDS = 31536000  # one year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+    SECURE_HSTS_PRELOAD = False
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     # On by default; only a local run on plain http (the browser check) switches it off.
     SECURE_SSL_REDIRECT = env_bool("DJANGO_SECURE_SSL_REDIRECT", True)
