@@ -86,9 +86,6 @@ def credit_for(credit: str, lang: str) -> str:
 
 
 def daypart_labels(lang: str) -> str:
-    """The labels of the four themes as JSON, safe inside a single-quoted HTML attribute."""
+    """The labels of the four themes as JSON; the template's autoescape makes it safe to show."""
     words = texts("shell", lang)
-    text = json.dumps({name: words[f"daypart_{name}"] for name in _THEMES}, ensure_ascii=False)
-    return (
-        text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("'", "&#x27;")
-    )
+    return json.dumps({name: words[f"daypart_{name}"] for name in _THEMES}, ensure_ascii=False)
