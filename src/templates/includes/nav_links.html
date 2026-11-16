@@ -1,7 +1,7 @@
-<ul class="nav-links">
-  <li><a href="/#house">The house</a></li>
-  <li><a href="/#hoa-xuan">Hòa Xuân</a></li>
-  <li><a href="/#rent">Rent</a></li>
-  <li><a href="/#faq">FAQ</a></li>
-  <li><a href="/#contact" class="nav-links__contact">Contact</a></li>
+{% load texts %}<ul class="nav-links">
+  <li><a href="{{ home_path }}#house">{% text "shell" "menu_house" %}</a></li>
+  <li><a href="{{ home_path }}#hoa-xuan">{% text "shell" "menu_hoa_xuan" %}</a></li>
+  <li><a href="{{ home_path }}#rent">{% text "shell" "menu_rent" %}</a></li>
+  <li><a href="{{ home_path }}#faq">{% text "shell" "menu_faq" %}</a></li>
+  <li><a href="{{ home_path }}#contact" class="nav-links__contact">{% text "shell" "menu_contact" %}</a></li>
 </ul>

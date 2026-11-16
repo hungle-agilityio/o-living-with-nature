@@ -291,6 +291,30 @@ body {
   padding: var(--space-2) 0;
 }
 
+/* Language switch (vietnamese AC6): "EN · VI" between the links and the phone menu. The
+   current language is plain text, underlined; the other one is a link, fainter. */
+
+.lang-switch {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.lang-switch a {
+  text-decoration: none;
+  opacity: 0.55;
+}
+
+.lang-switch a:hover,
+.lang-switch a:focus-visible {
+  opacity: 1;
+}
+
+.lang-switch__current {
+  opacity: 1;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+
 /* Main */
 
 .site-main {
@@ -721,6 +745,12 @@ html.hero-flight .hero__ln:last-child {
 
   .nav-menu {
     display: block;
+  }
+
+  /* On one line between the clock line and the Menu button, with room before Menu. */
+  .lang-switch {
+    margin-left: auto;
+    margin-right: var(--space-1);
   }
 
   .button {

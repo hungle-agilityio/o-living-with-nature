@@ -19,6 +19,12 @@
   var preview = line.hasAttribute("data-preview");
   var shift = sent - Date.now(); // the server's time minus the device's, at load
   var timer = 0;
+  var labels = {}; // the theme names in the page language, from data-labels (JSON)
+  try {
+    labels = JSON.parse(line.getAttribute("data-labels") || "{}");
+  } catch (error) {
+    labels = {}; // the capitalised theme name stands in
+  }
 
   function two(value) {
     return (value < 10 ? "0" : "") + value;
@@ -48,11 +54,11 @@
       }
     }
     var clock = two(here.getUTCHours()) + ":" + two(here.getUTCMinutes());
-    var label = theme ? theme.charAt(0).toUpperCase() + theme.slice(1) : "";
+    var label = labels[theme] || (theme ? theme.charAt(0).toUpperCase() + theme.slice(1) : "");
     // Only the clock and the label change; the words in between stay as the server wrote them.
     var text = line.textContent
       .replace(/\d\d:\d\d/, clock)
-      .replace(/\u00b7 \w+\s*$/, "\u00b7 " + label);
+      .replace(/· [^·]+$/, "· " + label);
     if (text !== line.textContent) {
       line.textContent = text;
     }

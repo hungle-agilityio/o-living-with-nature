@@ -167,7 +167,7 @@ def test_sitemap_lists_only_the_home_page(client: Client, settings: Settings) ->
     root = ElementTree.fromstring(client.get("/sitemap.xml").content)
 
     namespace = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
-    assert [loc.text for loc in root.iter(f"{namespace}loc")] == [f"{BASE}/"]
+    assert [loc.text for loc in root.iter(f"{namespace}loc")] == [f"{BASE}/", f"{BASE}/vi/"]
 
 
 # AC5

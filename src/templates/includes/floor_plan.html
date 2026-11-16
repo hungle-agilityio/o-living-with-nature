@@ -1,4 +1,4 @@
-{% load static %}{% comment %}
+{% load static texts %}{% comment %}
 The walk through the house (one-page spec AC16, AC17): a schematic of the parts of the house in
 HTML and CSS, front garden first. A block with a photo is a link to the photo file; with a
 script (js/floor-plan.js) the photo opens in the dialog below instead. Rendered by the tag
@@ -16,7 +16,7 @@ script (js/floor-plan.js) the photo opens in the dialog below instead. Rendered 
 </figure>
 <dialog class="floor-plan__dialog" aria-label="Photo">
   <figure class="media">
-    <div class="media__box floor-plan__box"><span class="media__chip">Illustrative photo</span></div>
+    <div class="media__box floor-plan__box"><span class="media__chip">{% text "shell" "chip_photo" %}</span></div>
     <figcaption class="media__credit"></figcaption>
   </figure>
   <form method="dialog">

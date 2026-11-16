@@ -8,14 +8,26 @@ from xml.sax.saxutils import escape
 from django.conf import settings
 
 from owner_content.services import SiteSettingsValue
+from pages import language
+from pages.texts import shell
 
-SITE_NAME = "Ở — Living with Nature"
+SITE_NAME = shell.EN["site_name"]
 OG_TYPE = "website"
 
 ROBOTS_INDEX = "index, follow"
 ROBOTS_NOINDEX = "noindex, nofollow"
 
 SITEMAP_PATH = "/sitemap.xml"
+
+# The home page in each language lists the same alternates (hreflang, path); the paths come
+# from `pages.language`, the one place that names the address of each language.
+VI_PREFIX = language.home_path(language.VI).rstrip("/")
+ALTERNATE_PATHS: tuple[tuple[str, str], ...] = (
+    (language.EN, language.home_path(language.EN)),
+    (language.VI, language.home_path(language.VI)),
+    ("x-default", language.home_path(language.EN)),
+)
+XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml"
 
 SCHEMA_CONTEXT = "https://schema.org"
 SCHEMA_TYPE = "LodgingBusiness"
@@ -49,6 +61,7 @@ class Head:
     site_name: str = SITE_NAME
     og_type: str = OG_TYPE
     site_verification: str = ""
+    alternates: tuple[tuple[str, str], ...] = ()
 
 
 # The pages of phase 1, in the order of the sitemap: the one page `/` (the old page addresses
@@ -56,11 +69,8 @@ class Head:
 PAGES: dict[str, Page] = {
     "home": Page(
         path="/",
-        title="Ở — Living with Nature · Garden house for rent in Hòa Xuân, Đà Nẵng",
-        description=(
-            "A whole garden house with two bedrooms, rented by the month in Hòa Xuân, Đà Nẵng. "
-            "From 13–14 million VND a month, minimum stay one month."
-        ),
+        title=shell.EN["seo_title"],
+        description=shell.EN["seo_description"],
     ),
 }
 
@@ -77,15 +87,29 @@ def robots_value(indexing_enabled: bool | None = None) -> str:
     return ROBOTS_INDEX if enabled else ROBOTS_NOINDEX
 
 
-def head_for(name: str) -> Head:
-    """The search tags of the page with this name; an unknown name is a KeyError."""
+def head_for(name: str, lang: str | None = None) -> Head:
+    """The search tags of the page with this name in `lang` (default: the current language);
+    an unknown name is a KeyError. Both languages list the same alternates."""
     page = PAGES[name]
+    alternates = tuple((hreflang, canonical_url(path)) for hreflang, path in ALTERNATE_PATHS)
+    if language.normalise(lang or language.current()) == language.VI:
+        words = shell.VI
+        return Head(
+            title=words["seo_title"],
+            description=words["seo_description"],
+            canonical=canonical_url(VI_PREFIX + page.path),
+            robots=robots_value(),
+            site_name=words["site_name"],
+            site_verification=settings.GOOGLE_SITE_VERIFICATION,
+            alternates=alternates,
+        )
     return Head(
         title=page.title,
         description=page.description,
         canonical=canonical_url(page.path),
         robots=robots_value(),
         site_verification=settings.GOOGLE_SITE_VERIFICATION,
+        alternates=alternates,
     )
 
 
@@ -114,14 +138,22 @@ def structured_data(head: Head, owner: SiteSettingsValue) -> str:
 
 
 def sitemap_xml(base_url: str | None = None) -> str:
-    """`sitemap.xml`: the canonical address of each page (only `/`) and nothing else."""
+    """`sitemap.xml`: the canonical address of the home page in each language, each with the
+    alternates of both; it does not depend on the active language."""
+    links = "".join(
+        f'<xhtml:link rel="alternate" hreflang="{escape(hreflang)}" '
+        f'href="{escape(canonical_url(path, base_url), {chr(34): "&quot;"})}"/>'
+        for hreflang, path in ALTERNATE_PATHS
+    )
     urls = "".join(
-        f"  <url><loc>{escape(canonical_url(page.path, base_url))}</loc></url>\n"
+        f"  <url><loc>{escape(canonical_url(prefix + page.path, base_url))}</loc>{links}</url>\n"
         for page in PAGES.values()
+        for prefix in ("", VI_PREFIX)
     )
     return (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
+        f'xmlns:xhtml="{XHTML_NAMESPACE}">\n'
         f"{urls}"
         "</urlset>\n"
     )

@@ -27,6 +27,7 @@ class Photo:
     source: str
     illustrative: bool = True
     licence: str = LICENCE
+    alt_vi: str = ""
 
     @property
     def path(self) -> str:
@@ -46,6 +47,7 @@ class AreaLoop:
     source: str
     illustrative: bool = True
     licence: str = LICENCE
+    label_vi: str = ""
 
     @property
     def mp4(self) -> str:
