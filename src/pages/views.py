@@ -12,8 +12,9 @@ def home(request: HttpRequest) -> HttpResponse:
     """The whole site: the hero and the five chapters, with the owner's settings (one query)."""
     theme = daypart_for(timezone.now(), request.GET.dict()).theme
     loops = hero.loops()
-    head = seo.head_for("home", language.of_request(request))
-    owner = site_settings()
+    lang = language.of_request(request)
+    head = seo.head_for("home", lang)
+    owner = site_settings(lang)
     context = {
         "seo": head,
         "hero": loops.get(theme),

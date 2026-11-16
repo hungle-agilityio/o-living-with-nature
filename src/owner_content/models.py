@@ -57,7 +57,14 @@ class SiteSettings(models.Model):
         "Usual reply time",
         max_length=60,
         default="within an hour",
-        help_text='Shown as "I usually reply …", for example "within an hour".',
+        help_text='Shown on the English page as "I usually reply …", for example "within an hour".',
+    )
+    reply_time_vi = models.CharField(
+        "Usual reply time (Vietnamese)",
+        max_length=60,
+        default="trong vòng một giờ",
+        help_text='Shown on the Vietnamese page as "Mình thường trả lời …", '
+        'for example "trong vòng một giờ".',
     )
 
     class Meta:
