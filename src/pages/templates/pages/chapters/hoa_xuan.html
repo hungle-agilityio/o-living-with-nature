@@ -1,19 +1,19 @@
-{% load photos static %}
-{# Chapter 02, Hòa Xuân: the band of design-match design.md, "02 ở gần", then photos and Maps. #}
+{% load photos static texts %}
+{# Chapter 02, Hòa Xuân: the band of design-match design.md, "02 ở gần", then photos and Maps. Texts: pages.texts.hoa_xuan. #}
 <section id="hoa-xuan" class="chapter chapter--hoa-xuan" aria-labelledby="hoa-xuan-heading">
   <div class="hoa-xuan__band">
     <div class="hoa-xuan__head reveal">
-      <p class="chapter-marker label muted">&nbsp;&#x309; 02 · close by</p>
+      <p class="chapter-marker label muted">&nbsp;&#x309; {% text "hoa_xuan" "marker" %}</p>
       <p class="chapter-word" lang="vi">ở gần</p>
       <h2 id="hoa-xuan-heading">Hòa <span class="accent">Xuân</span></h2>
     </div>
     <div class="hoa-xuan__foot">
-      <div class="reveal"><p class="hoa-xuan__line quote">Everything you need day to day is close by.</p></div>
+      <div class="reveal"><p class="hoa-xuan__line quote">{% text "hoa_xuan" "line" %}</p></div>
       <div class="reveal"><ul class="hoa-xuan__travel">
-        <li><span class="hoa-xuan__place label">Supermarket</span><span class="hoa-xuan__dot" aria-hidden="true"> · </span><span class="hoa-xuan__time">across the road</span></li>
-        <li><span class="hoa-xuan__place label">Market</span><span class="hoa-xuan__dot" aria-hidden="true"> · </span><span class="hoa-xuan__time">about 10 min</span></li>
-        <li><span class="hoa-xuan__place label">Beach</span><span class="hoa-xuan__dot" aria-hidden="true"> · </span><span class="hoa-xuan__time">about 10 min</span></li>
-        <li><span class="hoa-xuan__place label">Airport</span><span class="hoa-xuan__dot" aria-hidden="true"> · </span><span class="hoa-xuan__time">about 15 min</span></li>
+        <li><span class="hoa-xuan__place label">{% text "hoa_xuan" "place_supermarket" %}</span><span class="hoa-xuan__dot" aria-hidden="true"> · </span><span class="hoa-xuan__time">{% text "hoa_xuan" "time_supermarket" %}</span></li>
+        <li><span class="hoa-xuan__place label">{% text "hoa_xuan" "place_market" %}</span><span class="hoa-xuan__dot" aria-hidden="true"> · </span><span class="hoa-xuan__time">{% text "hoa_xuan" "time_market" %}</span></li>
+        <li><span class="hoa-xuan__place label">{% text "hoa_xuan" "place_beach" %}</span><span class="hoa-xuan__dot" aria-hidden="true"> · </span><span class="hoa-xuan__time">{% text "hoa_xuan" "time_beach" %}</span></li>
+        <li><span class="hoa-xuan__place label">{% text "hoa_xuan" "place_airport" %}</span><span class="hoa-xuan__dot" aria-hidden="true"> · </span><span class="hoa-xuan__time">{% text "hoa_xuan" "time_airport" %}</span></li>
       </ul></div>
     </div>
     <div class="hoa-xuan__loop">{% area_loop ratio="auto" %}</div>
@@ -25,7 +25,7 @@
       <li class="reveal">{% photo "street" ratio="4 / 3" %}</li>
       <li class="reveal">{% photo "beach-sunset" ratio="4 / 3" %}</li>
     </ul>
-    <a class="button button--secondary hoa-xuan__maps reveal" href="https://www.google.com/maps/search/?api=1&amp;query=H%C3%B2a%20Xu%C3%A2n%2C%20%C4%90%C3%A0%20N%E1%BA%B5ng" target="_blank" rel="noopener">Hòa Xuân on Google Maps ↗</a>
+    <a class="button button--secondary hoa-xuan__maps reveal" href="https://www.google.com/maps/search/?api=1&amp;query=H%C3%B2a%20Xu%C3%A2n%2C%20%C4%90%C3%A0%20N%E1%BA%B5ng" target="_blank" rel="noopener">{% text "hoa_xuan" "maps" %}</a>
   </div>
 </section>
 <script src="{% static 'js/area-band.js' %}" defer></script>

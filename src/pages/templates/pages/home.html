@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static texts %}
 {% block styles %}
   <link rel="stylesheet" href="{% static 'css/chapters/house.css' %}">
   <link rel="stylesheet" href="{% static 'css/chapters/hoa_xuan.css' %}">
@@ -18,10 +18,12 @@
 {% include "pages/chapters/faq.html" %}
 {% include "pages/chapters/contact.html" %}
 {# The phone contact bar (one-page AC12), on phones only. No channel, no bar. #}
-{% if owner.channels %}<nav class="contact-bar" aria-label="Contact">
+{% if owner.channels %}<nav class="contact-bar" aria-label="{% text "shell" "contact_bar_label" %}">
   {% include "includes/contact_buttons.html" with place="bar" %}
 </nav>
 <script src="{% static 'js/contact-bar.js' %}" defer></script>{% endif %}
+{# The language switch keeps the visitor's place (vietnamese AC8): a link hash set on scroll. #}
+<script src="{% static 'js/lang-switch.js' %}" defer></script>
 {# The counter (contact-counter AC9): a view on load, a click per contact button; also with no channel. #}
 <script src="{% static 'js/count.js' %}" defer></script>
 {% endblock %}

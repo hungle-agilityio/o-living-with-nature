@@ -85,6 +85,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "pages.context_processors.daypart",
+                "pages.context_processors.page_language",
             ],
         },
     },
@@ -118,9 +119,9 @@ def database_config(environ: Mapping[str, str]) -> dict[str, Any]:
 
 DATABASES = {"default": database_config(os.environ)}
 
-# Phase 1 is English only, at the site root; Vietnamese comes later under /vi/.
+# English at the site root, Vietnamese under /vi/ (i18n_patterns needs "vi" in LANGUAGES).
 LANGUAGE_CODE = "en"
-LANGUAGES = [("en", "English")]
+LANGUAGES = [("en", "English"), ("vi", "Tiếng Việt")]
 TIME_ZONE = "Asia/Ho_Chi_Minh"
 USE_I18N = True
 USE_TZ = True

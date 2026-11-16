@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.utils.safestring import mark_safe
 
 from owner_content.services import site_settings
-from pages import hero, seo
+from pages import hero, language, seo
 from pages.daypart import daypart_for
 
 
@@ -12,8 +12,9 @@ def home(request: HttpRequest) -> HttpResponse:
     """The whole site: the hero and the five chapters, with the owner's settings (one query)."""
     theme = daypart_for(timezone.now(), request.GET.dict()).theme
     loops = hero.loops()
-    head = seo.head_for("home")
-    owner = site_settings()
+    lang = language.of_request(request)
+    head = seo.head_for("home", lang)
+    owner = site_settings(lang)
     context = {
         "seo": head,
         "hero": loops.get(theme),

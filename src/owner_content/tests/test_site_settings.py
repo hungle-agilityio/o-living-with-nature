@@ -48,6 +48,7 @@ def form_data(**changes: Any) -> dict[str, Any]:
         "zalo": "0945 384 500",
         "owner_first_name": "Bún",
         "reply_time": "within an hour",
+        "reply_time_vi": "trong vòng một giờ",
     }
     data.update(changes)
     return data
@@ -76,7 +77,7 @@ def form_data(**changes: Any) -> dict[str, Any]:
         (
             "reply_time",
             "Usual reply time",
-            'Shown as "I usually reply …", for example "within an hour".',
+            'Shown on the English page as "I usually reply …", for example "within an hour".',
         ),
     ],
 )

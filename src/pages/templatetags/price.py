@@ -1,5 +1,6 @@
-"""`{{ owner.price_line|price_accents }}`: the price line with "million" and "a month" in the
-accent (design-match design.md, "03 ở lâu"). The text itself stays as written."""
+"""`{{ owner.price_line|price_accents }}`: the price line with "million" and "a month" (on /vi/
+"triệu" and "mỗi tháng") in the accent (design-match design.md, "03 ở lâu"). The text itself
+stays as written."""
 
 import re
 
@@ -9,7 +10,7 @@ from django.utils.safestring import SafeString, mark_safe
 
 register = template.Library()
 
-_ACCENT_WORDS = re.compile(r"\b(million|a month)\b")
+_ACCENT_WORDS = re.compile(r"\b(million|a month|triệu|mỗi tháng)\b")
 
 
 @register.filter

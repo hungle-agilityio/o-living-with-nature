@@ -82,7 +82,7 @@ def _media(**context: object) -> str:
 
 def test_settings_are_english_only() -> None:
     assert settings.LANGUAGE_CODE == "en"
-    assert [code for code, _name in settings.LANGUAGES] == ["en"]
+    assert [code for code, _name in settings.LANGUAGES] == ["en", "vi"]
 
 
 def test_page_is_english_whatever_the_browser_asks(client: Client) -> None:
@@ -157,6 +157,7 @@ def test_page_uses_no_javascript(client: Client) -> None:
         '<script src="/static/js/floor-plan.js" defer>',
         '<script src="/static/js/area-band.js" defer>',
         '<script src="/static/js/contact-bar.js" defer>',
+        '<script src="/static/js/lang-switch.js" defer>',
         '<script src="/static/js/count.js" defer>',
     ]
     assert "onclick" not in html

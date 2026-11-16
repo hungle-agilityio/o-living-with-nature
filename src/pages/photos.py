@@ -27,6 +27,7 @@ class Photo:
     source: str
     illustrative: bool = True
     licence: str = LICENCE
+    alt_vi: str = ""
 
     @property
     def path(self) -> str:
@@ -46,6 +47,7 @@ class AreaLoop:
     source: str
     illustrative: bool = True
     licence: str = LICENCE
+    label_vi: str = ""
 
     @property
     def mp4(self) -> str:
@@ -71,6 +73,7 @@ _LIST = (
         width=1200,
         height=1600,
         alt="An indoor atrium with hanging plants under a skylight",
+        alt_vi="Khoảng thông tầng với cây treo dưới giếng trời",
         credit="Photo: Fatmanur Üzüm / Pexels",
         source=f"{_PEXELS}/photo/indoor-atrium-with-hanging-plants-and-skylight-34545626/",
     ),
@@ -79,6 +82,7 @@ _LIST = (
         width=1600,
         height=1060,
         alt="A shaded back veranda with wicker chairs and tropical plants",
+        alt_vi="Hiên sau rợp bóng với ghế mây và cây nhiệt đới",
         credit=_ANONYMOUS,
         source=(
             f"{_PEXELS}/photo/backyard-of-modern-residential-villa-with-comfy-wicker-furniture"
@@ -90,6 +94,7 @@ _LIST = (
         width=1600,
         height=1280,
         alt="A woman selling vegetables on a street market",
+        alt_vi="Người phụ nữ bán rau ở chợ",
         credit=_ANONYMOUS,
         source=f"{_PEXELS}/photo/woman-selling-vegetables-on-the-street-19442603/",
     ),
@@ -98,6 +103,7 @@ _LIST = (
         width=1600,
         height=1067,
         alt="A calm bedroom with a made bed",
+        alt_vi="Phòng ngủ yên tĩnh với chiếc giường đã dọn",
         credit=_ANONYMOUS,
         source=f"{_PEXELS}/photo/bed-2563388/",
     ),
@@ -106,6 +112,7 @@ _LIST = (
         width=1200,
         height=1600,
         alt="Houseplants by a window next to an armchair",
+        alt_vi="Cây xanh bên cửa sổ cạnh chiếc ghế bành",
         credit=_ANONYMOUS,
         source=(
             f"{_PEXELS}/photo/houseplants-by-the-window-and-next-to-an-armchair-in-a-room-16269026/"
@@ -116,6 +123,7 @@ _LIST = (
         width=901,
         height=1600,
         alt="A sunlit kitchen with wooden furniture",
+        alt_vi="Căn bếp đầy nắng với đồ gỗ",
         credit=_ANONYMOUS,
         source=f"{_PEXELS}/photo/cozy-sunlit-kitchen-with-wooden-furniture-29148452/",
     ),
@@ -124,6 +132,7 @@ _LIST = (
         width=1067,
         height=1600,
         alt="The shadow of a palm leaf on a wall",
+        alt_vi="Bóng lá cọ trên tường",
         credit="Photo: Tim Mossholder / Pexels",
         source=f"{_PEXELS}/photo/shadow-of-palm-leaf-on-a-wall-14046313/",
     ),
@@ -132,6 +141,7 @@ _LIST = (
         width=1067,
         height=1600,
         alt="String lights in a garden in the evening",
+        alt_vi="Dây đèn trong vườn lúc chiều tối",
         credit="Photo: CharlieBrown / Pexels",
         source=f"{_PEXELS}/photo/photo-of-string-light-12125368/",
     ),
@@ -140,6 +150,7 @@ _LIST = (
         width=1600,
         height=1067,
         alt="A quiet Vietnamese village street",
+        alt_vi="Con đường làng yên tĩnh",
         credit=_ANONYMOUS,
         source=f"{_PEXELS}/photo/quaint-vietnamese-village-street-scene-in-quy-nh-n-30228478/",
     ),
@@ -148,6 +159,7 @@ _LIST = (
         width=1067,
         height=1600,
         alt="Walking barefoot on the beach at dawn",
+        alt_vi="Đi chân trần trên biển lúc bình minh",
         credit=_ANONYMOUS,
         source=f"{_PEXELS}/photo/woman-walking-barefoot-on-beach-at-dawn-18790609/",
     ),
@@ -156,6 +168,7 @@ _LIST = (
         width=1600,
         height=856,
         alt="People walking on the beach at sunset",
+        alt_vi="Người đi dạo trên biển lúc hoàng hôn",
         credit="Photo: Gorazd Nikoloski / Pexels",
         source=f"{_PEXELS}/photo/people-walking-on-beach-at-sunset-15506230/",
     ),
@@ -164,6 +177,7 @@ _LIST = (
         width=1067,
         height=1600,
         alt="A house with lit windows at night",
+        alt_vi="Ngôi nhà sáng đèn cửa sổ lúc đêm",
         credit=_ANONYMOUS,
         source=f"{_PEXELS}/photo/a-low-angle-shot-of-a-house-at-night-9592440/",
     ),
@@ -172,6 +186,7 @@ _LIST = (
         width=1067,
         height=1600,
         alt="A cup of tea by the window",
+        alt_vi="Tách trà bên cửa sổ",
         credit=_ANONYMOUS,
         source=f"{_PEXELS}/photo/cozy-moment-with-tea-by-the-window-31146888/",
     ),
@@ -180,6 +195,7 @@ _LIST = (
         width=1600,
         height=1067,
         alt="A staircase with a wooden railing and plants in a light house",
+        alt_vi="Cầu thang tay vịn gỗ và cây xanh trong căn nhà sáng",
         credit=_ANONYMOUS,
         source=(
             f"{_PEXELS}/photo/staircase-with-wooden-railing-decorated-with-plants-in-light"
@@ -195,6 +211,7 @@ AREA_LOOP = AreaLoop(
     width=1280,
     height=720,
     label="Riding a motorbike along a road",
+    label_vi="Chạy xe máy trên đường",
     credit="Video: Pexels",
     source=f"{_PEXELS}/video/traveling-the-road-in-motorcycle-4309733/",
 )

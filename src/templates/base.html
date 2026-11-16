@@ -1,12 +1,14 @@
-{% load static %}<!doctype html>
+{% load static texts %}<!doctype html>
 <html lang="{{ LANGUAGE_CODE|default:'en' }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}{{ seo.title|default:"Ở — Living with Nature" }}{% endblock %}</title>
+  <title>{% block title %}{% if seo.title %}{{ seo.title }}{% else %}{% text "shell" "site_name" %}{% endif %}{% endblock %}</title>
   {% block robots %}{% if seo %}<meta name="robots" content="{{ seo.robots }}">{% endif %}{% endblock %}
   {% if seo %}<meta name="description" content="{{ seo.description }}">
   <link rel="canonical" href="{{ seo.canonical }}">
+  {% for hreflang, href in seo.alternates %}<link rel="alternate" hreflang="{{ hreflang }}" href="{{ href }}">
+  {% endfor %}
   <meta property="og:title" content="{{ seo.title }}">
   <meta property="og:description" content="{{ seo.description }}">
   <meta property="og:url" content="{{ seo.canonical }}">
