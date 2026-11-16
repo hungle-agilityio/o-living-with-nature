@@ -7,7 +7,7 @@
     <nav class="nav-row" aria-label="{% text "shell" "nav_label" %}">
       {% include "includes/nav_links.html" %}
     </nav>
-    <p class="lang-switch label" aria-label="{{ lang_switch.label }}"><span class="lang-switch__current">{{ lang_switch.current }}</span> <span aria-hidden="true">·</span> <a href="{{ lang_switch.href }}" hreflang="{{ lang_switch.lang }}" lang="{{ lang_switch.lang }}">{{ lang_switch.name }}</a></p>
+    <p class="lang-switch label" role="group" aria-label="{{ lang_switch.label }}"><span class="lang-switch__current">{{ lang_switch.current }}</span> <span aria-hidden="true">·</span> <a href="{{ lang_switch.href }}" hreflang="{{ lang_switch.lang }}" lang="{{ lang_switch.lang }}">{{ lang_switch.name }}</a></p>
     <details class="nav-menu">
       <summary>{% text "shell" "menu_button" %}</summary>
       <nav aria-label="{% text "shell" "menu_nav_label" %}">
