@@ -20,6 +20,7 @@ class DailyCount(models.Model):
     class Place(models.TextChoices):
         BAR = "bar", "Phone bar"
         RENT = "rent", "Rent chapter"
+        FAQ = "faq", "FAQ chapter"
         CONTACT = "contact", "Contact chapter"
 
     day = models.DateField()
