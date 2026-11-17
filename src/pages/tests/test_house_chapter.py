@@ -118,10 +118,10 @@ def test_collage_scrolls_sideways_inside_its_box_on_narrow_screens() -> None:
     assert re.search(r"scroll-snap-type:\s*x mandatory", collage.group(1))
     room = re.search(r"\.house__room\s*\{([^}]*)\}", narrow.group(1))
     assert room, "no card rule at 760px or less"
-    assert re.search(r"240px", room.group(1))
+    assert re.search(r"84%", room.group(1))
     box = re.search(r"\.house__room \.media__box\s*\{([^}]*)\}", narrow.group(1))
     assert box, "no card height at 760px or less"
-    assert re.search(r"height:\s*320px", box.group(1))
+    assert re.search(r"aspect-ratio:\s*4 / 5", box.group(1))
     assert "100vw" not in css
 
 
