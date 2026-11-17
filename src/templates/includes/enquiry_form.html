@@ -1,0 +1,64 @@
+{% load texts enquiry %}{% comment %}
+The enquiry form of chapter 05 (issue #117): four states from `enquiry_state`: form, errors,
+sent, paused. Presentation only; the error lines come from the `enquiry` tags. No link, no
+script, no CSRF token. The trap is never given a value.
+{% endcomment %}{% if enquiry_state == "sent" %}
+  <div class="enquiry enquiry--sent" id="enquiry" role="status">
+    <p class="enquiry__lead label">{% text "enquiry" "sent_label" %}</p>
+    <p class="enquiry__thanks">{% text "enquiry" "thanks" %} <span class="accent">{{ owner.reply_line }}</span></p>
+  </div>
+{% elif enquiry_state == "paused" %}
+  <div class="enquiry enquiry--paused" id="enquiry" role="status">
+    <p class="enquiry__lead label">{% text "enquiry" "paused_label" %}</p>
+    <p class="enquiry__note">{% if owner.channels %}{% text "enquiry" "paused" %}{% else %}{% text "enquiry" "paused_no_channel" %}{% endif %}</p>
+  </div>
+{% else %}
+  <div class="enquiry reveal" id="enquiry">
+    <p class="enquiry__lead label">{% text "enquiry" "lead" %}</p>
+    {% if enquiry_state == "errors" %}<p class="enquiry__summary" role="alert">{% enquiry_summary enquiry_form %}</p>{% endif %}
+    <form class="enquiry-form" method="post" action="{{ home_path }}enquiry/#enquiry" novalidate>
+      <div class="enquiry__grid">
+        <div class="field{% if enquiry_form.name.errors %} field--error{% endif %}">
+          <label for="enq-name">{% text "enquiry" "name" %}</label>
+          <input id="enq-name" name="name" type="text" maxlength="80" required autocomplete="name" data-sensitive value="{{ enquiry_form.name.value|default:'' }}"{% if enquiry_form.name.errors %} aria-invalid="true" aria-describedby="enq-name-error"{% endif %}>
+          {% if enquiry_form.name.errors %}<p class="field__error" id="enq-name-error">{% enquiry_error enquiry_form "name" %}</p>{% endif %}
+        </div>
+        <div class="field{% if enquiry_form.reply_to.errors %} field--error{% endif %}">
+          <label for="enq-reply">{% text "enquiry" "reply_to" %}</label>
+          <input id="enq-reply" name="reply_to" type="text" maxlength="120" required placeholder="{% text "enquiry" "reply_to_placeholder" %}" data-sensitive value="{{ enquiry_form.reply_to.value|default:'' }}"{% if enquiry_form.reply_to.errors %} aria-invalid="true" aria-describedby="enq-reply-error"{% endif %}>
+          {% if enquiry_form.reply_to.errors %}<p class="field__error" id="enq-reply-error">{% enquiry_error enquiry_form "reply_to" %}</p>{% endif %}
+        </div>
+        <div class="field{% if enquiry_form.move_in.errors %} field--error{% endif %}">
+          <label for="enq-month">{% text "enquiry" "move_in" %} <span class="opt">{% text "enquiry" "optional" %}</span></label>
+          {% with chosen=enquiry_form.move_in.value|default:"" %}
+          <select id="enq-month" name="move_in"{% if enquiry_form.move_in.errors %} aria-invalid="true" aria-describedby="enq-month-error"{% endif %}>
+            {% for value, label in enquiry_form.fields.move_in.choices %}<option value="{{ value }}"{% if value == chosen %} selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          {% endwith %}
+          {% if enquiry_form.move_in.errors %}<p class="field__error" id="enq-month-error">{% enquiry_error enquiry_form "move_in" %}</p>{% endif %}
+        </div>
+        <div class="field{% if enquiry_form.stay.errors %} field--error{% endif %}">
+          <label for="enq-stay">{% text "enquiry" "stay" %} <span class="opt">{% text "enquiry" "optional" %}</span></label>
+          {% with chosen=enquiry_form.stay.value|default:"" %}
+          <select id="enq-stay" name="stay"{% if enquiry_form.stay.errors %} aria-invalid="true" aria-describedby="enq-stay-error"{% endif %}>
+            {% for value, label in enquiry_form.fields.stay.choices %}<option value="{{ value }}"{% if value == chosen %} selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          {% endwith %}
+          {% if enquiry_form.stay.errors %}<p class="field__error" id="enq-stay-error">{% enquiry_error enquiry_form "stay" %}</p>{% endif %}
+        </div>
+        <div class="field field--wide{% if enquiry_form.message.errors %} field--error{% endif %}">
+          <label for="enq-message">{% text "enquiry" "message" %}</label>
+          <textarea id="enq-message" name="message" rows="4" maxlength="1000" required placeholder="{% text "enquiry" "message_placeholder" %}" data-sensitive{% if enquiry_form.message.errors %} aria-invalid="true" aria-describedby="enq-message-error"{% endif %}>{{ enquiry_form.message.value|default:"" }}</textarea>
+          {% if enquiry_form.message.errors %}<p class="field__error" id="enq-message-error">{% enquiry_error enquiry_form "message" %}</p>{% endif %}
+        </div>
+      </div>
+      <div class="enquiry__trap" aria-hidden="true"><label>{% text "enquiry" "trap" %}<input name="website" tabindex="-1" autocomplete="off"></label></div>
+      <div class="enquiry__foot">
+        <p class="enquiry__privacy">{% text "enquiry" "privacy" %}</p>
+        <button class="button" type="submit">{% text "enquiry" "send" %}</button>
+      </div>
+    </form>
+  </div>
+{% endif %}
