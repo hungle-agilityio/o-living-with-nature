@@ -23,6 +23,8 @@ class SiteSettingsValue:
     reply_line: str
     # The owner's first name alone, for the signature under the rent quote.
     first_name: str = ""
+    journal_en: bool = False
+    journal_vi: bool = False
 
 
 @dataclass(frozen=True)
@@ -70,6 +72,8 @@ def site_settings(language: str = "en") -> SiteSettingsValue:
             record.reply_time_vi if vietnamese else record.reply_time
         ),
         first_name=record.owner_first_name,
+        journal_en=record.journal_en,
+        journal_vi=record.journal_vi,
     )
 
 
