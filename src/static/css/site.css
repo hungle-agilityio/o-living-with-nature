@@ -218,6 +218,11 @@ body {
   min-width: 0;
 }
 
+/* The short clock line ("14:52 · Day"): phones only, in place of the long one. */
+.site-header__short {
+  display: none;
+}
+
 .wordmark {
   font-family: var(--font-serif);
   font-weight: 500;
@@ -750,6 +755,20 @@ html.hero-flight .hero__ln:last-child {
 
   .nav-menu {
     display: block;
+  }
+
+  /* One header line: the wordmark centred in the row, the short clock instead of the long one. */
+  .site-header__left {
+    align-items: center;
+  }
+
+  .site-header__time {
+    display: none;
+  }
+
+  .site-header__short {
+    display: inline;
+    white-space: nowrap;
   }
 
   /* On one line between the clock line and the Menu button, with room before Menu. */
