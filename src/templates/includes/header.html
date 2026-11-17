@@ -2,7 +2,8 @@
   <div class="site-header__row">
     <div class="site-header__left">
       <a class="wordmark" href="{{ home_path }}">Ở</a>
-      {% if daypart %}<span class="site-header__time label" data-now="{{ daypart.now_ms }}"{% if daypart.preview %} data-preview{% endif %} data-labels='{{ daypart_labels }}'>{% text "shell" "clock_line" clock=daypart.clock %} · {% text "shell" "daypart_"|add:daypart.theme %}</span>{% endif %}
+      {% if daypart %}<span class="site-header__time label" data-now="{{ daypart.now_ms }}"{% if daypart.preview %} data-preview{% endif %} data-labels='{{ daypart_labels }}'>{% text "shell" "clock_line" clock=daypart.clock %} · {% text "shell" "daypart_"|add:daypart.theme %}</span>
+      <span class="site-header__short label">{{ daypart.clock }} · {% text "shell" "daypart_"|add:daypart.theme %}</span>{% endif %}
     </div>
     <nav class="nav-row" aria-label="{% text "shell" "nav_label" %}">
       {% include "includes/nav_links.html" %}
