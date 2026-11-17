@@ -66,6 +66,8 @@ class SiteSettings(models.Model):
         help_text='Shown on the Vietnamese page as "Mình thường trả lời …", '
         'for example "trong vòng một giờ".',
     )
+    journal_en = models.BooleanField(default=False, editable=False)
+    journal_vi = models.BooleanField(default=False, editable=False)
 
     class Meta:
         verbose_name = "Site settings"

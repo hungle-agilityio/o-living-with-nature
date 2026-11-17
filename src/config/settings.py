@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "owner_content",
     "counter",
     "enquiries",
+    "journal",
 ]
 
 # Sessions, accounts and messages are for the admin only. They are lazy: a public page never
