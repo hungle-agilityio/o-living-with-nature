@@ -1,0 +1,22 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <style>
+    .enq-msg { white-space: pre-wrap; max-width: 640px; line-height: 1.6 }
+  </style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+&rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+&rsaquo; Enquiry from <span data-sensitive>{{ original.name }}</span>
+</div>
+{% endblock %}
+
+{% block content_title %}<h1>Enquiry from <span data-sensitive>{{ original.name }}</span></h1>{% endblock %}
+
+{% block object-tools %}{% endblock %}
