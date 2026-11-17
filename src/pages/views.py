@@ -6,6 +6,7 @@ from django.utils.safestring import mark_safe
 from counter.services import today_in_da_nang
 from enquiries.forms import EnquiryForm
 from enquiries.services import sent_state
+from journal import context as journal_context
 from owner_content.services import site_settings
 from pages import hero, language, seo
 from pages.daypart import daypart_for
@@ -36,6 +37,7 @@ def render_home(
         "hero": loops.get(theme),
         "hero_loops": loops,
         "owner": owner,
+        "journal_path": journal_context.journal_path(lang, owner),
         # seo.structured_data already escaped <, > and & for a script element.
         "structured_data": mark_safe(seo.structured_data(head, owner)),
         "enquiry_form": enquiry_form,

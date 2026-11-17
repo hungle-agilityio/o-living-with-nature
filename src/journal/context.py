@@ -55,6 +55,11 @@ def _has_journal(owner: SiteSettingsValue, lang: str) -> bool:
     return owner.journal_vi if language.normalise(lang) == language.VI else owner.journal_en
 
 
+def journal_path(lang: str, owner: SiteSettingsValue) -> str:
+    """The menu and footer link to the journal of the language, or "" when it has no note."""
+    return list_path(lang) if _has_journal(owner, lang) else ""
+
+
 def _other(lang: str) -> str:
     return language.EN if language.normalise(lang) == language.VI else language.VI
 
@@ -105,6 +110,8 @@ def list_context(lang: str, number: int, owner: SiteSettingsValue) -> dict[str, 
         "seo": head,
         "owner": owner,
         "lang_switch": language.switch_to(lang, switch_href),
+        "journal_path": list_path(lang),
+        "journal_current": True,
         "lead": lead,
         "cards": [card(post, lang) for post in page.object_list],
         "newer_url": _page_link(lang, page.number - 1) if page.has_previous() else "",
@@ -144,6 +151,8 @@ def note_context(lang: str, slug: str, owner: SiteSettingsValue) -> dict[str, An
         "seo": head,
         "owner": owner,
         "lang_switch": language.switch_to(lang, switch_href),
+        "journal_path": list_path(lang),
+        "journal_current": True,
         "note": note,
         "body_html": to_html(post.body_vi if vietnamese else post.body),
         "list_url": list_path(lang),
