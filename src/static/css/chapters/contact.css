@@ -104,3 +104,121 @@
     transition: none;
   }
 }
+
+/* The enquiry form (issue #117). */
+.enquiry {
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid rgba(244, 240, 232, 0.22);
+  max-width: 960px;
+}
+
+.enquiry__lead {
+  margin: 0 0 var(--space-3);
+}
+
+.enquiry__summary {
+  margin: 0 0 var(--space-3);
+  padding: var(--space-2);
+  border: 1px solid #e8a87c;
+  color: #f0b48c;
+}
+
+.enquiry__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3) var(--space-4);
+}
+
+.enquiry .field--wide {
+  grid-column: 1 / -1;
+}
+
+.enquiry label {
+  display: block;
+  font-variant-caps: all-small-caps;
+  font-size: calc(12px / 0.7);
+  line-height: 1.4;
+  letter-spacing: calc(12px * 0.22);
+}
+
+.enquiry .opt {
+  font-variant-caps: normal;
+  font-size: 12px;
+  letter-spacing: 0;
+  opacity: 0.7;
+}
+
+.enquiry input,
+.enquiry select,
+.enquiry textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-1) 0;
+  border: 0;
+  border-bottom: 1px solid rgba(244, 240, 232, 0.45);
+  border-radius: 0;
+  background: transparent;
+  color: var(--paper);
+  font: inherit;
+  font-size: 16px;
+}
+
+.enquiry select option {
+  color: #1f2a22;
+}
+
+.enquiry .field--error input,
+.enquiry .field--error select,
+.enquiry .field--error textarea {
+  border-bottom-color: #e8a87c;
+}
+
+.enquiry .field__error {
+  margin: var(--space-1) 0 0;
+  color: #f0b48c;
+}
+
+.enquiry__trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.enquiry__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.enquiry__privacy {
+  margin: 0;
+  max-width: 560px;
+}
+
+.enquiry__thanks {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: 30px;
+  line-height: 1.3;
+}
+
+@media (max-width: 760px) {
+  .enquiry__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .enquiry .button {
+    width: 100%;
+  }
+
+  .enquiry__thanks {
+    font-size: 24px;
+  }
+}

@@ -287,7 +287,9 @@ def test_m30_no_channel_on_the_vietnamese_page(client: Client) -> None:
     assert "contact-bar" not in html
     faq = _plain(_chapter(html, "faq"))
     assert f"{VI_GREETING} {VI_REPLY}" in faq
-    assert _plain(_chapter(html, "contact")).endswith(VI_NO_CHANNEL)
+    assert _plain(_chapter(html, "contact").split('<div class="enquiry', 1)[0]).endswith(
+        VI_NO_CHANNEL
+    )
     assert VI_NO_CHANNEL in _chapter(html, "contact")
     assert "Contact details are on their way." not in html
 

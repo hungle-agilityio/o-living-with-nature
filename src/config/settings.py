@@ -36,6 +36,9 @@ ALLOWED_HOSTS = [
 # The public base URL of the site, in one place (canonical links, sitemap, hreflang).
 SITE_BASE_URL = os.environ.get("SITE_BASE_URL", "http://localhost:8000").rstrip("/")
 
+# The owner's private ntfy topic address; empty means no push on a new enquiry.
+NTFY_TOPIC_URL = os.environ.get("NTFY_TOPIC_URL", "").strip()
+
 # The one switch that lets search engines in: on only when the value is exactly "1". It stays
 # off until real photos replace the stand-ins.
 INDEXING_ENABLED = os.environ.get("INDEXING_ENABLED", "") == "1"
@@ -54,6 +57,7 @@ INSTALLED_APPS = [
     "pages",
     "owner_content",
     "counter",
+    "enquiries",
 ]
 
 # Sessions, accounts and messages are for the admin only. They are lazy: a public page never
