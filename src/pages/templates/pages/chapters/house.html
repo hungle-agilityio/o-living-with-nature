@@ -1,4 +1,4 @@
-{% load photos texts %}
+{% load photos static texts %}
 {# Chapter 01, the house (design-match spec AC18 to AC21; design.md, "01 ở nhà"). Texts: pages.texts.house. #}
 <section id="house" class="chapter chapter--house" aria-labelledby="house-heading">
   <div class="house__top">
@@ -49,3 +49,4 @@
     {% floor_plan %}
   </div>
 </section>
+<script src="{% static 'js/house-carousel.js' %}" defer></script>

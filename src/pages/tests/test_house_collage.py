@@ -214,13 +214,13 @@ def test_collage_scrolls_sideways_in_cards_on_narrow_screens() -> None:
     collage = _rule(narrow, ".house__collage")
     assert re.search(r"overflow-x:\s*auto", collage)
     assert re.search(r"scroll-snap-type:\s*x mandatory", collage)
-    assert re.search(r"max-width:\s*100%", collage)
+    assert re.search(r"scroll-padding:\s*0 var\(--side\)", collage)
     room = _rule(narrow, ".house__room")
-    assert re.search(r"240px", room)
+    assert re.search(r"flex:\s*0 0 84%", room)
     assert re.search(r"margin-top:\s*0", room)
-    assert re.search(r"scroll-snap-align:\s*start", room)
+    assert re.search(r"scroll-snap-align:\s*center", room)
     box = _rule(narrow, ".house__room .media__box")
-    assert re.search(r"height:\s*320px", box)
+    assert re.search(r"aspect-ratio:\s*4 / 5", box)
 
 
 def test_facts_row_has_two_columns_and_56px_numbers_on_narrow_screens() -> None:

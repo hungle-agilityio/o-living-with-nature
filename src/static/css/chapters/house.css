@@ -3,8 +3,10 @@
    1–7) beside the owner line and "Why Ở" (columns 8–12, at the bottom); the room collage (18px
    gaps, 72px below), each photo at its own height and shift; the facts row (96px below); then the
    layout list and "Included" (columns 1–5) beside the walk through the house (columns 7–12).
-   Phones: one column, the collage a sideways row of 240px by 320px cards in its own box, the
-   facts row on two columns. */
+   Phones (760px or less): one column; the collage a swipe carousel that runs to the screen edges,
+   one card of 84% of the row at a time (photo box 4 / 5), snapping to the centre one card per
+   swipe, with no rise and no zoom inside it; under it the pager ("1 / 5" and five dots), built by
+   js/house-carousel.js and hidden on desktop; the facts row on two columns. */
 
 .chapter--house {
   position: relative;
@@ -106,6 +108,11 @@
 
 .house__room-label {
   margin: 12px 0 0;
+}
+
+/* The pager of the phone carousel (built by js/house-carousel.js): shown at 760px or less only. */
+.house__pager {
+  display: none;
 }
 
 /* The facts row */
@@ -295,22 +302,91 @@ a.floor-plan__room:focus-visible {
   .house__collage {
     display: flex;
     gap: 12px;
-    max-width: 100%;
-    margin-top: var(--space-5);
-    padding-bottom: var(--space-1);
+    margin: var(--space-5) calc(-1 * var(--side)) 0;
+    padding: 0 var(--side);
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
+    scroll-padding: 0 var(--side);
+    scrollbar-width: none;
+  }
+
+  .house__collage::-webkit-scrollbar {
+    display: none;
   }
 
   .house__room {
-    flex: 0 0 240px;
+    flex: 0 0 84%;
     margin-top: 0;
-    scroll-snap-align: start;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
   }
 
+  /* !important: media.html writes each photo's own ratio inline on the box. */
   .house__room .media__box {
-    height: 320px;
+    height: auto;
+    aspect-ratio: 4 / 5 !important;
+  }
+
+  /* No rise, no fade and no zoom inside the carousel: they made the swipe jerk. */
+  html.motion .house__collage .house__room.reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  html.motion .house__collage .media__box img {
+    animation: none;
+  }
+
+  .house__pager {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-top: 14px;
+  }
+
+  .house__count {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .house__dots {
+    display: flex;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .house__dots button {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit; /* the dot is currentColor: the ink of the daypart, not the button's own */
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+  }
+
+  .house__dots button::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.28;
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease;
+  }
+
+  .house__dots button[aria-current="true"]::before {
+    opacity: 1;
+    transform: scale(1.25);
   }
 
   .house__facts {
@@ -319,5 +395,11 @@ a.floor-plan__room:focus-visible {
 
   .house__fact-number {
     font-size: 56px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .house__dots button::before {
+    transition: none;
   }
 }
