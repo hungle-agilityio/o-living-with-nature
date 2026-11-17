@@ -11,6 +11,7 @@ class DailyCount(models.Model):
     class Kind(models.TextChoices):
         VIEW = "view", "View"
         CLICK = "click", "Click"
+        MESSAGE = "message", "Message"
 
     class Channel(models.TextChoices):
         CALL = "call", "Call"
@@ -24,8 +25,8 @@ class DailyCount(models.Model):
         CONTACT = "contact", "Contact chapter"
 
     day = models.DateField()
-    kind = models.CharField(max_length=5, choices=Kind.choices)
-    # A view has an empty channel and place.
+    kind = models.CharField(max_length=7, choices=Kind.choices)
+    # A view has an empty channel and place; a message has an empty channel and place "contact".
     channel = models.CharField(max_length=8, choices=Channel.choices, blank=True)
     place = models.CharField(max_length=7, choices=Place.choices, blank=True)
     count = models.PositiveIntegerField(default=0)

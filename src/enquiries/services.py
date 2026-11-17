@@ -1,4 +1,4 @@
-"""Storing an enquiry: the trap, the daily limit and the 12-month keep.
+"""Storing an enquiry: the trap, the daily limit, the 12-month keep and the message count.
 
 Nothing here logs (the push in `notify` logs only an error class name):
 a name, a reply-to or a message never reaches a log record.
@@ -8,7 +8,10 @@ from datetime import datetime, time, timedelta
 from enum import StrEnum
 
 from django.http import QueryDict
+from django.utils import timezone
 
+from counter.models import DailyCount
+from counter.services import record_count
 from enquiries.forms import EnquiryForm, EnquiryStateForm
 from enquiries.models import Enquiry
 from enquiries.notify import push_new_enquiry
@@ -42,7 +45,9 @@ def start_of_day(now: datetime) -> datetime:
 def store_enquiry(form: EnquiryForm, *, language: str, from_owner: bool, now: datetime) -> Outcome:
     """Store a valid form, unless it is a trap or today's limit is reached.
 
-    `from_owner` is not used yet: the count of #119 leaves the owner's own tests out.
+    A stored enquiry adds one to today's message count (Đà Nẵng date of `now`). `from_owner`
+    (a logged-in staff user) is stored and pushed but not counted. Trapped and paused posts
+    count nothing.
     """
     if is_trapped(form):
         return Outcome.TRAPPED
@@ -58,6 +63,13 @@ def store_enquiry(form: EnquiryForm, *, language: str, from_owner: bool, now: da
         message=data["message"],
         language=language,
     )
+    if not from_owner:
+        record_count(
+            kind=DailyCount.Kind.MESSAGE,
+            channel="",
+            place=DailyCount.Place.CONTACT,
+            day=timezone.localtime(now, DA_NANG).date(),
+        )
     push_new_enquiry()
     return Outcome.STORED
 

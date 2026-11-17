@@ -8,7 +8,10 @@ from counter.models import DailyCount
 
 
 class CountForm(forms.Form):
-    kind = forms.ChoiceField(choices=DailyCount.Kind.choices)
+    # Messages are counted by the server when an enquiry is stored, never through /count/.
+    kind = forms.ChoiceField(
+        choices=[(k.value, k.label) for k in (DailyCount.Kind.VIEW, DailyCount.Kind.CLICK)]
+    )
     channel = forms.ChoiceField(choices=DailyCount.Channel.choices, required=False)
     place = forms.ChoiceField(choices=DailyCount.Place.choices, required=False)
 

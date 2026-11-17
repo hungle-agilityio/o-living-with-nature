@@ -22,6 +22,7 @@ NO_VIEWS = "–"
 
 VIEW = Q(kind=DailyCount.Kind.VIEW)
 CLICK = Q(kind=DailyCount.Kind.CLICK)
+MESSAGE = Q(kind=DailyCount.Kind.MESSAGE)
 
 
 @dataclass(frozen=True)
@@ -29,6 +30,7 @@ class Totals:
     label: str
     views: int
     clicks: int
+    messages: int = 0
 
     @property
     def rate(self) -> str:
@@ -51,6 +53,7 @@ class MonthRow:
     whatsapp: int
     zalo: int
     clicks: int
+    messages: int = 0
 
 
 @dataclass(frozen=True)
@@ -59,11 +62,12 @@ class Report:
     by_channel: tuple[PeriodRow, ...]
     by_place: tuple[PeriodRow, ...]
     by_month: tuple[MonthRow, ...]
+    messages: PeriodRow = PeriodRow("Form (messages sent)", 0, 0, 0)
 
     @property
     def is_empty(self) -> bool:
         total = self.summary[2]
-        return total.views == 0 and total.clicks == 0
+        return total.views == 0 and total.clicks == 0 and total.messages == 0
 
 
 def clicks_per_100(*, clicks: int, views: int) -> str:
@@ -104,6 +108,7 @@ def build_report() -> Report:
     for period, in_period in periods.items():
         sums[f"{period}_views"] = _count(in_period & VIEW)
         sums[f"{period}_clicks"] = _count(in_period & CLICK)
+        sums[f"{period}_messages"] = _count(in_period & MESSAGE)
         for value, _ in channels:
             sums[f"{period}_channel_{value}"] = _count(in_period & CLICK & Q(channel=value))
         for value, _ in places:
@@ -114,15 +119,16 @@ def build_report() -> Report:
         return PeriodRow(label, totals[f"this_{key}"], totals[f"last_{key}"], totals[f"all_{key}"])
 
     summary = (
-        Totals("This month", totals["this_views"], totals["this_clicks"]),
-        Totals("Last month", totals["last_views"], totals["last_clicks"]),
-        Totals("All time", totals["all_views"], totals["all_clicks"]),
+        Totals("This month", totals["this_views"], totals["this_clicks"], totals["this_messages"]),
+        Totals("Last month", totals["last_views"], totals["last_clicks"], totals["last_messages"]),
+        Totals("All time", totals["all_views"], totals["all_clicks"], totals["all_messages"]),
     )
     return Report(
         summary=summary,
         by_channel=tuple(row(str(label), f"channel_{value}") for value, label in channels),
         by_place=tuple(row(str(label), f"place_{value}") for value, label in places),
         by_month=_by_month(),
+        messages=row("Form (messages sent)", "messages"),
     )
 
 
@@ -138,13 +144,20 @@ def _by_month() -> tuple[MonthRow, ...]:
             whatsapp=_count(CLICK & Q(channel=channel.WHATSAPP)),
             zalo=_count(CLICK & Q(channel=channel.ZALO)),
             clicks=_count(CLICK),
+            messages=_count(MESSAGE),
         )
         .filter(total__gt=0)
         .order_by("-month")[:MONTHS_SHOWN]
     )
     return tuple(
         MonthRow(
-            month_label(r["month"]), r["views"], r["call"], r["whatsapp"], r["zalo"], r["clicks"]
+            month_label(r["month"]),
+            r["views"],
+            r["call"],
+            r["whatsapp"],
+            r["zalo"],
+            r["clicks"],
+            r["messages"],
         )
         for r in rows
     )
