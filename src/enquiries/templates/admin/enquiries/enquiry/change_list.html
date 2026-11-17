@@ -1,0 +1,35 @@
+{% extends "admin/change_list.html" %}
+{% load admin_list %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <style>
+    .enq-scroll { max-width: 100%; overflow-x: auto }
+    .enq-badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600 }
+    .enq-badge--new { background: #fff1c2; color: #6a4b00 }
+    .enq-badge--replied { background: #e3efe1; color: #2f5a2a }
+    .enq-note { margin: 16px 0; color: var(--body-quiet-color, #666) }
+  </style>
+{% endblock %}
+
+{% block content %}
+  {% if cl.full_result_count == 0 %}
+    <div id="content-main">
+      <p>No enquiries yet. They appear here when someone sends the form on the site.</p>
+      <p class="enq-note">Each enquiry is deleted 12 months after it arrived.</p>
+    </div>
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
+
+{% block result_list %}
+  {% if action_form and actions_on_top and cl.show_admin_actions %}{% admin_actions %}{% endif %}
+  <div class="enq-scroll">{% result_list cl %}</div>
+  {% if action_form and actions_on_bottom and cl.show_admin_actions %}{% admin_actions %}{% endif %}
+{% endblock %}
+
+{% block pagination %}
+  {{ block.super }}
+  <p class="enq-note">Newest first. Each enquiry is deleted 12 months after it arrived. The site never sends a reply for you: answer by email, WhatsApp or Zalo, then mark it as replied.</p>
+{% endblock %}
