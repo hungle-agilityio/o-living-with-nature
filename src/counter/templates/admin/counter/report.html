@@ -37,6 +37,7 @@
       <dl>
         <dt>Page views</dt><dd>{{ totals.views }}</dd>
         <dt>Contact clicks</dt><dd>{{ totals.clicks }}</dd>
+        <dt>Messages sent</dt><dd>{{ totals.messages }}</dd>
         <dt>clicks per 100 views</dt><dd>{{ totals.rate }}</dd>
       </dl>
     </section>
@@ -51,6 +52,7 @@
         {% for row in report.by_channel %}
         <tr><th scope="row">{{ row.label }}</th><td class="num">{{ row.this_month }}</td><td class="num">{{ row.last_month }}</td><td class="num">{{ row.all_time }}</td></tr>
         {% endfor %}
+        <tr><th scope="row">{{ report.messages.label }}</th><td class="num">{{ report.messages.this_month }}</td><td class="num">{{ report.messages.last_month }}</td><td class="num">{{ report.messages.all_time }}</td></tr>
       </tbody>
     </table>
   </div>
@@ -70,10 +72,10 @@
   <h2 class="counter-heading">By month</h2>
   <div class="counter-scroll">
     <table>
-      <thead><tr><th scope="col">Month</th><th scope="col" class="num">Views</th><th scope="col" class="num">Call</th><th scope="col" class="num">WhatsApp</th><th scope="col" class="num">Zalo</th><th scope="col" class="num">Total clicks</th></tr></thead>
+      <thead><tr><th scope="col">Month</th><th scope="col" class="num">Views</th><th scope="col" class="num">Call</th><th scope="col" class="num">WhatsApp</th><th scope="col" class="num">Zalo</th><th scope="col" class="num">Total clicks</th><th scope="col" class="num">Messages</th></tr></thead>
       <tbody>
         {% for row in report.by_month %}
-        <tr><th scope="row">{{ row.month }}</th><td class="num">{{ row.views }}</td><td class="num">{{ row.call }}</td><td class="num">{{ row.whatsapp }}</td><td class="num">{{ row.zalo }}</td><td class="num">{{ row.clicks }}</td></tr>
+        <tr><th scope="row">{{ row.month }}</th><td class="num">{{ row.views }}</td><td class="num">{{ row.call }}</td><td class="num">{{ row.whatsapp }}</td><td class="num">{{ row.zalo }}</td><td class="num">{{ row.clicks }}</td><td class="num">{{ row.messages }}</td></tr>
         {% endfor %}
       </tbody>
     </table>

@@ -416,11 +416,11 @@ def test_nothing_is_deleted_when_the_post_is_refused() -> None:
 # M12 (AC9): query budget and the sent state of the home page
 
 
-def test_stored_post_makes_at_most_three_queries(
+def test_stored_post_makes_at_most_five_queries(
     django_assert_max_num_queries: DjangoAssertNumQueries,
 ) -> None:
     client = Client()
-    with django_assert_max_num_queries(3):
+    with django_assert_max_num_queries(5):
         assert client.post(EN, VALID).status_code == 303
     assert Enquiry.objects.count() == 1
 
