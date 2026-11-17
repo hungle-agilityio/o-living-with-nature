@@ -75,6 +75,11 @@ def switch(lang: str) -> dict[str, str]:
     }
 
 
+def switch_to(lang: str, href: str) -> dict[str, str]:
+    """The language switch of `lang` whose link to the other language goes to `href`."""
+    return {**switch(lang), "href": href}
+
+
 def credit_for(credit: str, lang: str) -> str:
     """A credit in the page language: a leading `Photo: ` becomes `Ảnh: ` in Vietnamese."""
     if normalise(lang) == EN:

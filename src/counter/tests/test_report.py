@@ -176,6 +176,7 @@ def test_by_channel_and_by_place_rows_in_order_with_zeros() -> None:
         ("Rent chapter", 0, 2, 3),
         ("FAQ chapter", 0, 0, 0),
         ("Contact chapter", 4, 0, 4),
+        ("Journal notes", 0, 0, 0),
     ]
 
 

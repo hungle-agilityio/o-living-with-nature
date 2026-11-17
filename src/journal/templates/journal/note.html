@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static texts %}
+{% block styles %}<link rel="stylesheet" href="{% static 'css/journal.css' %}">{% endblock %}
+{% block content %}
+<article class="note">
+  <a class="note__back" href="{{ list_url }}">{% text "journal" "back" %}</a>
+  <p class="label muted"><time datetime="{{ note.iso_date }}">{{ note.date_label }}</time></p>
+  <h1 class="note__title">{{ note.title }}</h1>
+  {% if note.cover %}<div class="note__cover">
+    {% include "includes/media.html" with photo=note.cover_src alt=note.cover|alt_text:lang width=note.cover.width height=note.cover.height ratio=note.cover_ratio illustrative=note.cover.illustrative credit=note.cover.credit|credit_text:lang eager=True %}
+  </div>{% endif %}
+  <div class="note__body">{{ body_html }}</div>
+  <aside class="note-contact">
+    <p class="note-contact__line">{% text "journal" "contact_line" %}</p>
+    <p class="note-contact__price">{{ price_reply }}</p>
+    {% include "includes/contact_buttons.html" with place="journal" %}
+    <p class="note-contact__form"><a href="{{ home_path }}#enquiry">{% text "journal" "form_link" %}</a></p>
+  </aside>
+  {% if other %}<p class="note__more label muted">{% text "journal" "other" %} <a href="{{ other.url }}">{{ other.title }}</a></p>{% endif %}
+</article>
+<script src="{% static 'js/count.js' %}" defer></script>
+{% endblock %}
