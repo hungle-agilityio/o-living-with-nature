@@ -113,6 +113,30 @@ def head_for(name: str, lang: str | None = None) -> Head:
     )
 
 
+def page_head(
+    lang: str,
+    *,
+    title: str,
+    description: str,
+    path: str,
+    og_type: str,
+    alternates: tuple[tuple[str, str], ...],
+) -> Head:
+    """The search tags of a page outside `PAGES` (a journal page): `path` already carries the
+    `/vi` prefix in Vietnamese, and `alternates` holds full addresses (or nothing)."""
+    words = shell.VI if language.normalise(lang) == language.VI else shell.EN
+    return Head(
+        title=title,
+        description=description,
+        canonical=canonical_url(path),
+        robots=robots_value(),
+        site_name=words["site_name"],
+        og_type=og_type,
+        site_verification=settings.GOOGLE_SITE_VERIFICATION,
+        alternates=alternates,
+    )
+
+
 def structured_data(head: Head, owner: SiteSettingsValue) -> str:
     """The JSON-LD text of the page, safe to place inside a `<script>` element.
 

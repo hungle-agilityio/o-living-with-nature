@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static texts %}
+{% block styles %}<link rel="stylesheet" href="{% static 'css/journal.css' %}">{% endblock %}
+{% block content %}
+<div class="journal">
+  <header class="journal__head">
+    <p class="label muted">{% text "journal" "label" %}</p>
+    <h1 class="journal__title">{% text "journal" "heading" %}</h1>
+    <p class="journal__lead">{{ lead }}</p>
+  </header>
+  <ol class="journal__list">
+  {% for card in cards %}
+    <li class="note-card{% if not card.cover %} note-card--plain{% endif %}">
+      {% if card.cover %}<div class="note-card__cover">
+        {% include "includes/media.html" with photo=card.cover_src alt=card.cover|alt_text:lang width=card.cover.width height=card.cover.height ratio=card.cover_ratio illustrative=card.cover.illustrative credit=card.cover.credit|credit_text:lang eager=forloop.first %}
+      </div>{% endif %}
+      <div>
+        <p class="label muted"><time datetime="{{ card.iso_date }}">{{ card.date_label }}</time></p>
+        <h2><a href="{{ card.url }}">{{ card.title }}</a></h2>
+        <p>{{ card.summary }}</p>
+        <a class="more" href="{{ card.url }}">{% text "journal" "read" %}</a>
+      </div>
+    </li>
+  {% endfor %}
+  </ol>
+  {% if newer_url or older_url %}<nav class="journal__pages">
+    {% if newer_url %}<a href="{{ newer_url }}">{% text "journal" "newer" %}</a>{% else %}<span></span>{% endif %}
+    {% if older_url %}<a href="{{ older_url }}">{% text "journal" "older" %}</a>{% endif %}
+  </nav>{% endif %}
+</div>
+<script src="{% static 'js/count.js' %}" defer></script>
+{% endblock %}

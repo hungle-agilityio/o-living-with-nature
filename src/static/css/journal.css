@@ -1,0 +1,103 @@
+/* journal (/journal/): the list of notes and one note, from the prototype's journal block
+   (docs/design/prototype.html). No line-height below .9: lower values let Vietnamese marks
+   touch the line above. */
+
+.journal { max-width: 1080px; margin: 0 auto; }
+.journal__head { margin: 0 0 var(--space-6); }
+.journal__title {
+  text-transform: none;
+  font-variant-caps: all-small-caps;
+  font-size: calc(clamp(40px, 8vw, var(--size-headline)) / .7);
+  line-height: .9;
+  padding-top: .12em;
+  letter-spacing: -.021em;
+  margin: var(--space-2) 0 var(--space-4);
+}
+.journal__lead { max-width: 560px; margin: 0; opacity: .8; }
+.journal__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-6);
+}
+.journal__pages {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+.note-card {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--space-5);
+  align-items: center;
+  padding-top: var(--space-5);
+  border-top: 1px solid currentColor;
+  border-top-color: rgba(127, 127, 127, .3);
+}
+.note-card--plain { grid-template-columns: 1fr; }
+.note-card h2 {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  text-transform: none;
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 1.1;
+  margin: var(--space-1) 0 var(--space-2);
+}
+.note-card h2 a { color: inherit; text-decoration: none; }
+.note-card h2 a:hover { text-decoration: underline; text-underline-offset: .15em; }
+.note-card p { margin: 0 0 var(--space-2); max-width: 560px; }
+.note-card .more {
+  font-size: 14px;
+  letter-spacing: var(--spacing-label);
+  text-transform: uppercase;
+}
+
+.note { max-width: 720px; margin: 0 auto; }
+.note__back {
+  font-size: 14px;
+  letter-spacing: var(--spacing-label);
+  text-transform: uppercase;
+}
+.note__title {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  text-transform: none;
+  font-size: clamp(36px, 6vw, 64px);
+  line-height: 1.05;
+  margin: var(--space-2) 0 var(--space-4);
+}
+.note__cover { margin: 0 0 var(--space-5); }
+.note__body p { font-size: 19px; line-height: 1.65; margin: 0 0 var(--space-3); }
+.note__body h2 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  text-transform: none;
+  font-size: 26px;
+  margin: var(--space-5) 0 var(--space-2);
+}
+.note__body a { text-underline-offset: .15em; }
+
+.note-contact {
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid rgba(127, 127, 127, .3);
+}
+.note-contact__line {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: 30px;
+  line-height: 1.25;
+  margin: 0 0 var(--space-2);
+}
+.note-contact__price { margin: 0 0 var(--space-3); }
+.note-contact__form { margin: var(--space-3) 0 0; }
+.note__more { margin-top: var(--space-6); }
+
+@media (max-width: 760px) {
+  .note-card { grid-template-columns: 1fr; gap: var(--space-3); }
+  .note__body p { font-size: 17px; }
+  .note-contact .contact-buttons .button { flex: 1 1 auto; }
+}

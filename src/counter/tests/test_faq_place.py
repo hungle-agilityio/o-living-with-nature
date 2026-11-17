@@ -62,6 +62,7 @@ def test_place_has_four_values_in_order_and_keeps_max_length_7() -> None:
         ("rent", "Rent chapter"),
         ("faq", "FAQ chapter"),
         ("contact", "Contact chapter"),
+        ("journal", "Journal notes"),
     ]
     assert DailyCount._meta.get_field("place").max_length == 7
 
@@ -154,8 +155,9 @@ def test_report_has_the_faq_chapter_row_between_rent_and_contact(owner_client: C
         "Rent chapter",
         "FAQ chapter",
         "Contact chapter",
+        "Journal notes",
     ]
-    assert [r.this_month for r in report.by_place] == [5, 0, 3, 4]
+    assert [r.this_month for r in report.by_place] == [5, 0, 3, 4, 0]
     assert report.summary[0].clicks == 12
     assert "FAQ chapter" in report_html(owner_client)
 
