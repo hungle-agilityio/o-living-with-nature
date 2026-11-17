@@ -3,7 +3,7 @@
 :root {
   /* Fonts */
   --font-sans: "Be Vietnam Pro", system-ui, sans-serif;
-  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-serif: "Cormorant Garamond", "Times New Roman", Times, serif;
 
   /* Colours (the day theme until body[data-daypart] sets another; the footer and the contact
      band are fixed) */
@@ -644,6 +644,11 @@ html.hero-flight .hero__letter {
   right: 0;
   opacity: 0;
   pointer-events: none;
+}
+
+/* While hero.js waits for the letter's font, the still letter is not shown in another one. */
+html.hero-wait .hero__letter {
+  visibility: hidden;
 }
 
 html.hero-flight .hero__video {

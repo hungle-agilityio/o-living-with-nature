@@ -257,11 +257,13 @@ def test_pages_load_the_two_fonts_from_google_fonts(client: Client) -> None:
         for link in links
         if link.get("rel") == "stylesheet" and "fonts.googleapis.com" in (link["href"] or "")
     ]
-    assert len(fonts) == 1
+    assert len(fonts) == 2
     assert fonts[0].startswith("https://fonts.googleapis.com/css2?")
-    assert "family=Be+Vietnam+Pro" in fonts[0]
     assert "family=Cormorant+Garamond" in fonts[0]
-    assert "display=swap" in fonts[0]
+    assert "display=block" in fonts[0]
+    assert fonts[1].startswith("https://fonts.googleapis.com/css2?")
+    assert "family=Be+Vietnam+Pro" in fonts[1]
+    assert "display=swap" in fonts[1]
 
 
 def _section_css(css: str, selector: str) -> str:
