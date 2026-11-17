@@ -3,7 +3,8 @@
    The page works without this file: everything then shows at once. With JavaScript, an
    IntersectionObserver, and when the visitor has not asked for less motion, the class "motion"
    on <html> turns on the rules of motion.css: the header fades in, each element with the class
-   "reveal" rises into place when 12% of it is on screen, and photos in media slots zoom slowly. */
+   "reveal" rises into place when 12% of it is on screen, and photos in media slots zoom slowly.
+   A photo zooms only while its slot is within a tenth of the screen height of the screen. */
 (function () {
   "use strict";
 
@@ -55,6 +56,18 @@
   });
 
   root.classList.add("motion");
+
+  var near = new IntersectionObserver(
+    function (entries) {
+      entries.forEach(function (entry) {
+        entry.target.classList.toggle("is-near", entry.isIntersecting);
+      });
+    },
+    { rootMargin: "10% 0px" }
+  );
+  [].forEach.call(document.querySelectorAll(".media__box"), function (box) {
+    near.observe(box);
+  });
 
   blocks.forEach(function (element) {
     if (onScreen(element)) {

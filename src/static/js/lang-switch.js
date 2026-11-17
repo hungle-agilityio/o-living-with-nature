@@ -22,7 +22,16 @@
     link.setAttribute("href", base + hash);
   }
 
-  window.addEventListener("scroll", update, { passive: true });
+  var frame = 0;
+  function later() {
+    if (!frame) {
+      frame = window.requestAnimationFrame(function () {
+        frame = 0;
+        update();
+      });
+    }
+  }
+  window.addEventListener("scroll", later, { passive: true });
   ["pointerdown", "focus", "click"].forEach(function (name) {
     link.addEventListener(name, update);
   });
