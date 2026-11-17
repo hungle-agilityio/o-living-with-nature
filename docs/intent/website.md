@@ -47,7 +47,7 @@ The site is written **as if the house is finished (Q15)**, in **English only (Q5
 
 - Vietnamese pages (a later phase).
 - Booking, availability calendar, online payment. (The enquiry form was added on 2026-11-16: `docs/intent/enquiry-form.md`.)
-- Blog or journal, and a CMS for page texts.
+- A CMS for page texts. (The journal moved in on 2026-11-17: `docs/intent/journal.md`.)
 - Being indexed by search engines before real photos exist.
 - Own domain and paid hosting (kept on the free plans for now).
 - The house's construction progress or milestones (Q3 is set aside while the site is written as finished).
@@ -80,7 +80,7 @@ Order: 1 → 2 → 3, then 4. Epic 4 depends only on 1 and 2, so it can run besi
 
 - **Phase 2: real photos and going public.** Replace the stand-ins with real photos and remove their labels. Turn on `INDEXING_ENABLED`, submit the sitemap to Google Search Console, and add `LodgingBusiness` structured data with real details. Decide whether to leave Render's free plan (cold starts), then run a speed check.
 - **Phase 3: Vietnamese.** Add `/vi/` pages with the same content, a language switch and hreflang. Vietnamese keywords, for example "thuê nhà nguyên căn Hòa Xuân" and "nhà vườn cho thuê Đà Nẵng".
-- **Phase 4 (optional, by need).** Own domain with 301 redirects from onrender.com, a journal. (The enquiry form moved earlier: `docs/intent/enquiry-form.md`, 2026-11-16.)
+- **Phase 4 (optional, by need).** Own domain with 301 redirects from onrender.com. (The enquiry form moved earlier: `docs/intent/enquiry-form.md`, 2026-11-16; the journal on 2026-11-17: `docs/intent/journal.md`.)
 
 ## Content from the owner (2026-11-11)
 
