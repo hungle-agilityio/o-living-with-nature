@@ -42,9 +42,16 @@
     transition: none;
   }
 
-  /* Photos in media slots zoom slowly, clipped by the slot (overflow: hidden in site.css). */
+  /* Photos in media slots zoom slowly, clipped by the slot (overflow: hidden in site.css), only
+     while the slot is near the screen ("is-near", set by js/reveal.js). The play state comes
+     after the animation line, which would reset it. */
   html.motion .media__box img {
     animation: motion-zoom 22s ease-in-out infinite alternate;
+    animation-play-state: paused;
+  }
+
+  html.motion .media__box.is-near img {
+    animation-play-state: running;
   }
 
   @keyframes motion-zoom {

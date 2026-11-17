@@ -1,8 +1,7 @@
-/* Home hero "Through the Ở": the intro that plays by itself (design-match design.md, "Hero").
-   Without this file the still hero shows under a solid header. With hero files and motion, the
-   class "hero-flight" makes the hero one screen; a canvas draws the loop through the letter,
-   which grows on time until the loop fills the screen, then the heading rises line by line.
-   Any input jumps to the end. Nothing is stored. */
+/* Home hero "Through the Ở" (design-match design.md, "Hero"). Without this file: the still
+   hero. With motion, "hero-flight" makes the hero one screen; a canvas draws the loop through
+   the letter, which grows until the loop fills the screen, then the heading rises. Any input
+   jumps to the end. Nothing is stored. */
 (function () {
   "use strict";
 
@@ -10,10 +9,10 @@
   var GROW_START = 0.6; // seconds: the letter rests until here
   var GROW_END = 5.6; // the loop fills the screen here
   var INTRO_END = 7.0; // the shade and the heading are in by here
-  var LINE_DELAY = 0.15; // each heading line starts this long after the one before
+  var LINE_DELAY = 0.15; // between the starts of two heading lines
   var LINE_TIME = 1.0; // how long one line takes to rise
   var CUE_START = 6.9; // the cue fades in from here, in half a second
-  var FOOT_END = 1 / 6; // the dictionary line is gone after the first sixth of the growth
+  var FOOT_END = 1 / 6; // the dictionary line is gone by here (of the growth)
   var SAND = "#e9e2d3";
   var OUTLINE = "rgba(233, 226, 211, "; // Paper: the outline of the letter at night
   var LETTER = "Ở";
@@ -38,6 +37,9 @@
   var begun = 0; // the time the intro started
   var skipped = false;
   var ready = false; // go() has chosen: the font wait is over
+  var idle = false; // intro over, hero away: no frames until it is back
+  var watch = "IntersectionObserver" in window;
+  var seen = true; // the observer: the hero is near the screen
   var lines = [];
   var shown = {};
   // Set by measure(): the frame, the letter at rest, and the point the letter grows around.
@@ -52,7 +54,7 @@
     return Math.min(1, Math.max(0, value));
   }
 
-  /* The sine ease-in-out: with the size maxScale to this power, the zoom is even. */
+  /* Sine ease-in-out: with maxScale to this power, the zoom is even. */
   function easeInOut(t) {
     return -(Math.cos(Math.PI * t) - 1) / 2;
   }
@@ -65,8 +67,7 @@
     return window.performance && performance.now ? performance.now() : Date.now();
   }
 
-  /* The left side of the bowl of the letter, where its stroke is thickest: [centre, width] in
-     ems from the start of the letter, found on a small drawing so that any font works. */
+  /* The thickest stroke of the bowl: [centre, width] in ems, read off a small drawing. */
   function stroke() {
     var probe = document.createElement("canvas");
     var pen = probe.getContext("2d");
@@ -95,7 +96,7 @@
     height = frame.clientHeight;
     canvas.width = Math.round(width * ratio);
     canvas.height = Math.round(height * ratio);
-    // The hero letter of the type scale: 70% of the screen height, at most 105% of its width.
+    // 70% of the screen height, at most 105% of its width.
     size = Math.min(0.7 * height, 1.05 * width);
     ctx.font = font(size);
     var box = ctx.measureText(LETTER);
@@ -137,7 +138,7 @@
     ctx.fillRect(0, 0, width, height);
   }
 
-  /* e: the eased time of the growth; time: its plain time; night: the theme of this frame. */
+  /* e: the eased time of the growth; time: its plain time. */
   function draw(e, time, night) {
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
     ctx.globalCompositeOperation = "source-over";
@@ -146,8 +147,7 @@
     if (e >= 0.999) {
       return; // the loop fills the screen
     }
-    // Keep the picture only inside the letter, grown around the anchor, which moves to the
-    // centre of the screen by the same e; the size is multiplied by the same ratio every moment.
+    // The picture only inside the letter, grown around the anchor, which moves to the centre.
     var scale = Math.pow(maxScale, e);
     ctx.globalCompositeOperation = "destination-in";
     ctx.translate(anchorX + (width / 2 - anchorX) * e, anchorY + (height / 2 - anchorY) * e);
@@ -155,8 +155,7 @@
     ctx.translate(-anchorX, -anchorY);
     ctx.font = font(size);
     ctx.fillText(LETTER, originX, originY);
-    // At night a Paper outline keeps the dark top of the letter visible; 1.5px wide on screen,
-    // it fades out over the first fifth of the growth.
+    // At night a 1.5px Paper outline, fading out over the first fifth of the growth.
     var alpha = 0.55 * clamp(1 - time / 0.2);
     if (night && alpha > 0) {
       ctx.globalCompositeOperation = "source-over";
@@ -226,8 +225,7 @@
         line.style.opacity = rise < 1 ? rise.toFixed(3) : "";
       });
     });
-    // Over the hero the header is clear, and its text turns Paper once the loop covers it;
-    // once the hero has left the screen it is the solid bar again.
+    // Over the hero a clear header, Paper text once the loop covers it; past it, the solid bar.
     show("past", past, function (value) {
       root.classList.toggle("hero-past", value);
     });
@@ -247,6 +245,10 @@
     if (onScreen) {
       draw(e, time, night);
     }
+    if (skipped && watch && !seen) {
+      window.cancelAnimationFrame(request);
+      idle = true;
+    }
   }
 
   /* Any input during the intro jumps to its end; nothing is ever prevented. */
@@ -261,8 +263,7 @@
     root.classList.add("hero-flight");
     split();
     measure();
-    // Opened lower down or at a chapter address: the end state at once, and the chapter kept
-    // in view now that the hero is one screen high.
+    // Opened lower down or at a chapter address: the end state, the chapter kept in view.
     var target = location.hash.length > 1 && document.getElementById(location.hash.slice(1));
     skipped = window.pageYOffset > 40 || !!target || (skipped && !ready);
     if (target && target.scrollIntoView) {
@@ -275,6 +276,7 @@
   function stop() {
     window.cancelAnimationFrame(request);
     request = 0;
+    idle = false;
     root.classList.remove("hero-flight", "hero-over", "hero-past");
     ["--hero-foot", "--hero-title", "--hero-cue"].forEach(function (name) {
       hero.style.removeProperty(name);
@@ -299,19 +301,35 @@
     window.addEventListener(name, skip, { passive: true });
   });
   window.addEventListener("resize", function () {
-    // A phone's toolbar sliding away also fires this; measure only when the frame changed.
-    if (request && (frame.clientWidth !== width || frame.clientHeight !== height)) {
+    // A phone's toolbar sliding away fires this too; measure only on a new frame size.
+    if (request && !idle && moved()) {
       measure();
     }
   });
+  function moved() {
+    return frame.clientWidth !== width || frame.clientHeight !== height;
+  }
+  if (watch) {
+    new IntersectionObserver(
+      function (entries) {
+        seen = entries[entries.length - 1].isIntersecting;
+        if (idle && seen) {
+          idle = false;
+          moved() && measure();
+          tick();
+        }
+      },
+      { rootMargin: "10% 0px" }
+    ).observe(hero);
+  }
   if (lessMotion.addEventListener) {
     lessMotion.addEventListener("change", function () {
       ready && choose(); // during the font wait, go() chooses
     });
   }
 
-  /* A new theme while the page is open (daypart.js): its poster first, then its loop. Until the
-     poster has loaded the old picture stays. A theme with no files: Sand, no chip. */
+  /* A new theme (daypart.js): the old picture stays until its poster loads, then its loop. No
+     files: Sand, no chip. */
   var letter = hero.querySelector(".hero__letter");
   var chip = hero.querySelector(".hero__chip");
   var sources = video.querySelectorAll("source"); // webm, then mp4
