@@ -1,7 +1,8 @@
 /* The time of day while the page is open (time-of-day-live, "Live theme").
    The server sends its time with the page (data-now on the header line). This file keeps the
    time in Đà Nẵng (UTC+7, no daylight saving) as that time plus the time since load, so a wrong
-   device clock has no effect. On every minute it moves the header clock; at 05:00, 08:00, 17:00
+   device clock has no effect. On every minute it moves the header clock (the long line and
+   the short phone line, .site-header__short); at 05:00, 08:00, 17:00
    and 19:00 it sets body[data-daypart] and tells the page with the event "daypart", unless the
    page is a preview (data-preview), which keeps its theme. Nothing is stored or sent. */
 (function () {
@@ -12,6 +13,7 @@
   var OFFSET = 7 * 3600e3; // Đà Nẵng is UTC+7 all year
 
   var line = document.querySelector(".site-header__time");
+  var short = document.querySelector(".site-header__short"); // "14:52 · Day", on phones
   var sent = line && Number(line.getAttribute("data-now"));
   if (!sent || !document.body || !window.CustomEvent) {
     return; // without the time the page keeps what the server chose
@@ -61,6 +63,10 @@
       .replace(/· [^·]+$/, "· " + label);
     if (text !== line.textContent) {
       line.textContent = text;
+    }
+    var brief = clock + " · " + label;
+    if (short && short.textContent !== brief) {
+      short.textContent = brief;
     }
     // Wake just after the next minute starts.
     window.clearTimeout(timer);
