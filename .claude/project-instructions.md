@@ -34,12 +34,12 @@ For every new request:
    - a Summary that ends with the user story line;
    - "Done when" items numbered AC1, AC2, ..., written Given/When/Then when users see the result;
    - a `## Test matrix rows` section with its rows of the test matrix (fast lane: the small table itself);
-   - `Depends on #M` when it needs another open issue;
+   - `Depends on #M.` on its own line when it needs another open issue; for an epic task it stands directly under "Part of the epic #N", with `Depends on: none` when the task has none; the issues of an epic are created in dependency order, base tasks first;
    - "Part of the epic #N" when the task belongs to an epic;
    - a link to the spec on `main` (full lane);
    - the labels `risk:low`, `risk:medium` or `risk:high`, plus `needs-ui` when users see a change;
    - with `needs-ui`, a `## Screens to capture` block whose every step names the prototype state it should match with `"design": "<state id>"`;
-   - the labels printed by `python3 -I .flow/plugin/skills/create-issue/route_issue.py <body file>` (from the repository root), run on each issue body before it is posted. They come from its Files likely touched section:
+   - the labels printed by `python3 -I .flow/plugin/skills/create-issue/route_issue.py <body file>` (from the repository root), run on each issue body; it must exit 0 before the issue is posted. They come from its Files likely touched section:
      - `area:flow` for the workflow (`.flow/loop/`, `.claude/`, `.github/`, `docs/intent/`, `docs/specs/`, `scripts/`), `area:app` for the app and its hosting;
      - `agent:ready` always (ADR-023): the tick passes the listed files to the build and `before-edit-check` lets it edit exactly those, guarded ones included (`.claude/`, `.github/`, `.mcp.json`, the plugin, the gate files, an existing test under `src/<feature>/tests/`). A path outside the repository is not routed: fix the issue;
      - exception (ADR-023, "Exception: .claude/"): a task that changes a file under `.claude/` cannot be built by the loop (safetyCheck; `route_issue.py` warns). Split it out, give it no `agent:*` label, and build it by hand through the Mac mini (I click Merge);
