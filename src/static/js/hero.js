@@ -17,7 +17,7 @@
   var SAND = "#e9e2d3";
   var OUTLINE = "rgba(233, 226, 211, "; // Paper: the outline of the letter at night
   var LETTER = "Ở";
-  var FONT = '500 SIZEpx "Cormorant Garamond", Georgia, serif';
+  var FONT = '500 SIZEpx "Cormorant Garamond", "Times New Roman", Times, serif';
 
   var hero = document.getElementById("hero");
   var frame = hero && hero.querySelector(".hero__frame");
@@ -37,6 +37,7 @@
   var request = 0;
   var begun = 0; // the time the intro started
   var skipped = false;
+  var ready = false; // go() has chosen: the font wait is over
   var lines = [];
   var shown = {};
   // Set by measure(): the frame, the letter at rest, and the point the letter grows around.
@@ -263,7 +264,7 @@
     // Opened lower down or at a chapter address: the end state at once, and the chapter kept
     // in view now that the hero is one screen high.
     var target = location.hash.length > 1 && document.getElementById(location.hash.slice(1));
-    skipped = window.pageYOffset > 40 || !!target;
+    skipped = window.pageYOffset > 40 || !!target || (skipped && !ready);
     if (target && target.scrollIntoView) {
       target.scrollIntoView();
     }
@@ -304,7 +305,9 @@
     }
   });
   if (lessMotion.addEventListener) {
-    lessMotion.addEventListener("change", choose);
+    lessMotion.addEventListener("change", function () {
+      ready && choose(); // during the font wait, go() chooses
+    });
   }
 
   /* A new theme while the page is open (daypart.js): its poster first, then its loop. Until the
@@ -355,16 +358,28 @@
     };
     image.src = files[0];
   });
-  // The letter is drawn in the fallback font until Cormorant Garamond has loaded.
-  if (document.fonts && document.fonts.load) {
-    document.fonts.load(font(64), LETTER + "O").then(
-      function () {
-        if (request) {
-          measure();
-        }
-      },
-      function () {} // the fallback font stays
-    );
+  /* Wait (3 s at most) for the letter's font, so it is never drawn in another one. */
+  function go() {
+    if (ready) {
+      return;
+    }
+    root.classList.remove("hero-wait");
+    choose();
+    ready = true;
   }
-  choose();
+  if (document.fonts && document.fonts.load) {
+    root.classList.add("hero-wait");
+    if (!lessMotion.matches) {
+      root.classList.add("hero-flight");
+    }
+    document.fonts.load(font(64), LETTER + "O").then(function () {
+      if (ready && request) {
+        measure(); // late font: the running intro switches to it
+      }
+      go();
+    }, go);
+    window.setTimeout(go, 3000);
+  } else {
+    go();
+  }
 })();
