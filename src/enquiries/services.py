@@ -1,6 +1,7 @@
 """Storing an enquiry: the trap, the daily limit and the 12-month keep.
 
-Nothing here logs: a name, a reply-to or a message never reaches a log record.
+Nothing here logs (the push in `notify` logs only an error class name):
+a name, a reply-to or a message never reaches a log record.
 """
 
 from datetime import datetime, time, timedelta
@@ -10,6 +11,7 @@ from django.http import QueryDict
 
 from enquiries.forms import EnquiryForm, EnquiryStateForm
 from enquiries.models import Enquiry
+from enquiries.notify import push_new_enquiry
 from pages.daypart import DA_NANG
 
 DAILY_LIMIT = 20
@@ -56,6 +58,7 @@ def store_enquiry(form: EnquiryForm, *, language: str, from_owner: bool, now: da
         message=data["message"],
         language=language,
     )
+    push_new_enquiry()
     return Outcome.STORED
 
 

@@ -30,3 +30,6 @@ services:
       # Set by hand on Render: the Google Search Console verification value.
       - key: GOOGLE_SITE_VERIFICATION
         sync: false
+      # Set by hand on Render: the owner's private ntfy topic address (pushes on a new enquiry).
+      - key: NTFY_TOPIC_URL
+        sync: false
