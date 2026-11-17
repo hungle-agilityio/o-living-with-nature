@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="{% static 'css/chapters/rent.css' %}">
   <link rel="stylesheet" href="{% static 'css/chapters/faq.css' %}">
   <link rel="stylesheet" href="{% static 'css/chapters/contact.css' %}">
+  {% if owner.channels %}<noscript><style>.contact-bar { transform: none !important; }</style></noscript>{% endif %}
 {% endblock %}
 {% block structured_data %}<script type="application/ld+json">{{ structured_data }}</script>{% endblock %}
 {% block main_class %}site-main site-main--one-page{% endblock %}
