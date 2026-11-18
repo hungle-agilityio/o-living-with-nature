@@ -9,12 +9,13 @@
 
 ## Business rules
 
-- **Phase 1 is one page:** `/` holds the hero and five chapters with the ids `house`, `hoa-xuan`, `rent`, `faq` and `contact` (spec: `docs/specs/one-page/spec.md`). The menu links to the chapter ids. The old addresses `/house/`, `/hoa-xuan/`, `/faq/` and `/contact/` redirect (301) to their chapter. No blog.
+- **Phase 1 is one page:** `/` holds the hero and five chapters with the ids `house`, `hoa-xuan`, `rent`, `faq` and `contact` (spec: `docs/specs/one-page/spec.md`). The menu links to the chapter ids. The old addresses `/house/`, `/hoa-xuan/`, `/faq/` and `/contact/` redirect (301) to their chapter. Besides the one page, the journal has its own pages (see Journal).
 - **Languages:** phase 1 is English only, at the site root. Vietnamese comes in phase 3 under `/vi/`; English addresses never change.
 - **Voice:** the owner speaking in the first person ("Hi, I'm Bún…").
 - **Contact:** phone, WhatsApp and Zalo, shown as buttons (no email in phase 1). The site does not send messages for the visitor. An enquiry form in the contact chapter keeps a visitor's name, reply address, move-in month, stay and message for the owner, who reads them in `/owner/`; they are deleted after 12 months (`docs/specs/enquiry-form/spec.md`). The site still sends nothing to the visitor.
+- **Journal:** the owner writes short notes in `/owner/` (English, Vietnamese optional) and publishes them at `/journal/` and `/vi/journal/` (`docs/specs/journal/spec.md`). A note's cover is one of the photos in `src/pages/photos.py`, never an upload.
 - **Price:** an expected range set by the owner in the admin, for example "From 13–14 million VND a month".
-- **Content:** page texts, photos and videos live in the repository and change through issues. The owner edits in the Django admin (`/owner/`) only the price range, the contact values (Call, WhatsApp, Zalo), the owner's first name and the reply time.
+- **Content:** page texts, photos and videos live in the repository and change through issues. The owner edits in the Django admin (`/owner/`) the price range, the contact values (Call, WhatsApp, Zalo), the owner's first name, the reply time and the journal notes.
 - **Photos and video:** until real ones exist, licensed stock photos and clips (Unsplash, Pexels) stand in. Each shows the visible label "Illustrative" (photo or video), and its source and licence are recorded (`docs/specs/site-shell/media-credits.md`, `docs/specs/owner-content/media-credits.md` and the photo list `src/pages/photos.py`). Never use images taken from search results. A place with no file shows the empty state, never a broken image.
 - **Look:** the design is fixed in `docs/specs/site-shell/design.md`: design E "Through the Ở" (a giant letter Ở filled with a time-of-day loop on the home page, a dictionary line, chapters ở nhà, ở gần, ở lâu, ở lại?), editorial type, colours that follow the time of day in Đà Nẵng (dawn, day, dusk, night).
 - **Search engines:** the site stays out of search results (`INDEXING_ENABLED` off: noindex) until real photos replace the stand-ins. The base URL is set in one place (`SITE_BASE_URL`).
