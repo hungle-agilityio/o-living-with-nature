@@ -1,5 +1,6 @@
 {% load texts %}<footer class="site-footer">
   <div class="site-footer__inner">
+    {% if journal_path %}<p class="site-footer__journal"><a href="{{ journal_path }}">{% text "shell" "footer_journal" %}</a></p>{% endif %}
     <p class="site-footer__name"><span class="site-footer__mark">Ở</span> {% text "shell" "footer_name" %}</p>
     {% if daypart_themes %}<p class="site-footer__preview">{% text "shell" "footer_preview" %} {% for theme in daypart_themes %}<a href="?t={{ theme }}">{% text "shell" "preview_"|add:theme %}</a>{% if not forloop.last %} · {% endif %}{% endfor %}</p>{% endif %}
     <p class="site-footer__note">{% text "shell" "footer_note" %}</p>

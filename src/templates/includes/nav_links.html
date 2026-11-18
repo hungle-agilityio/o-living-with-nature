@@ -3,5 +3,6 @@
   <li><a href="{{ home_path }}#hoa-xuan">{% text "shell" "menu_hoa_xuan" %}</a></li>
   <li><a href="{{ home_path }}#rent">{% text "shell" "menu_rent" %}</a></li>
   <li><a href="{{ home_path }}#faq">{% text "shell" "menu_faq" %}</a></li>
+  {% if journal_path %}<li><a href="{{ journal_path }}"{% if journal_current %} aria-current="page"{% endif %}>{% text "shell" "menu_journal" %}</a></li>{% endif %}
   <li><a href="{{ home_path }}#contact" class="nav-links__contact">{% text "shell" "menu_contact" %}</a></li>
 </ul>

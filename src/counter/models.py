@@ -23,6 +23,7 @@ class DailyCount(models.Model):
         RENT = "rent", "Rent chapter"
         FAQ = "faq", "FAQ chapter"
         CONTACT = "contact", "Contact chapter"
+        JOURNAL = "journal", "Journal notes"
 
     day = models.DateField()
     kind = models.CharField(max_length=7, choices=Kind.choices)
