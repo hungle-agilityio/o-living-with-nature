@@ -6,7 +6,7 @@ Code is split by feature, not by layer: `src/{feature}/` holds everything one fe
 
 - **Views** (`src/pages/views.py`): read the request, call a service when there is logic, render a template. No business rule in a view or a template.
 - **Services** (for example `src/pages/daypart.py`, `src/pages/seo.py`): plain typed functions or service objects that hold the logic and are unit tested.
-- **Models**: phase 1 stores a small amount of data: the site settings the owner edits (price range, contact values, first name, reply time) and the visit and click counters. Photos and videos are static files, not models. A new model is a decision for an issue, never a side effect.
+- **Models**: phase 1 stores a small amount of data: the site settings the owner edits (price range, contact values, first name, reply time), the visit and click counters, the visitors' enquiries and the owner's journal notes (`src/journal/`). Photos and videos are static files, not models. A new model is a decision for an issue, never a side effect.
 - **Templates** (`src/{feature}/templates/`, shared ones in `src/templates/`, reusable parts in `src/templates/includes/`): presentation only; every page extends `base.html`.
 - **Settings** (`src/config/settings.py`): values that differ per environment come from environment variables (`DATABASE_URL`, `SITE_BASE_URL`, `INDEXING_ENABLED`, `OWNER_USERNAME`, `OWNER_PASSWORD`); secrets are never committed.
 
