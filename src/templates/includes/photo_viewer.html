@@ -1,0 +1,6 @@
+{% load texts %}{# The full-screen photo viewer of the home page (issue #156); photo-viewer.js fills and opens it. #}
+<dialog class="viewer" aria-label="{% text "shell" "viewer_label" %}" data-open-label="{% text "shell" "viewer_open" %}">
+  <div class="viewer__top"><span class="viewer__count" aria-live="polite"></span><button type="button" class="viewer__close" aria-label="{% text "shell" "viewer_close" %}">✕</button></div>
+  <div class="viewer__track"></div>
+  <div class="viewer__bottom"><button type="button" class="viewer__step" data-step="-1" aria-label="{% text "shell" "viewer_previous" %}">←</button><button type="button" class="viewer__step" data-step="1" aria-label="{% text "shell" "viewer_next" %}">→</button></div>
+</dialog>
