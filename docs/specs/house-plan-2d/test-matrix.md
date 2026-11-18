@@ -1,0 +1,28 @@
+# Test matrix: house-plan-2d
+
+| Row | AC | Case | Check | Level | Test file | Task |
+|---|---|---|---|---|---|---|
+| M1 | AC1 | normal | `rooms("en")` returns the ten keys in the table's order with kind, rectangle, name and text; `rooms("vi")` the Vietnamese names and texts. | unit | `src/pages/tests/test_house_drawing.py` | T1 |
+| M2 | AC1 | empty | Given the bedroom photo file is missing, `rooms()` gives Bedroom 1 and Bedroom 2 no photo; Front garden, Bathroom and Laundry always have none. | unit | `src/pages/tests/test_house_drawing.py` | T1 |
+| M3 | AC2 | normal | Given `/` at 1440 px, the block spans the chapter width, the card is left (8/12) and the panel right (4/12); `house.css` gives `.house__plan` `grid-column: 1 / -1`. | integration | `src/pages/tests/test_house_drawing.py` | T1 |
+| M4 | AC2 | empty | n/a: the drawing has no data that can be empty; rooms without photo are M10. | n/a | — | T1 |
+| M5 | AC3 | normal | Given `/`, the page has one `svg.plan__svg--h` and one `svg.plan__svg--v`, each with ten `a.plan__room`, a hatch pattern and a wash filter; the section SVG has `aria-hidden="true"`; no `<img>` inside the card; two renders of `/` give the same SVG. | integration | `src/pages/tests/test_house_drawing.py` | T1 |
+| M6 | AC3 | normal | Given `/` at 1440 px, the drawing matches the prototype state `plan`. | browser | screenshot in the verify report (design `plan`) | T1 |
+| M7 | AC4 | narrow screen | Given `/` at 390 px, the upright plan shows, the sideways one is hidden, and the Bathroom's tap rect is at least 44 by 44 px on screen; matches `plan-phone`. | browser | screenshot in the verify report (design `plan-phone`) + `src/pages/tests/test_house_drawing.py` (rect size in plan units × scale) | T1 |
+| M8 | AC5 | normal | Each `a.plan__room` has `href="#room-<key>"`, `data-room`, `aria-label` = name; the SVG has `role="group"` and the label in EN and VI. | integration | `src/pages/tests/test_house_drawing.py` | T1 |
+| M9 | AC6 | normal | `/` has the heading, the chip "Sketch · not to scale" and the new caption; `/vi/` the Vietnamese ones; neither has "Schematic" / "Sơ đồ". | integration | `src/pages/tests/test_house_drawing.py` | T1 |
+| M10 | AC7, AC8 | normal | `/` has `ol.plan__rooms` with ten `li.plan-room` in order, "03 of 10" on Light well with its photo, chip, credit and lazy loading; `/vi/` "03 / 10" and Vietnamese texts. | integration | `src/pages/tests/test_house_drawing.py` | T1 |
+| M11 | AC8 | empty | Front garden, Bathroom and Laundry items show the Sand block with Ở and "No photo of this room yet"; VI "Chưa có ảnh phòng này". | integration | `src/pages/tests/test_house_drawing.py` | T1 |
+| M12 | AC9 | normal | `/` has no `dialog.floor-plan__dialog`, no link to `/static/media/photos/` inside `#floor-plan`, keeps `id="floor-plan"` and loads `js/floor-plan.js` once with `defer`. | integration | `src/pages/tests/test_house_drawing.py` | T1 |
+| M13 | AC10 | normal | `/` has "The cardboard model" and the three model images in order with their alt texts and the chip "Cardboard model"; the three files exist in `src/static/media/model/` and equal the ones in `docs/specs/house-plan-2d/media/`. | integration | `src/pages/tests/test_house_drawing.py` | T1 |
+| M14 | AC10 | narrow screen | Given `/` at 390 px, the model photos are a sideways snapping row; matches `plan-model-phone`. | browser | screenshot in the verify report (design `plan-model-phone`) | T1 |
+| M15 | AC11 | normal | `floor-plan.js` handles a click on `a.plan__room`: adds `js` and `is-open` to the figure, `is-on` and `aria-current` to the room and its item, prevents the jump. | unit | `src/pages/tests/test_house_drawing_panel.py` (reads the script) | T2 |
+| M16 | AC11 | normal | Given `/` at 1440 px with Light well clicked, the panel matches `plan-room`. | browser | screenshot in the verify report (design `plan-room`) | T2 |
+| M17 | AC11 | empty | Given no room open, the hint shows and no ← → buttons show (CSS `.plan.js:not(.is-open) .plan__bar { display: none }`). | integration | `src/pages/tests/test_house_drawing_panel.py` | T2 |
+| M18 | AC12 | normal | The script wraps → after the last room and ← before the first, handles ArrowRight, ArrowLeft and Escape, and returns focus on close. | unit | `src/pages/tests/test_house_drawing_panel.py` | T2 |
+| M19 | AC13 | narrow screen | Given `/` at 390 px with Covered veranda tapped, the sheet matches `plan-phone-sheet`; `house.css` makes `.plan.js.is-open .plan__panel` fixed at the bottom with `max-height: 76vh` and `z-index` above the contact bar. | browser + integration | screenshot (design `plan-phone-sheet`) + `src/pages/tests/test_house_drawing_panel.py` | T2 |
+| M20 | AC13 | manual | On a real phone, tap Covered veranda, swipe the sheet's content, tap → twice and ✕: the right rooms show and the sheet closes. | manual | owner on the preview before `/merge` | T2 |
+| M21 | AC14 | normal | `floor-plan.js` has no `import`, no `localStorage`/`sessionStorage`/`document.cookie`, is under 4,000 bytes; `house.css` has a `prefers-reduced-motion: reduce` rule removing the two animations. | unit | `src/pages/tests/test_house_drawing_panel.py` | T2 |
+| M22 | AC15 | normal | `/` and `/vi/` make exactly one query. | integration | `src/pages/tests/test_house_drawing.py` | T1 |
+| M23 | AC15 | normal | `/` and `/vi/` still make exactly one query after the panel script. | integration | `src/pages/tests/test_house_drawing_panel.py` | T2 |
+| M24 | AC16 | normal | `bash scripts/check.sh` passes; only the listed existing tests changed. | integration | the whole suite | T1, T2 |
