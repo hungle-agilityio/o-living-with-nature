@@ -1,0 +1,617 @@
+"""Patch docs/design/prototype.html with the 2D house drawing (thread "Redraw the house plan as a 2D sketch").
+
+Usage: python3 add_plan.py <prototype.html in> <prototype.html out>
+
+Replaces the schematic room boxes of "Walk through the house" in every home* state with a
+hand-drawn plan (ink line + watercolour wash, in the style of the owner's sketch) and a small
+section above it. Layout read from the owner's cardboard model. Every room is a link; a tap
+opens the room panel (desktop: beside the plan; phone: a bottom sheet) with its photo or the
+empty sand block, its text, n / 10 and previous / next.
+Adds SCENARIOS for the new states.
+"""
+import json
+import random
+import sys
+
+src, out = sys.argv[1], sys.argv[2]
+page = open(src, encoding="utf-8").read()
+OPEN = '<script type="application/json" id="docs">'
+i = page.index(OPEN) + len(OPEN)
+j = page.index("</script>", i)
+docs = json.loads(page[i:j])
+
+# ---------------------------------------------------------------- the rooms
+# Plan units: u runs from the lane (front, 0) to the back fence (250); v across the plot (0..80).
+L, W = 250, 80
+PH = {  # photo key -> (file, width, height, alt EN, alt VI, credit EN, credit VI)
+    "veranda": ("veranda.jpg", 1600, 1060, "A shaded back veranda with wicker chairs and tropical plants", "Hiên sau rợp bóng với ghế mây và cây nhiệt đới", "Photo: Pexels", "Ảnh: Pexels"),
+    "lightwell": ("lightwell.jpg", 1200, 1600, "An indoor atrium with hanging plants under a skylight", "Khoảng thông tầng với cây treo dưới giếng trời", "Photo: Fatmanur Üzüm / Pexels", "Ảnh: Fatmanur Üzüm / Pexels"),
+    "kitchen": ("kitchen.jpg", 901, 1600, "A sunlit kitchen with wooden furniture", "Căn bếp đầy nắng với đồ gỗ", "Photo: Pexels", "Ảnh: Pexels"),
+    "mezzanine": ("mezzanine.jpg", 1600, 1067, "A staircase with a wooden railing and plants in a light house", "Cầu thang tay vịn gỗ và cây xanh trong căn nhà sáng", "Photo: Pexels", "Ảnh: Pexels"),
+    "bedroom": ("bedroom.jpg", 1600, 1067, "A calm bedroom with a made bed", "Phòng ngủ yên tĩnh với chiếc giường đã dọn", "Photo: Pexels", "Ảnh: Pexels"),
+    "garden-evening": ("garden-evening.jpg", 1067, 1600, "String lights in a garden in the evening", "Dây đèn trong vườn lúc chiều tối", "Photo: CharlieBrown / Pexels", "Ảnh: CharlieBrown / Pexels"),
+}
+
+# key, kind, rect (u0, u1, v0, v1), photo, EN name, VI name, EN text, VI text
+ROOMS = [
+    ("front-garden", "garden", (0, 50, 0, W), None, "Front garden", "Vườn trước",
+     "The way in: a small walled garden between the lane and the house, so the rooms sit back from the street and stay quiet.",
+     "Lối vào: một khoảng vườn nhỏ có tường bao giữa ngõ và nhà, để các phòng lùi xa mặt đường và luôn yên tĩnh."),
+    ("veranda", "room", (50, 90, 34, W), "veranda", "Covered veranda", "Hiên có mái che",
+     "A deep roof over the front of the house, open to the garden: a place to sit with a coffee and watch the rain.",
+     "Mái hiên sâu phía trước nhà, mở ra vườn: chỗ ngồi uống cà phê và ngắm mưa."),
+    ("light-well", "room", (50, 90, 0, 34), "lightwell", "Light well", "Giếng trời",
+     "Open to the sky, with a curved wall and a round opening. It brings daylight and air into the middle of the house.",
+     "Mở lên trời, có vách cong và một ô tròn. Giếng trời đưa ánh sáng và gió vào giữa nhà."),
+    ("living-kitchen", "room", (90, 155, 0, W), "kitchen", "Living room and kitchen", "Phòng khách và bếp",
+     "One open room under the high roof, lit from above. A real kitchen for everyday cooking and a table to eat together.",
+     "Một không gian mở dưới mái cao, lấy sáng từ trên. Bếp thật để nấu mỗi ngày và bàn để cùng ăn."),
+    ("mezzanine", "loft", (96, 126, 4, 42), "mezzanine", "Mezzanine", "Gác lửng",
+     "A loft above the living room: a quiet corner to read or work.",
+     "Gác lửng phía trên phòng khách: một góc yên để đọc sách hay làm việc."),
+    ("bedroom-1", "room", (155, 200, 0, 34), "bedroom", "Bedroom 1", "Phòng ngủ 1",
+     "A calm bedroom at the back of the house, away from the lane.",
+     "Phòng ngủ yên tĩnh ở phía sau nhà, xa ngõ."),
+    ("bathroom", "wet", (155, 182, 34, 50), None, "Bathroom", "Phòng tắm",
+     "One bathroom, between the two bedrooms.",
+     "Một phòng tắm, nằm giữa hai phòng ngủ."),
+    ("bedroom-2", "room", (155, 200, 50, W), "bedroom", "Bedroom 2", "Phòng ngủ 2",
+     "The second bedroom, also at the back: for a guest, a study or someone who keeps different hours.",
+     "Phòng ngủ thứ hai, cũng ở phía sau: cho khách, làm phòng đọc, hay cho người có giờ giấc khác."),
+    ("laundry", "wet", (200, 218, 0, W), None, "Laundry, drying and storage", "Giặt, phơi và kho",
+     "A practical corner at the back: wash, dry clothes out of the rain, and keep things out of sight.",
+     "Góc tiện ích phía sau: giặt, phơi đồ không sợ mưa, và cất đồ gọn gàng."),
+    ("back-garden", "garden", (218, L, 0, W), "garden-evening", "Back garden", "Vườn sau",
+     "A quiet garden behind the house, easy to look after. Garden care once a week is included.",
+     "Khu vườn yên tĩnh sau nhà, dễ chăm. Đã bao gồm chăm vườn mỗi tuần một lần."),
+]
+
+T = {
+    "en": dict(heading="Walk through the house", chip="Sketch · not to scale",
+               note="Drawn from the cardboard model of the house, not the architect's plan.",
+               hint="Tap a room on the plan to look inside.", section="Section", plan="Plan",
+               prev="Previous room", next="Next room", close="Close", of="of",
+               photo_chip="Illustrative photo", empty="No photo of this room yet",
+               lane="lane", plan_label="Plan of the house: tap a room"),
+    "vi": dict(heading="Đi một vòng quanh nhà", chip="Phác thảo · không theo tỉ lệ",
+               note="Vẽ theo mô hình bìa của căn nhà, chưa phải bản vẽ của kiến trúc sư.",
+               hint="Chạm vào một phòng trên bản vẽ để xem bên trong.", section="Mặt cắt", plan="Mặt bằng",
+               prev="Phòng trước", next="Phòng sau", close="Đóng", of="/",
+               photo_chip="Ảnh minh hoạ", empty="Chưa có ảnh phòng này",
+               lane="ngõ", plan_label="Mặt bằng căn nhà: chạm vào một phòng"),
+}
+
+# ---------------------------------------------------------------- drawing helpers
+INK = "#3b2e24"
+
+
+def jit(rng, a=0.9):
+    return rng.uniform(-a, a)
+
+
+def sketch_line(rng, x1, y1, x2, y2, w=1.3, extra=""):
+    """Two slightly different strokes with overshoot: the hand-drawn ink line of the sketch."""
+    out = []
+    for k in range(2):
+        dx, dy = x2 - x1, y2 - y1
+        n = max((dx * dx + dy * dy) ** 0.5, 1)
+        ox, oy = dx / n * 3, dy / n * 3  # overshoot at both ends
+        mx, my = (x1 + x2) / 2 + jit(rng, 1.2), (y1 + y2) / 2 + jit(rng, 1.2)
+        out.append(
+            f'<path d="M{x1 - ox + jit(rng):.1f} {y1 - oy + jit(rng):.1f} Q{mx:.1f} {my:.1f} '
+            f'{x2 + ox + jit(rng):.1f} {y2 + oy + jit(rng):.1f}" stroke-width="{w if k == 0 else w * 0.6:.2f}" '
+            f'opacity="{0.95 if k == 0 else 0.55}"{extra}/>'
+        )
+    return "".join(out)
+
+
+def sketch_rect(rng, x, y, w, h, sw=1.3):
+    return (sketch_line(rng, x, y, x + w, y, sw) + sketch_line(rng, x + w, y, x + w, y + h, sw)
+            + sketch_line(rng, x + w, y + h, x, y + h, sw) + sketch_line(rng, x, y + h, x, y, sw))
+
+
+def tree(rng, cx, cy, r, cls="plan-tree"):
+    spokes = "".join(
+        f'<path d="M{cx:.1f} {cy:.1f} L{cx + r * 0.92 * c:.1f} {cy + r * 0.92 * s:.1f}"/>'
+        for c, s in [(__import__("math").cos(a), __import__("math").sin(a))
+                     for a in [k * 6.283 / 9 + rng.uniform(0, 0.4) for k in range(9)]]
+    )
+    return (f'<g class="{cls}"><circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r:.1f}" class="plan-tree__wash" filter="url(#plan-wash)"/>'
+            f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r:.1f}" class="plan-tree__ring"/>'
+            f'<g class="plan-tree__spokes">{spokes}</g></g>')
+
+
+def plan_svg(lang, orient):
+    """The plan, horizontal (front at left) or vertical (front at top)."""
+    t = T[lang]
+    rng = random.Random(7)
+    pad = 26
+    if orient == "h":
+        s, su = 3.3, 3.3
+        def P(u, v):
+            return pad + 34 + u * su, pad + v * s
+        def R(u0, u1, v0, v1):
+            x0, y0 = P(u0, v0); x1, y1 = P(u1, v1)
+            return x0, y0, x1 - x0, y1 - y0
+        vw, vh = pad * 2 + 34 + L * su, pad * 2 + W * s + 14
+    else:
+        s, su = 4.3, 3.0
+        def P(u, v):
+            return pad + v * s, pad + 34 + u * su
+        def R(u0, u1, v0, v1):
+            x0, y0 = P(u0, v0); x1, y1 = P(u1, v1)
+            return x0, y0, x1 - x0, y1 - y0
+        vw, vh = pad * 2 + W * s, pad * 2 + 34 + L * su + 14
+
+    g_wash, g_ink, g_hit, g_text = [], [], [], []
+    # trees around the plot (outside), like the sketch
+    for (u, v, r) in [(-4, -6, 15), (30, 88, 13), (120, -9, 12), (232, 90, 16), (256, 14, 14), (176, 89, 11)]:
+        x, y = P(u, v)
+        g_wash.append(tree(rng, x, y, r * (1 if orient == "h" else 1.1), "plan-tree plan-tree--out"))
+    for key, kind, (u0, u1, v0, v1), photo, en, vi, _, _ in ROOMS:
+        x, y, w, h = R(u0, u1, v0, v1)
+        name = en if lang == "en" else vi
+        if kind == "garden":
+            g_wash.append(f'<rect x="{x + 3:.1f}" y="{y + 3:.1f}" width="{w - 6:.1f}" height="{h - 6:.1f}" class="plan-wash plan-wash--garden" filter="url(#plan-wash)"/>')
+            # planting in the garden
+            for k in range(3 if key == "front-garden" else 4):
+                tx = x + w * rng.uniform(0.2, 0.8); ty = y + h * (0.2 + 0.6 * k / 3 if orient == "h" else rng.uniform(0.25, 0.75))
+                if orient == "v":
+                    tx = x + w * (0.15 + 0.7 * k / 3); ty = y + h * rng.uniform(0.3, 0.7)
+                g_wash.append(tree(rng, tx, ty, rng.uniform(8, 12)))
+            g_ink.append(f'<g class="plan-wall plan-wall--fence">{sketch_rect(rng, x, y, w, h, 1.1)}</g>')
+        else:
+            cls = {"room": "plan-wash--room", "wet": "plan-wash--wet", "loft": "plan-wash--loft"}[kind]
+            if kind != "loft":
+                g_wash.append(f'<rect x="{x + 2:.1f}" y="{y + 2:.1f}" width="{w - 4:.1f}" height="{h - 4:.1f}" class="plan-wash {cls}" filter="url(#plan-wash)"/>'
+                              f'<rect x="{x + 4:.1f}" y="{y + 4:.1f}" width="{w - 8:.1f}" height="{h - 8:.1f}" class="plan-edge {cls}" filter="url(#plan-wash)"/>')
+            if kind == "wet":
+                g_wash.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" fill="url(#plan-hatch)"/>')
+            if kind == "loft":
+                g_ink.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" class="plan-loft"/>')
+            else:
+                g_ink.append(f'<g class="plan-wall">{sketch_rect(rng, x, y, w, h, 2.0)}</g>')
+        # the tap target and its label
+        g_hit.append(
+            f'<a class="plan__room" href="#room-{key}" data-room="{key}" aria-label="{name}">'
+            f'<rect class="plan__hit" x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}"/>'
+        )
+        cx, cy = x + w / 2, y + h / 2
+        if key == "living-kitchen":
+            cx, cy = P(137, 40)
+        if key == "laundry" and orient == "h":
+            label = f'<text class="plan__label" x="{cx:.1f}" y="{cy:.1f}" transform="rotate(-90 {cx:.1f} {cy:.1f})">{name}</text>'
+        else:
+            words = name.split(" ")
+            lines, cur = [], ""
+            maxc = 12 if key == "living-kitchen" else max(int(w / 7.2), 6)
+            for wd in words:
+                if len(cur) + len(wd) + 1 > maxc and cur:
+                    lines.append(cur); cur = wd
+                else:
+                    cur = (cur + " " + wd).strip()
+            lines.append(cur)
+            y0 = cy - (len(lines) - 1) * 8
+            if key == "light-well":
+                y0 = y + h - 10 - (len(lines) - 1) * 16 if orient == "h" else y + h - 8 - (len(lines) - 1) * 16
+            label = "".join(f'<text class="plan__label" x="{cx:.1f}" y="{y0 + n * 16:.1f}">{ln}</text>' for n, ln in enumerate(lines))
+        g_hit.append(label + "</a>")
+
+    # details: light well round wall + opening, skylights, kitchen counter and table, beds, door gaps
+    x, y, w, h = R(50, 90, 0, 34)
+    r = min(w, h) * 0.34
+    lcx, lcy = x + w / 2, y + h / 2 - (6 if orient == "h" else 4)
+    g_ink.append(f'<circle cx="{lcx:.1f}" cy="{lcy:.1f}" r="{r:.1f}" class="plan-round" filter="url(#plan-wash)"/>'
+                 f'<circle cx="{lcx:.1f}" cy="{lcy:.1f}" r="{r:.1f}" class="plan-round__ink"/>'
+                 f'<circle cx="{lcx:.1f}" cy="{lcy:.1f}" r="2.2" fill="{INK}"/>')
+    for (u0, u1, v0, v1) in [(130, 142, 12, 26), (130, 142, 54, 68)]:
+        sx, sy, sw_, sh = R(u0, u1, v0, v1)
+        g_ink.append(f'<rect x="{sx:.1f}" y="{sy:.1f}" width="{sw_:.1f}" height="{sh:.1f}" class="plan-sky"/>')
+    kx, ky, kw, kh = R(140, 153, 50, 78)  # kitchen counter along the wall
+    g_ink.append(f'<rect x="{kx:.1f}" y="{ky:.1f}" width="{kw:.1f}" height="{kh:.1f}" class="plan-furn"/>')
+    tx, ty = P(116, 64)
+    g_ink.append(f'<circle cx="{tx:.1f}" cy="{ty:.1f}" r="13" class="plan-furn"/>')
+    for (u0, u1, v0, v1) in [(178, 198, 6, 26), (178, 198, 56, 76)]:
+        bx, by, bw, bh = R(u0, u1, v0, v1)
+        g_ink.append(f'<rect x="{bx:.1f}" y="{by:.1f}" width="{bw:.1f}" height="{bh:.1f}" rx="2" class="plan-furn"/>')
+    # stair to the loft
+    for k in range(6):
+        sx0, sy0 = P(96 + k * 3, 42); sx1, sy1 = P(96 + k * 3, 50)
+        g_ink.append(f'<path d="M{sx0:.1f} {sy0:.1f} L{sx1:.1f} {sy1:.1f}" class="plan-stair"/>')
+    # the lane and the arrow in, like the sketch
+    ax, ay = P(-12, 40)
+    if orient == "h":
+        arrow = f'<path d="M{ax - 6:.1f} {ay:.1f} L{ax + 16:.1f} {ay:.1f} M{ax + 9:.1f} {ay - 6:.1f} L{ax + 16:.1f} {ay:.1f} L{ax + 9:.1f} {ay + 6:.1f}" class="plan-arrow"/>'
+        lane = f'<text class="plan__note" x="{ax - 4:.1f}" y="{ay - 12:.1f}" style="text-anchor:start">{t["lane"]}</text>'
+    else:
+        arrow = f'<path d="M{ax:.1f} {ay - 6:.1f} L{ax:.1f} {ay + 16:.1f} M{ax - 6:.1f} {ay + 9:.1f} L{ax:.1f} {ay + 16:.1f} L{ax + 6:.1f} {ay + 9:.1f}" class="plan-arrow"/>'
+        lane = f'<text class="plan__note" x="{ax + 14:.1f}" y="{ay + 4:.1f}" style="text-anchor:start">{t["lane"]}</text>'
+
+    return (
+        f'<svg class="plan__svg plan__svg--{orient}" viewBox="0 0 {vw:.0f} {vh:.0f}" role="group" aria-label="{t["plan_label"]}">'
+        f'<g aria-hidden="true">{"".join(g_wash)}</g>'
+        f'<g class="plan-ink" aria-hidden="true">{"".join(g_ink)}{arrow}</g>'
+        f'<g aria-hidden="true">{lane}</g>'
+        f'{"".join(g_hit)}</svg>'
+    )
+
+
+def section_svg(lang):
+    """The long section above the plan: hill, trees, veranda lean-to, round opening, gable."""
+    t = T[lang]
+    rng = random.Random(3)
+    su, pad, base = 3.3, 26, 150
+    X = lambda u: pad + u * su
+    parts = []
+    # hills behind, washed
+    parts.append(f'<path d="M0 {base - 40} C 120 40, 260 60, 360 70 S 600 20, 700 50 S 860 70, 900 60 L900 {base} L0 {base}Z" class="sec-hill" filter="url(#plan-wash)"/>')
+    for (u, r) in [(-2, 34), (22, 26), (236, 36), (258, 24)]:
+        parts.append(f'<circle cx="{X(u):.1f}" cy="{base - 52:.1f}" r="{r}" class="sec-tree" filter="url(#plan-wash)"/>'
+                     f'<path d="M{X(u):.1f} {base} L{X(u):.1f} {base - 40:.1f} M{X(u):.1f} {base - 30:.1f} L{X(u) - 14:.1f} {base - 58:.1f} M{X(u):.1f} {base - 36:.1f} L{X(u) + 12:.1f} {base - 66:.1f}" class="sec-trunk"/>')
+    # front wall of the garden
+    parts.append(f'<g class="plan-ink">{sketch_line(rng, X(0), base, X(0), base - 26, 1.4)}</g>')
+    # veranda + light well block (low, lean-to)
+    vx0, vx1 = X(50), X(90)
+    parts.append(f'<path d="M{vx0:.1f} {base} L{vx0:.1f} {base - 48} L{vx1:.1f} {base - 62} L{vx1:.1f} {base}Z" class="sec-wall" filter="url(#plan-wash)"/>')
+    parts.append(f'<g class="plan-ink">{sketch_line(rng, vx0 - 8, base - 46, vx1 + 4, base - 64, 1.8)}{sketch_line(rng, vx0, base, vx0, base - 48, 1.4)}</g>')
+    for k in range(9):
+        xx = vx0 - 6 + k * (vx1 - vx0 + 8) / 9
+        yy = base - 46 - (xx - vx0 + 6) * 18 / (vx1 - vx0 + 10)
+        parts.append(f'<path d="M{xx:.1f} {yy:.1f} q3 -4 6 0" class="sec-corr"/>')
+    parts.append(f'<circle cx="{(vx0 + vx1) / 2:.1f}" cy="{base - 26:.1f}" r="17" class="sec-round" filter="url(#plan-wash)"/>'
+                 f'<circle cx="{(vx0 + vx1) / 2:.1f}" cy="{base - 26:.1f}" r="17" class="plan-round__ink"/>')
+    # main gable over living + bedrooms
+    gx0, gx1 = X(90), X(200)
+    ridge = base - 112
+    parts.append(f'<path d="M{gx0:.1f} {base} L{gx0:.1f} {base - 70} L{(gx0 + gx1) / 2:.1f} {ridge} L{gx1:.1f} {base - 70} L{gx1:.1f} {base}Z" class="sec-wall sec-wall--main" filter="url(#plan-wash)"/>')
+    parts.append(f'<g class="plan-ink">{sketch_line(rng, gx0 - 6, base - 66, (gx0 + gx1) / 2, ridge - 2, 2)}{sketch_line(rng, (gx0 + gx1) / 2, ridge - 2, gx1 + 6, base - 66, 2)}'
+                 f'{sketch_line(rng, gx0, base, gx0, base - 70, 1.4)}{sketch_line(rng, gx1, base, gx1, base - 70, 1.4)}'
+                 f'{sketch_line(rng, gx0, base - 54, X(126), base - 54, 1.1)}</g>')
+    # skylights on the roof
+    for u in (133, 139):
+        sx = X(u); sy = base - 70 - (sx - gx0) * (112 - 70) / ((gx1 - gx0) / 2)
+        parts.append(f'<path d="M{sx:.1f} {sy:.1f} l0 -9 l12 -3 l0 9" class="sec-sky"/>')
+    # figures: a person on the loft and one in the living room, like the sketch
+    fx, fy = X(110), base - 54
+    parts.append(f'<g class="sec-person"><circle cx="{fx:.1f}" cy="{fy - 18:.1f}" r="3.2"/><path d="M{fx:.1f} {fy - 14:.1f} l0 9 l-5 5 M{fx:.1f} {fy - 5:.1f} l6 5"/></g>')
+    fx, fy = X(145), base
+    parts.append(f'<g class="sec-person"><circle cx="{fx:.1f}" cy="{fy - 26:.1f}" r="3.2"/><path d="M{fx:.1f} {fy - 22:.1f} l0 12 l-4 10 M{fx:.1f} {fy - 10:.1f} l4 10"/></g>')
+    # back lean-to (laundry)
+    bx0, bx1 = X(200), X(218)
+    parts.append(f'<path d="M{bx0:.1f} {base} L{bx0:.1f} {base - 58} L{bx1:.1f} {base - 44} L{bx1:.1f} {base}Z" class="sec-wall" filter="url(#plan-wash)"/>'
+                 f'<g class="plan-ink">{sketch_line(rng, bx0 - 2, base - 58, bx1 + 6, base - 42, 1.6)}{sketch_line(rng, bx1, base, bx1, base - 44, 1.3)}</g>'
+                 f'<path d="M{bx0 + 8:.1f} {base} L{bx0 + 8:.1f} {base - 22} A10 10 0 0 1 {bx1 - 4:.1f} {base - 22} L{bx1 - 4:.1f} {base}" class="sec-arch"/>')
+    parts.append(f'<g class="plan-ink">{sketch_line(rng, -10, base, 900, base, 1.6)}</g>')
+    w = pad * 2 + L * su
+    return (f'<svg class="plan__section" viewBox="0 0 {w:.0f} {base + 22}" aria-hidden="true" focusable="false">{"".join(parts)}'
+            f'<text class="plan__note" x="{w - pad}" y="{base + 18}" style="text-anchor:end">{t["section"]}</text></svg>')
+
+
+DEFS = (
+    '<svg class="plan__defs" width="0" height="0" aria-hidden="true" focusable="false"><defs>'
+    '<filter id="plan-wash" x="-10%" y="-10%" width="120%" height="120%">'
+    '<feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="3" seed="4" result="n"/>'
+    '<feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"/></filter>'
+    '<pattern id="plan-hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">'
+    f'<path d="M0 0 L0 7" stroke="{INK}" stroke-width="0.9" opacity="0.45"/></pattern>'
+    '</defs></svg>'
+)
+
+
+def fragment(lang):
+    t = T[lang]
+    items = []
+    for n, (key, kind, _, photo, en, vi, ten, tvi) in enumerate(ROOMS, 1):
+        name, text = (en, ten) if lang == "en" else (vi, tvi)
+        if photo:
+            f, w, h, aen, avi, cen, cvi = PH[photo]
+            media = (f'<figure class="media plan-room__media"><div class="media__box plan-room__box">'
+                     f'<img src="/static/media/photos/{f}" alt="{aen if lang == "en" else avi}" width="{w}" height="{h}" loading="lazy">'
+                     f'<span class="media__chip">{t["photo_chip"]}</span></div>'
+                     f'<figcaption class="media__credit">{cen if lang == "en" else cvi}</figcaption></figure>')
+        else:
+            media = (f'<figure class="media plan-room__media"><div class="media__box plan-room__box plan-room__box--empty" role="img" aria-label="{t["empty"]}">'
+                     f'<span class="plan-room__mark" aria-hidden="true">Ở</span></div>'
+                     f'<figcaption class="media__credit">{t["empty"]}</figcaption></figure>')
+        items.append(
+            f'<li class="plan-room" id="room-{key}" data-room="{key}" tabindex="-1">'
+            f'<p class="label muted plan-room__count">{n:02d} {t["of"]} {len(ROOMS):02d}</p>'
+            f'<h4 class="plan-room__name">{name}</h4>{media}<p class="plan-room__text">{text}</p></li>'
+        )
+    return (
+        f'<figure id="floor-plan" class="house__plan plan reveal" aria-labelledby="floor-plan-heading">'
+        f'<h3 id="floor-plan-heading" class="label muted plan__heading">{t["heading"]}</h3>'
+        f'<div class="plan__body">'
+        f'<div class="plan__paper">{DEFS}{section_svg(lang)}'
+        f'{plan_svg(lang, "h")}{plan_svg(lang, "v")}'
+        f'<span class="media__chip plan__chip">{t["chip"]}</span></div>'
+        f'<aside class="plan__panel" aria-live="polite">'
+        f'<div class="plan__bar"><button type="button" class="plan__step" data-step="-1" aria-label="{t["prev"]}">←</button>'
+        f'<button type="button" class="plan__step" data-step="1" aria-label="{t["next"]}">→</button>'
+        f'<button type="button" class="plan__close" aria-label="{t["close"]}">✕</button></div>'
+        f'<p class="plan__hint">{t["hint"]}</p>'
+        f'<ol class="plan__rooms">{"".join(items)}</ol></aside>'
+        f'</div>'
+        f'<figcaption class="media__credit plan__note-line">{t["note"]}</figcaption>'
+        f'</figure>'
+    )
+
+
+CSS = r"""
+<style>/* Walk through the house as a 2D drawing (prototype of the house-plan-2d spec) */
+.house__included .label { margin-top: 0; }
+.house__plan.plan { grid-column: 1 / -1; grid-row: auto; margin: var(--space-4, 48px) 0 0; }
+.plan__heading { margin: 0 0 16px; font-weight: inherit; }
+.plan__body { display: grid; grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); gap: 24px; align-items: start; }
+.plan__paper { position: relative; overflow: hidden; padding: 18px 18px 52px; background: #f3ece0; border: 1px solid #ddd2bf; box-shadow: 0 1px 0 rgba(0,0,0,.03); color: #3b2e24; }
+.plan__defs { position: absolute; }
+.plan__section { display: block; width: 100%; height: auto; margin-bottom: 4px; }
+.plan__svg { display: block; width: 100%; height: auto; overflow: visible; }
+.plan__svg--v { display: none; }
+.plan-ink path, .plan-wall path { fill: none; stroke: #3b2e24; stroke-linecap: round; }
+.plan-wall--fence path { stroke-dasharray: 5 4; }
+.plan-wash { opacity: .55; }
+.plan-wash--room { fill: #e2bfa4; }
+.plan-wash--wet { fill: #d8c6b4; }
+.plan-wash--garden { fill: #b9c58f; opacity: .42; }
+.plan-edge { fill: none !important; stroke-width: 3; opacity: .35; }
+.plan-edge.plan-wash--room { stroke: #c99a7a; }
+.plan-edge.plan-wash--wet { stroke: #b9a48f; }
+.plan-loft { fill: none; stroke: #3b2e24; stroke-width: 1.3; stroke-dasharray: 6 4; }
+.plan-tree__wash { fill: #e7dfae; opacity: .75; }
+.plan-tree--out .plan-tree__wash { fill: #e9e2bd; }
+.plan-tree__ring { fill: none; stroke: #9a8f6a; stroke-width: .8; }
+.plan-tree__spokes path { stroke: #9a8f6a; stroke-width: .6; }
+.plan-round { fill: #6f8a4f; opacity: .7; }
+.plan-round__ink { fill: none; stroke: #3b2e24; stroke-width: 2.4; }
+.plan-sky { fill: none; stroke: #3b2e24; stroke-width: 1; stroke-dasharray: 3 3; }
+.plan-furn { fill: none; stroke: #3b2e24; stroke-width: 1; opacity: .7; }
+.plan-stair { stroke: #3b2e24; stroke-width: 1.6; }
+.plan-arrow { fill: none; stroke: #3b2e24; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.plan__label { font: italic 500 15px/1 var(--font-serif, "Cormorant Garamond", serif); fill: #3b2e24; text-anchor: middle; pointer-events: none; }
+.plan__note { font: 500 10px/1 var(--font-sans, sans-serif); letter-spacing: .2em; text-transform: uppercase; fill: #7a6b5c; text-anchor: middle; }
+.sec-hill { fill: #a9b97c; opacity: .45; }
+.sec-tree { fill: #8fa462; opacity: .55; }
+.sec-trunk { fill: none; stroke: #3b2e24; stroke-width: 1.2; }
+.sec-wall { fill: #c9a88d; opacity: .6; }
+.sec-wall--main { fill: #b99a80; }
+.sec-corr { fill: none; stroke: #3b2e24; stroke-width: .9; }
+.sec-round { fill: #b5642f; opacity: .75; }
+.sec-sky { fill: #f3ece0; stroke: #3b2e24; stroke-width: 1.2; }
+.sec-arch { fill: #f3ece0; stroke: #3b2e24; stroke-width: 1.3; }
+.sec-person circle { fill: #3b2e24; }
+.sec-person path { fill: none; stroke: #3b2e24; stroke-width: 1.6; stroke-linecap: round; }
+.plan__hit { fill: transparent; stroke: transparent; stroke-width: 3; transition: fill .25s ease, stroke .25s ease; }
+.plan__room { cursor: pointer; outline: none; }
+.plan__room:hover .plan__hit { fill: rgba(63, 90, 58, .12); }
+.plan__room:focus-visible .plan__hit { stroke: #3f5a3a; stroke-dasharray: 4 3; }
+.plan__room.is-on .plan__hit { fill: rgba(63, 90, 58, .22); stroke: #3f5a3a; stroke-width: 3; }
+.plan__room.is-on .plan__label { font-weight: 700; }
+.plan__chip { position: absolute; left: 18px; bottom: 14px; }
+.plan__panel { position: sticky; top: calc(var(--header-height, 64px) + 16px); }
+.plan__bar { display: none; gap: 8px; justify-content: flex-end; margin-bottom: 8px; }
+.plan__step, .plan__close { width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 50%; background: none; color: var(--ink); font-size: 18px; cursor: pointer; }
+.plan__step:hover, .plan__close:hover, .plan__step:focus-visible, .plan__close:focus-visible { background: var(--sand); }
+.plan__close { display: none; }
+.plan__hint { margin: 0; padding: 24px; border: 1px dashed var(--line); color: var(--muted); font: italic 22px/1.3 var(--font-serif, serif); }
+.plan__rooms { margin: 0; padding: 0; list-style: none; }
+.plan-room { padding: 0 0 24px; outline: none; }
+.plan-room + .plan-room { border-top: 1px solid var(--line); padding-top: 24px; }
+.plan-room__count { margin: 0 0 6px; font-variant-numeric: tabular-nums; }
+.plan-room__name { margin: 0 0 14px; font: 400 34px/1.05 var(--font-serif, serif); }
+.plan-room__media { margin: 0; }
+.plan-room__box { aspect-ratio: 4 / 3; overflow: hidden; }
+.plan-room__box img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.plan-room__box--empty { display: flex; align-items: center; justify-content: center; background: var(--sand); }
+.plan-room__mark { font: 400 64px/1 var(--font-serif, serif); color: var(--sand-ink, #b8ae98); }
+.plan-room__text { margin: 12px 0 0; }
+/* with the script: one room at a time */
+.plan.js .plan-room { display: none; padding: 0; border: 0; }
+.plan.js .plan-room.is-on { display: block; animation: plan-in .3s ease; }
+.plan.js .plan__bar { display: flex; }
+.plan.js.is-open .plan__hint { display: none; }
+.plan.js:not(.is-open) .plan__bar { display: none; }
+@keyframes plan-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.plan__note-line { margin-top: 10px; }
+@media (max-width: 860px) {
+  .plan__body { grid-template-columns: 1fr; }
+  .plan__paper { padding: 12px 10px 48px; }
+  .plan__svg--h { display: none; }
+  .plan__svg--v { display: block; max-width: 420px; margin: 0 auto; }
+  .plan__label { font-size: 16px; }
+  .plan__hint { padding: 14px 16px; font-size: 19px; }
+  /* the room panel becomes a bottom sheet */
+  .plan.js .plan__panel { position: static; }
+  .plan.js.is-open .plan__panel { position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 60; max-height: 76vh; overflow-y: auto; padding: 0 16px max(20px, env(safe-area-inset-bottom)); background: var(--ground); border-top: 1px solid var(--line); border-radius: 18px 18px 0 0; box-shadow: 0 -12px 40px rgba(0,0,0,.2); animation: plan-up .3s ease; }
+  .plan.js.is-open .plan__bar { position: sticky; top: 0; z-index: 1; padding: 12px 0 8px; margin: 0; background: var(--ground); }
+  .plan.js.is-open .plan__close { display: inline-block; margin-left: auto; order: 3; }
+  .plan.js.is-open .plan__step[data-step="-1"] { order: 1; }
+  .plan.js.is-open .plan__step[data-step="1"] { order: 2; }
+  .plan-room__name { font-size: 30px; }
+  .plan-room__box { aspect-ratio: 16 / 10; }
+}
+@keyframes plan-up { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .plan.js .plan-room.is-on, .plan.js.is-open .plan__rooms { animation: none; } }
+</style>
+"""
+
+JS = r"""
+<script>/* Walk through the house as a 2D drawing (prototype): a room on the plan opens its panel. */
+(function () {
+  "use strict";
+  var plan = document.getElementById("floor-plan");
+  if (!plan || !plan.classList.contains("plan")) return;
+  var rooms = [].slice.call(plan.querySelectorAll(".plan-room"));
+  var links = [].slice.call(plan.querySelectorAll("a.plan__room"));
+  var current = -1;
+  plan.classList.add("js");
+  function sheet() { return window.matchMedia("(max-width: 860px)").matches; }
+  function open(n, focus) {
+    current = (n + rooms.length) % rooms.length;
+    var key = rooms[current].getAttribute("data-room");
+    rooms.forEach(function (r, k) { r.classList.toggle("is-on", k === current); });
+    links.forEach(function (a) {
+      var on = a.getAttribute("data-room") === key;
+      a.classList.toggle("is-on", on);
+      if (on) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current");
+    });
+    plan.classList.add("is-open");
+    if (focus) rooms[current].focus({preventScroll: true});
+    if (sheet()) {
+      var on = links.filter(function (a) { return a.getAttribute("data-room") === key; })[0];
+      var r = on && on.getBoundingClientRect();
+      if (r) window.scrollBy({top: r.top - 84, behavior: window.PLAN_OPEN_INSTANT ? "auto" : "smooth"});
+    }
+  }
+  function close() {
+    plan.classList.remove("is-open");
+    rooms.forEach(function (r) { r.classList.remove("is-on"); });
+    links.forEach(function (a) { a.classList.remove("is-on"); a.removeAttribute("aria-current"); });
+    if (current > -1) { var a = links.filter(function (l) { return l.getAttribute("data-room") === rooms[current].getAttribute("data-room"); })[0]; if (a) a.focus(); }
+    current = -1;
+  }
+  links.forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      e.preventDefault();
+      var key = a.getAttribute("data-room");
+      open(rooms.map(function (r) { return r.getAttribute("data-room"); }).indexOf(key), !sheet());
+    });
+    a.addEventListener("keydown", function (e) { if (e.key === " ") { e.preventDefault(); a.click(); } });
+  });
+  [].forEach.call(plan.querySelectorAll(".plan__step"), function (b) {
+    b.addEventListener("click", function () { open((current < 0 ? -1 : current) + Number(b.getAttribute("data-step")), true); });
+  });
+  plan.querySelector(".plan__close").addEventListener("click", close);
+  document.addEventListener("keydown", function (e) {
+    if (current < 0) return;
+    if (e.key === "Escape") close();
+    if (e.key === "ArrowRight") open(current + 1, true);
+    if (e.key === "ArrowLeft") open(current - 1, true);
+  });
+  if (window.PLAN_OPEN) setTimeout(function () { window.PLAN_OPEN_INSTANT = true; open(rooms.map(function (r) { return r.getAttribute("data-room"); }).indexOf(window.PLAN_OPEN), false); window.PLAN_OPEN_INSTANT = false; }, 60);
+})();
+</script>
+"""
+
+
+# ---------------------------------------------------------------- the facts row, drawn
+FACT_ICONS = {
+    "beds": (
+        '<g filter="url(#plan-wash)"><rect x="8" y="10" width="36" height="48" class="fact-wash"/><rect x="54" y="10" width="36" height="48" class="fact-wash"/></g>'
+        '<g class="fact-ink"><rect x="8" y="10" width="36" height="48" rx="2"/><rect x="54" y="10" width="36" height="48" rx="2"/>'
+        '<rect x="12" y="14" width="28" height="9" rx="3"/><rect x="58" y="14" width="28" height="9" rx="3"/>'
+        '<path d="M8 30 q18 4 36 0 M54 30 q18 4 36 0"/></g>'
+    ),
+    "gardens": (
+        '<g filter="url(#plan-wash)"><circle cx="30" cy="38" r="20" class="fact-green"/><circle cx="68" cy="34" r="16" class="fact-green"/></g>'
+        '<g class="fact-ink fact-ink--thin"><circle cx="30" cy="38" r="20"/><circle cx="68" cy="34" r="16"/>'
+        '<path d="M30 38 l14 -12 M30 38 l18 4 M30 38 l4 18 M30 38 l-14 12 M30 38 l-18 -4 M30 38 l-4 -18 M68 34 l11 -9 M68 34 l14 3 M68 34 l3 14 M68 34 l-11 9 M68 34 l-14 -3"/></g>'
+    ),
+    "well": (
+        '<g filter="url(#plan-wash)"><circle cx="49" cy="38" r="20" class="fact-moss"/></g>'
+        '<g class="fact-ink"><circle cx="49" cy="38" r="20" stroke-width="2.4"/><circle cx="49" cy="38" r="2" fill="#3b2e24"/>'
+        '<path d="M49 6 v8 M27 12 l5 6 M71 12 l-5 6 M18 30 l7 2 M80 30 l-7 2" stroke-width="1.2"/></g>'
+    ),
+    "home": (
+        '<g filter="url(#plan-wash)"><path d="M18 58 V32 L49 12 L80 32 V58 Z" class="fact-wash"/><circle cx="35" cy="44" r="7" class="fact-rust"/></g>'
+        '<g class="fact-ink"><path d="M12 35 L49 10 L86 35"/><path d="M18 31 V58 H80 V31"/><circle cx="35" cy="44" r="7"/>'
+        '<circle cx="62" cy="38" r="2.6" fill="#3b2e24"/><path d="M62 41 v9 l-4 8 M62 50 l4 8 M62 44 l-5 4 M62 44 l5 4"/><path d="M4 58 H94"/></g>'
+    ),
+}
+
+
+def facts_html(lang):
+    rows = (
+        [("2", "bedrooms", "beds"), ("2", "gardens", "gardens"), ("1", "light well", "well"), ("1", "household at a time", "home")]
+        if lang == "en" else
+        [("2", "phòng ngủ", "beds"), ("2", "khoảng vườn", "gardens"), ("1", "giếng trời", "well"), ("1", "hộ thuê một lúc", "home")]
+    )
+    rng = random.Random(11)
+    rule = '<svg class="house__facts-rule" viewBox="0 0 1000 14" preserveAspectRatio="none" aria-hidden="true" focusable="false"><g class="fact-ink">'
+    rule += sketch_line(rng, 4, 7, 996, 7, 1.4) + "</g></svg>"
+    items = "".join(
+        f'<li><svg class="house__fact-icon" viewBox="0 0 98 64" aria-hidden="true" focusable="false">{FACT_ICONS[icon]}</svg>'
+        f'<span class="house__fact-number">{n}</span> <span class="house__fact-label">{label}</span></li>'
+        for n, label, icon in rows
+    )
+    return f'<div class="house__facts-drawn reveal">{rule}<ul class="house__facts house__facts--drawn">{items}</ul></div>'
+
+
+FACTS_CSS = """
+<style>/* the facts row as small watercolour drawings (prototype) */
+.house__facts-drawn { margin: 96px 0 0; }
+.house__facts-rule { display: block; width: 100%; height: 14px; }
+.house__facts--drawn { margin: 0; padding: var(--space-3) 0 0; border-top: 0; }
+.house__facts--drawn li { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 16px; align-items: end; }
+.house__fact-icon { grid-row: 1 / span 2; width: 118px; height: 77px; overflow: visible; }
+.house__facts--drawn .house__fact-number { font-style: italic; font-size: 72px; line-height: .9; }
+.house__facts--drawn .house__fact-label { margin-top: 4px; font-family: var(--font-serif); font-style: italic; font-size: 20px; line-height: 1.2; }
+.fact-ink rect, .fact-ink path, .fact-ink circle:not([fill]) { fill: none; stroke: #3b2e24; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.fact-ink--thin path, .fact-ink--thin circle { stroke: #8a7d58; stroke-width: .9; }
+.fact-wash { fill: #e2bfa4; opacity: .7; }
+.fact-green { fill: #c9d29a; opacity: .8; }
+.fact-moss { fill: #6f8a4f; opacity: .7; }
+.fact-rust { fill: #b5642f; opacity: .75; }
+body[data-daypart="night"] .fact-ink rect, body[data-daypart="night"] .fact-ink path, body[data-daypart="night"] .fact-ink circle:not([fill]) { stroke: #e9e2d3; }
+body[data-daypart="night"] .fact-ink circle[fill] { fill: #e9e2d3; }
+@media (max-width: 760px) {
+  .house__facts-drawn { margin-top: 64px; }
+  .house__facts--drawn { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 28px; }
+  .house__facts--drawn li { grid-template-columns: 1fr; }
+  .house__fact-icon { grid-row: auto; width: 78px; height: 51px; margin-bottom: 6px; }
+  .house__facts--drawn .house__fact-number { font-size: 52px; }
+  .house__facts--drawn .house__fact-label { font-size: 17px; }
+}
+</style>
+"""
+
+
+def patch(html, lang, open_room=None):
+    a = html.index('<figure id="floor-plan"')
+    b = html.index("</dialog>", a) + len("</dialog>")
+    html = html[:a] + fragment(lang) + html[b:]
+    # the owner dropped "The layout" list (2026-11-18): the drawing names the rooms
+    la = html.index('<div class="house__layout')
+    lb = html.index('<div class="house__included', la)
+    html = html[:la] + html[lb:]
+    # the facts row, drawn in the style of the sketch (owner, 2026-11-18)
+    fa = html.index('<ul class="house__facts reveal">')
+    fb = html.index("</ul>", fa) + len("</ul>")
+    html = html[:fa] + facts_html(lang) + html[fb:]
+    html = html.replace("</head>", FACTS_CSS + "</head>", 1)
+    html = html.replace("</head>", CSS + "</head>", 1)
+    pre = f'<script>window.PLAN_OPEN={json.dumps(open_room)};</script>' if open_room else ""
+    k = html.rindex("</body>")
+    return html[:k] + pre + JS + html[k:]
+
+
+for key in list(docs):
+    h = docs[key]
+    if 'id="floor-plan"' in h:
+        docs[key] = patch(h, "vi" if key.startswith("home-vi") else "en")
+
+base_en = json.loads(page[i:j])["home-day"]
+base_vi = json.loads(page[i:j])["home-vi-day"]
+docs["home-day-plan-light-well"] = patch(base_en, "en", "light-well")
+docs["home-day-plan-bathroom"] = patch(base_en, "en", "bathroom")
+docs["home-day-plan-veranda"] = patch(base_en, "en", "veranda")
+docs["home-vi-day-plan-veranda"] = patch(base_vi, "vi", "veranda")
+
+NEW = """  {group: "Site · walk through the house (2D drawing)", id: "house-facts", title: "01 The house · facts row drawn (2 bedrooms, 2 gardens, 1 light well, 1 household)", doc: "home-day", at: "house"},
+  {group: "Site · walk through the house (2D drawing)", id: "house-facts-phone", title: "Phone · facts row drawn, two columns", doc: "home-day", at: "house", w: "phone"},
+  {group: "Site · walk through the house (2D drawing)", id: "plan", title: "Walk through · the drawing, no room open (tap a room)", doc: "home-day", at: "floor-plan"},
+  {group: "Site · walk through the house (2D drawing)", id: "plan-room", title: "Walk through · Light well open (photo, text, 03 of 10, ← →)", doc: "home-day-plan-light-well", at: "floor-plan"},
+  {group: "Site · walk through the house (2D drawing)", id: "plan-room-empty", title: "Walk through · Bathroom open, no photo yet (sand block)", doc: "home-day-plan-bathroom", at: "floor-plan"},
+  {group: "Site · walk through the house (2D drawing)", id: "plan-phone", title: "Phone · the drawing upright, front garden at the top", doc: "home-day", at: "floor-plan", w: "phone"},
+  {group: "Site · walk through the house (2D drawing)", id: "plan-phone-sheet", title: "Phone · Covered veranda open in the bottom sheet (✕, ← →)", doc: "home-day-plan-veranda", at: "floor-plan", w: "phone"},
+  {group: "Site · walk through the house (2D drawing)", id: "vi-plan", title: "/vi/ Đi một vòng quanh nhà · bản vẽ", doc: "home-vi-day", at: "floor-plan"},
+  {group: "Site · walk through the house (2D drawing)", id: "vi-plan-phone-sheet", title: "/vi/ Phone · Hiên có mái che mở trong khung dưới", doc: "home-vi-day-plan-veranda", at: "floor-plan", w: "phone"},
+"""
+tail = page[j:]
+anchor = "var SCENARIOS = [\n"
+tail = tail.replace(anchor, anchor + NEW, 1)
+head = page[:i].replace("Full-screen photo viewer added on 2026-11-18 (main 9c45cfa), drawn by hand: not built yet.",
+    "Full-screen photo viewer added on 2026-11-18 (main 9c45cfa), drawn by hand: not built yet.\n  Walk through the house as a 2D drawing (from the cardboard model) added on 2026-11-18 (main 9cda474), drawn by hand: not built yet.", 1)
+blob = json.dumps(docs, ensure_ascii=False).replace("</", "<\\/")
+open(out, "w", encoding="utf-8").write(head + blob + tail)
+print("ok", len(docs))
