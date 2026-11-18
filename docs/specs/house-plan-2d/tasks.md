@@ -11,21 +11,21 @@ One epic of two tasks, in order: T1 draws the house and lists the rooms (works w
 
 T1 adds the query-cap test `src/pages/tests/test_house_drawing.py::test_home_page_still_makes_one_query`; T2 does not change it.
 
-## T1: Draw the house as a 2D plan with its room list and the cardboard model
+## T1: Draw the house as a 2D plan with its room list
 
-- **ACs:** AC1–AC10, AC15, AC16
-- **Matrix rows:** M1–M14, M22, M24
-- **Files likely touched:** `src/pages/floor_plan.py`, `src/pages/texts/house.py`, `src/templates/includes/floor_plan.html`, `src/pages/templatetags/photos.py`, `src/static/css/chapters/house.css`, `src/static/media/model/model-side.jpg` (NEW), `src/static/media/model/model-front.jpg` (NEW), `src/static/media/model/model-light-well.jpg` (NEW), `src/pages/tests/test_house_drawing.py` (NEW), `docs/specs/house-plan-2d/decisions/T1.md` (NEW); plus the existing tests it changes (mainly `src/pages/tests/test_floor_plan.py`)
+- **ACs:** AC1–AC9, AC14, AC15
+- **Matrix rows:** M1–M12, M20, M22
+- **Files likely touched:** `src/pages/floor_plan.py`, `src/pages/texts/house.py`, `src/templates/includes/floor_plan.html`, `src/pages/templatetags/photos.py`, `src/static/css/chapters/house.css`, `src/pages/tests/test_house_drawing.py` (NEW), `docs/specs/house-plan-2d/decisions/T1.md` (NEW); plus the existing tests it changes (mainly `src/pages/tests/test_floor_plan.py`)
 - **Depends on:** none
 - **Risk:** medium
 - **needs-ui:** yes
-- **Screens to capture:** `/#floor-plan` at 1440x1000 → `#floor-plan` (design `plan`); `/#floor-plan` at 390x844 → `#floor-plan .plan__paper` (design `plan-phone`); `/#floor-plan` at 390x844 → `.plan__model` (design `plan-model-phone`)
+- **Screens to capture:** `/#floor-plan` at 1440x1000 → `#floor-plan` (design `plan`); `/#floor-plan` at 390x844 → `#floor-plan .plan__paper` (design `plan-phone`)
 - **Label:** `agent:ready`
 
 ## T2: Open a room from the plan: side panel on desktop, bottom sheet on phones
 
-- **ACs:** AC11–AC14, AC15, AC16
-- **Matrix rows:** M15–M21, M23, M24
+- **ACs:** AC10–AC13, AC14, AC15
+- **Matrix rows:** M13–M19, M21, M22
 - **Files likely touched:** `src/static/js/floor-plan.js`, `src/static/css/chapters/house.css`, `src/pages/tests/test_house_drawing_panel.py` (NEW), `docs/specs/house-plan-2d/decisions/T2.md` (NEW); plus the existing tests it changes (the floor-plan script tests)
 - **Depends on:** T1
 - **Risk:** low

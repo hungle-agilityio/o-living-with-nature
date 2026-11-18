@@ -6,8 +6,8 @@ Replaces the schematic room boxes of "Walk through the house" in every home* sta
 hand-drawn plan (ink line + watercolour wash, in the style of the owner's sketch) and a small
 section above it. Layout read from the owner's cardboard model. Every room is a link; a tap
 opens the room panel (desktop: beside the plan; phone: a bottom sheet) with its photo or the
-empty sand block, its text, n / 10 and previous / next. Below the plan, three photos of the
-cardboard model. Adds SCENARIOS for the new states.
+empty sand block, its text, n / 10 and previous / next.
+Adds SCENARIOS for the new states.
 """
 import json
 import random
@@ -72,21 +72,13 @@ T = {
                hint="Tap a room on the plan to look inside.", section="Section", plan="Plan",
                prev="Previous room", next="Next room", close="Close", of="of",
                photo_chip="Illustrative photo", empty="No photo of this room yet",
-               model="The cardboard model", model_chip="Cardboard model",
-               lane="lane", plan_label="Plan of the house: tap a room",
-               models=[("model-side", "The cardboard model of the house from the side: the long gable roof and the veranda roof"),
-                       ("model-front", "The cardboard model seen from the front garden, with the veranda and the Ở sign"),
-                       ("model-light-well", "The light well of the model, with its curved wall and round opening, lit from above")]),
+               lane="lane", plan_label="Plan of the house: tap a room"),
     "vi": dict(heading="Đi một vòng quanh nhà", chip="Phác thảo · không theo tỉ lệ",
                note="Vẽ theo mô hình bìa của căn nhà, chưa phải bản vẽ của kiến trúc sư.",
                hint="Chạm vào một phòng trên bản vẽ để xem bên trong.", section="Mặt cắt", plan="Mặt bằng",
                prev="Phòng trước", next="Phòng sau", close="Đóng", of="/",
                photo_chip="Ảnh minh hoạ", empty="Chưa có ảnh phòng này",
-               model="Mô hình bìa", model_chip="Mô hình bìa",
-               lane="ngõ", plan_label="Mặt bằng căn nhà: chạm vào một phòng",
-               models=[("model-side", "Mô hình bìa của căn nhà nhìn từ bên hông: mái dốc dài và mái hiên"),
-                       ("model-front", "Mô hình bìa nhìn từ vườn trước, có hiên và bảng Ở"),
-                       ("model-light-well", "Giếng trời của mô hình, vách cong và ô tròn, có ánh sáng từ trên")]),
+               lane="ngõ", plan_label="Mặt bằng căn nhà: chạm vào một phòng"),
 }
 
 # ---------------------------------------------------------------- drawing helpers
@@ -326,10 +318,6 @@ def fragment(lang):
             f'<p class="label muted plan-room__count">{n:02d} {t["of"]} {len(ROOMS):02d}</p>'
             f'<h4 class="plan-room__name">{name}</h4>{media}<p class="plan-room__text">{text}</p></li>'
         )
-    models = "".join(
-        f'<li><img src="/static/media/model/{k}.jpg" alt="{alt}" width="1000" height="{696 if k == "model-side" else 712}" loading="lazy"></li>'
-        for k, alt in t["models"]
-    )
     return (
         f'<figure id="floor-plan" class="house__plan plan reveal" aria-labelledby="floor-plan-heading">'
         f'<h3 id="floor-plan-heading" class="label muted plan__heading">{t["heading"]}</h3>'
@@ -345,8 +333,6 @@ def fragment(lang):
         f'<ol class="plan__rooms">{"".join(items)}</ol></aside>'
         f'</div>'
         f'<figcaption class="media__credit plan__note-line">{t["note"]}</figcaption>'
-        f'<div class="plan__model"><p class="label muted">{t["model"]}</p><ul class="plan__model-list">{models}</ul>'
-        f'<span class="media__chip plan__model-chip">{t["model_chip"]}</span></div>'
         f'</figure>'
     )
 
@@ -426,11 +412,6 @@ CSS = r"""
 .plan.js:not(.is-open) .plan__bar { display: none; }
 @keyframes plan-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .plan__note-line { margin-top: 10px; }
-.plan__model { position: relative; margin-top: 28px; }
-.plan__model .label { margin: 0 0 10px; }
-.plan__model-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
-.plan__model-list img { display: block; width: 100%; height: auto; aspect-ratio: 10 / 7; object-fit: cover; }
-.plan__model-chip { position: absolute; left: 8px; bottom: 8px; }
 @media (max-width: 860px) {
   .plan__body { grid-template-columns: 1fr; }
   .plan__paper { padding: 12px 10px 48px; }
@@ -438,8 +419,6 @@ CSS = r"""
   .plan__svg--v { display: block; max-width: 420px; margin: 0 auto; }
   .plan__label { font-size: 16px; }
   .plan__hint { padding: 14px 16px; font-size: 19px; }
-  .plan__model-list { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 78%; overflow-x: auto; scroll-snap-type: x mandatory; }
-  .plan__model-list li { scroll-snap-align: start; }
   /* the room panel becomes a bottom sheet */
   .plan.js .plan__panel { position: static; }
   .plan.js.is-open .plan__panel { position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 60; max-height: 76vh; overflow-y: auto; padding: 0 16px max(20px, env(safe-area-inset-bottom)); background: var(--ground); border-top: 1px solid var(--line); border-radius: 18px 18px 0 0; box-shadow: 0 -12px 40px rgba(0,0,0,.2); animation: plan-up .3s ease; }
@@ -541,7 +520,6 @@ NEW = """  {group: "Site · walk through the house (2D drawing)", id: "plan", ti
   {group: "Site · walk through the house (2D drawing)", id: "plan-room-empty", title: "Walk through · Bathroom open, no photo yet (sand block)", doc: "home-day-plan-bathroom", at: "floor-plan"},
   {group: "Site · walk through the house (2D drawing)", id: "plan-phone", title: "Phone · the drawing upright, front garden at the top", doc: "home-day", at: "floor-plan", w: "phone"},
   {group: "Site · walk through the house (2D drawing)", id: "plan-phone-sheet", title: "Phone · Covered veranda open in the bottom sheet (✕, ← →)", doc: "home-day-plan-veranda", at: "floor-plan", w: "phone"},
-  {group: "Site · walk through the house (2D drawing)", id: "plan-model-phone", title: "Phone · the cardboard model photos (swipe)", doc: "home-day", at: "floor-plan", w: "phone"},
   {group: "Site · walk through the house (2D drawing)", id: "vi-plan", title: "/vi/ Đi một vòng quanh nhà · bản vẽ", doc: "home-vi-day", at: "floor-plan"},
   {group: "Site · walk through the house (2D drawing)", id: "vi-plan-phone-sheet", title: "/vi/ Phone · Hiên có mái che mở trong khung dưới", doc: "home-vi-day-plan-veranda", at: "floor-plan", w: "phone"},
 """

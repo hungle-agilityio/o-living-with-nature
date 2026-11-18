@@ -6,7 +6,6 @@ On the home page `/` and `/vi/`, chapter 01 (`#house`), the block "Walk through 
 
 1. A drawing on a paper card: a long section of the house (decoration only) above a clickable plan of the plot, front garden to back garden, drawn as inline SVG with ink lines and watercolour washes, the style of the owner's sketch. The plan is laid out sideways on wide screens and upright (front garden at the top) at 860 px wide or less. A chip "Sketch · not to scale" and the caption "Drawn from the cardboard model of the house, not the architect's plan."
 2. Ten rooms, each a link on the plan. Without JavaScript the rooms are a list beside (desktop) or under (phone) the drawing, each with its number, name, photo (or the empty Sand block with Ở) and text. With JavaScript (`js/floor-plan.js`) one room shows at a time: beside the drawing on desktop, in a bottom sheet on phones, with previous / next and close.
-3. "The cardboard model": three photos of the owner's cardboard model under the drawing, labelled "Cardboard model".
 
 The look, the layout and the motion are those of the prototype states listed under Design. The drawing code of the prototype is in [drawing-reference.txt](drawing-reference.txt) (a Python script, kept as text so the linters skip it) (the script that drew those states): the build ports its geometry, sketch-line method, markup, CSS and script to Django; the result must match the prototype states visually, not byte for byte. No database query is added; the owner pages do not change.
 
@@ -63,26 +62,22 @@ Texts:
 - **AC8.** Given a room with a photo (for example Light well), then its item shows the photo at 4 / 3 (cover) with the chip "Illustrative photo" (VI "Ảnh minh hoạ") and its credit ("Photo: Fatmanur Üzüm / Pexels", VI "Ảnh: Fatmanur Üzüm / Pexels"), the alt text of `pages/photos.py` in the page's language, `loading="lazy"`. Given a room with no photo (Front garden, Bathroom, Laundry) or whose file is missing, then the item shows the Sand block with a large Ở and the caption "No photo of this room yet" (VI "Chưa có ảnh phòng này"); this matches `plan-room-empty`.
 - **AC9.** The old dialog `dialog.floor-plan__dialog`, its Close button and the ↗ links to photo files are gone; the block keeps `id="floor-plan"` and the page still links `js/floor-plan.js` once with `defer`.
 
-### The cardboard model (T1)
-
-- **AC10.** Given `/`, then under the caption there is the label "The cardboard model" (VI "Mô hình bìa") and three photos in this order, from `src/static/media/model/`: `model-side.jpg` ("The cardboard model of the house from the side: the long gable roof and the veranda roof" / "Mô hình bìa của căn nhà nhìn từ bên hông: mái dốc dài và mái hiên"), `model-front.jpg` ("The cardboard model seen from the front garden, with the veranda and the Ở sign" / "Mô hình bìa nhìn từ vườn trước, có hiên và bảng Ở"), `model-light-well.jpg` ("The light well of the model, with its curved wall and round opening, lit from above" / "Giếng trời của mô hình, vách cong và ô tròn, có ánh sáng từ trên"), each 1000 px wide at 10 / 7, with the chip "Cardboard model" (VI "Mô hình bìa") on the first. The files are the three JPEGs of `docs/specs/house-plan-2d/media/`, copied unchanged. On desktop they are three equal columns; on a phone a sideways row of 78% cards that snaps (`plan-model-phone`). They carry no "Illustrative" chip: they are real photos of the owner's model.
-
 ### Opening a room (T2)
 
-- **AC11.** Given a desktop with JavaScript and no room open, when the visitor clicks Light well on the plan, then Light well is tinted moss with a 3 px moss outline and its label bold, `aria-current="true"` is on its link, the hint hides and the panel shows only the Light well item ("03 of 10", photo, chip, credit, text) with a 0.3 s fade-up, and two round 44 px buttons ← (label "Previous room", VI "Phòng trước") and → ("Next room", VI "Phòng sau") above it; this matches `plan-room`. The panel stays in view while the page scrolls past the drawing (sticky under the header).
-- **AC12.** Given a room open, when the visitor presses → (or the → key), then the next room in the table's order opens (after Back garden comes Front garden); ← (or the ← key) opens the previous one (before Front garden comes Back garden); Esc closes the room: no room tinted, the hint shows again and focus returns to that room's link.
-- **AC13.** Given a phone with JavaScript, when the visitor taps Covered veranda, then the page scrolls so the room sits just under the header, and a bottom sheet slides up (0.3 s) holding ←, → and ✕ (label "Close", VI "Đóng") in a sticky row and the Covered veranda item ("02 of 10", photo, chip, credit, text); the sheet is at most 76% of the screen high, scrolls inside, covers the phone contact bar and has rounded top corners; ✕ closes it; this matches `plan-phone-sheet` (VI `vi-plan-phone-sheet`).
-- **AC14.** Given the visitor asked for less motion, then the fade-up and the sheet's slide do not run and the page jumps instead of scrolling smoothly. The script is plain JavaScript in `src/static/js/floor-plan.js` (no library), stores nothing, and is under 4,000 bytes.
+- **AC10.** Given a desktop with JavaScript and no room open, when the visitor clicks Light well on the plan, then Light well is tinted moss with a 3 px moss outline and its label bold, `aria-current="true"` is on its link, the hint hides and the panel shows only the Light well item ("03 of 10", photo, chip, credit, text) with a 0.3 s fade-up, and two round 44 px buttons ← (label "Previous room", VI "Phòng trước") and → ("Next room", VI "Phòng sau") above it; this matches `plan-room`. The panel stays in view while the page scrolls past the drawing (sticky under the header).
+- **AC11.** Given a room open, when the visitor presses → (or the → key), then the next room in the table's order opens (after Back garden comes Front garden); ← (or the ← key) opens the previous one (before Front garden comes Back garden); Esc closes the room: no room tinted, the hint shows again and focus returns to that room's link.
+- **AC12.** Given a phone with JavaScript, when the visitor taps Covered veranda, then the page scrolls so the room sits just under the header, and a bottom sheet slides up (0.3 s) holding ←, → and ✕ (label "Close", VI "Đóng") in a sticky row and the Covered veranda item ("02 of 10", photo, chip, credit, text); the sheet is at most 76% of the screen high, scrolls inside, covers the phone contact bar and has rounded top corners; ✕ closes it; this matches `plan-phone-sheet` (VI `vi-plan-phone-sheet`).
+- **AC13.** Given the visitor asked for less motion, then the fade-up and the sheet's slide do not run and the page jumps instead of scrolling smoothly. The script is plain JavaScript in `src/static/js/floor-plan.js` (no library), stores nothing, and is under 4,000 bytes.
 
 ### All tasks
 
-- **AC15.** `/` and `/vi/` still make exactly one database query each; the owner pages and the 404 page are unchanged.
-- **AC16.** Every test on `main` passes unchanged, except the ones each task lists under "Existing tests that change" in its issue, changed only as listed there. `bash scripts/check.sh` passes.
+- **AC14.** `/` and `/vi/` still make exactly one database query each; the owner pages and the 404 page are unchanged.
+- **AC15.** Every test on `main` passes unchanged, except the ones each task lists under "Existing tests that change" in its issue, changed only as listed there. `bash scripts/check.sh` passes.
 
 ## Edge cases
 
 - Empty: a room with no photo, or whose photo file is missing, shows the Sand block with Ở and "No photo of this room yet" (AC8); the room is still on the plan and in the list.
-- Large data: always ten rooms and three model photos (fixed in code); nothing grows with data.
+- Large data: always ten rooms (fixed in code); nothing grows with data.
 - Narrow screens: at 320 px the upright plan scales down with the card; the tap areas of the smallest room (Bathroom) stay at least 44 px (AC4).
 - Themes: the paper card keeps its own paper colour and ink in all four times of day (dawn, day, dusk, night); the panel uses the theme's colours.
 - No JavaScript: the full list of ten rooms shows; links jump to the items (AC7).
@@ -97,7 +92,7 @@ Texts:
 | Q3 Label | "Sketch · not to scale" | No label | It is still not the architect's plan |
 | Q4 What a tap shows | Room tinted, panel with name, photo (stock, labelled) or empty block, 1–2 sentences, ← → | Only the photo, as today | The owner asked for photo and information per room |
 | Q5 Room texts | Drafted by Claude from the owner's facts, approved by the owner in the prototype ("Prototype ổn", 2026-11-18); no sizes | The owner writes them | Faster; nothing invented beyond what the owner said |
-| Q6 Cardboard model photos on the site | Yes: three, labelled "Cardboard model" | Not on the site | Real, honest pictures of the house while real photos wait for Phase 2 |
+| Q6 Cardboard model photos on the site | Not on the site (owner, after seeing the prototype, 2026-11-18) | Three photos labelled "Cardboard model" (first answer) | The owner removed the strip; the drawing alone shows the house |
 | Q7 Phone | Plan upright, front garden at the top, tap areas ≥ 44 px, room in a bottom sheet | Sideways plan with sideways scroll | Fits a phone without sideways scrolling |
 | Q8 Vietnamese | Same drawing with Vietnamese labels on `/vi/` | — | One drawing for both languages |
 
@@ -114,9 +109,6 @@ Prototype `docs/design/prototype.html` (Artifact https://claude.ai/artifact/2NC8
 - `#plan-room-empty`: desktop, Bathroom open, no photo.
 - `#plan-phone`: phone, the upright plan.
 - `#plan-phone-sheet`: phone, Covered veranda in the bottom sheet.
-- `#plan-model-phone`: phone, the cardboard model photos.
 - `#vi-plan`, `#vi-plan-phone-sheet`: the same on `/vi/`.
-
-In the repository the prototype's model photos resolve to `src/static/media/model/`, which T1 adds; until then those three images show empty in the repository copy (the Artifact has them).
 
 ## Open questions
