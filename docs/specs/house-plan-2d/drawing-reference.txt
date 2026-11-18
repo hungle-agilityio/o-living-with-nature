@@ -339,6 +339,7 @@ def fragment(lang):
 
 CSS = r"""
 <style>/* Walk through the house as a 2D drawing (prototype of the house-plan-2d spec) */
+.house__included .label { margin-top: 0; }
 .house__plan.plan { grid-column: 1 / -1; grid-row: auto; margin: var(--space-4, 48px) 0 0; }
 .plan__heading { margin: 0 0 16px; font-weight: inherit; }
 .plan__body { display: grid; grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); gap: 24px; align-items: start; }
@@ -493,10 +494,91 @@ JS = r"""
 """
 
 
+# ---------------------------------------------------------------- the facts row, drawn
+FACT_ICONS = {
+    "beds": (
+        '<g filter="url(#plan-wash)"><rect x="8" y="10" width="36" height="48" class="fact-wash"/><rect x="54" y="10" width="36" height="48" class="fact-wash"/></g>'
+        '<g class="fact-ink"><rect x="8" y="10" width="36" height="48" rx="2"/><rect x="54" y="10" width="36" height="48" rx="2"/>'
+        '<rect x="12" y="14" width="28" height="9" rx="3"/><rect x="58" y="14" width="28" height="9" rx="3"/>'
+        '<path d="M8 30 q18 4 36 0 M54 30 q18 4 36 0"/></g>'
+    ),
+    "gardens": (
+        '<g filter="url(#plan-wash)"><circle cx="30" cy="38" r="20" class="fact-green"/><circle cx="68" cy="34" r="16" class="fact-green"/></g>'
+        '<g class="fact-ink fact-ink--thin"><circle cx="30" cy="38" r="20"/><circle cx="68" cy="34" r="16"/>'
+        '<path d="M30 38 l14 -12 M30 38 l18 4 M30 38 l4 18 M30 38 l-14 12 M30 38 l-18 -4 M30 38 l-4 -18 M68 34 l11 -9 M68 34 l14 3 M68 34 l3 14 M68 34 l-11 9 M68 34 l-14 -3"/></g>'
+    ),
+    "well": (
+        '<g filter="url(#plan-wash)"><circle cx="49" cy="38" r="20" class="fact-moss"/></g>'
+        '<g class="fact-ink"><circle cx="49" cy="38" r="20" stroke-width="2.4"/><circle cx="49" cy="38" r="2" fill="#3b2e24"/>'
+        '<path d="M49 6 v8 M27 12 l5 6 M71 12 l-5 6 M18 30 l7 2 M80 30 l-7 2" stroke-width="1.2"/></g>'
+    ),
+    "home": (
+        '<g filter="url(#plan-wash)"><path d="M18 58 V32 L49 12 L80 32 V58 Z" class="fact-wash"/><circle cx="35" cy="44" r="7" class="fact-rust"/></g>'
+        '<g class="fact-ink"><path d="M12 35 L49 10 L86 35"/><path d="M18 31 V58 H80 V31"/><circle cx="35" cy="44" r="7"/>'
+        '<circle cx="62" cy="38" r="2.6" fill="#3b2e24"/><path d="M62 41 v9 l-4 8 M62 50 l4 8 M62 44 l-5 4 M62 44 l5 4"/><path d="M4 58 H94"/></g>'
+    ),
+}
+
+
+def facts_html(lang):
+    rows = (
+        [("2", "bedrooms", "beds"), ("2", "gardens", "gardens"), ("1", "light well", "well"), ("1", "household at a time", "home")]
+        if lang == "en" else
+        [("2", "phòng ngủ", "beds"), ("2", "khoảng vườn", "gardens"), ("1", "giếng trời", "well"), ("1", "hộ thuê một lúc", "home")]
+    )
+    rng = random.Random(11)
+    rule = '<svg class="house__facts-rule" viewBox="0 0 1000 14" preserveAspectRatio="none" aria-hidden="true" focusable="false"><g class="fact-ink">'
+    rule += sketch_line(rng, 4, 7, 996, 7, 1.4) + "</g></svg>"
+    items = "".join(
+        f'<li><svg class="house__fact-icon" viewBox="0 0 98 64" aria-hidden="true" focusable="false">{FACT_ICONS[icon]}</svg>'
+        f'<span class="house__fact-number">{n}</span> <span class="house__fact-label">{label}</span></li>'
+        for n, label, icon in rows
+    )
+    return f'<div class="house__facts-drawn reveal">{rule}<ul class="house__facts house__facts--drawn">{items}</ul></div>'
+
+
+FACTS_CSS = """
+<style>/* the facts row as small watercolour drawings (prototype) */
+.house__facts-drawn { margin: 96px 0 0; }
+.house__facts-rule { display: block; width: 100%; height: 14px; }
+.house__facts--drawn { margin: 0; padding: var(--space-3) 0 0; border-top: 0; }
+.house__facts--drawn li { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 16px; align-items: end; }
+.house__fact-icon { grid-row: 1 / span 2; width: 118px; height: 77px; overflow: visible; }
+.house__facts--drawn .house__fact-number { font-style: italic; font-size: 72px; line-height: .9; }
+.house__facts--drawn .house__fact-label { margin-top: 4px; font-family: var(--font-serif); font-style: italic; font-size: 20px; line-height: 1.2; }
+.fact-ink rect, .fact-ink path, .fact-ink circle:not([fill]) { fill: none; stroke: #3b2e24; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.fact-ink--thin path, .fact-ink--thin circle { stroke: #8a7d58; stroke-width: .9; }
+.fact-wash { fill: #e2bfa4; opacity: .7; }
+.fact-green { fill: #c9d29a; opacity: .8; }
+.fact-moss { fill: #6f8a4f; opacity: .7; }
+.fact-rust { fill: #b5642f; opacity: .75; }
+body[data-daypart="night"] .fact-ink rect, body[data-daypart="night"] .fact-ink path, body[data-daypart="night"] .fact-ink circle:not([fill]) { stroke: #e9e2d3; }
+body[data-daypart="night"] .fact-ink circle[fill] { fill: #e9e2d3; }
+@media (max-width: 760px) {
+  .house__facts-drawn { margin-top: 64px; }
+  .house__facts--drawn { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 28px; }
+  .house__facts--drawn li { grid-template-columns: 1fr; }
+  .house__fact-icon { grid-row: auto; width: 78px; height: 51px; margin-bottom: 6px; }
+  .house__facts--drawn .house__fact-number { font-size: 52px; }
+  .house__facts--drawn .house__fact-label { font-size: 17px; }
+}
+</style>
+"""
+
+
 def patch(html, lang, open_room=None):
     a = html.index('<figure id="floor-plan"')
     b = html.index("</dialog>", a) + len("</dialog>")
     html = html[:a] + fragment(lang) + html[b:]
+    # the owner dropped "The layout" list (2026-11-18): the drawing names the rooms
+    la = html.index('<div class="house__layout')
+    lb = html.index('<div class="house__included', la)
+    html = html[:la] + html[lb:]
+    # the facts row, drawn in the style of the sketch (owner, 2026-11-18)
+    fa = html.index('<ul class="house__facts reveal">')
+    fb = html.index("</ul>", fa) + len("</ul>")
+    html = html[:fa] + facts_html(lang) + html[fb:]
+    html = html.replace("</head>", FACTS_CSS + "</head>", 1)
     html = html.replace("</head>", CSS + "</head>", 1)
     pre = f'<script>window.PLAN_OPEN={json.dumps(open_room)};</script>' if open_room else ""
     k = html.rindex("</body>")
@@ -515,7 +597,9 @@ docs["home-day-plan-bathroom"] = patch(base_en, "en", "bathroom")
 docs["home-day-plan-veranda"] = patch(base_en, "en", "veranda")
 docs["home-vi-day-plan-veranda"] = patch(base_vi, "vi", "veranda")
 
-NEW = """  {group: "Site · walk through the house (2D drawing)", id: "plan", title: "Walk through · the drawing, no room open (tap a room)", doc: "home-day", at: "floor-plan"},
+NEW = """  {group: "Site · walk through the house (2D drawing)", id: "house-facts", title: "01 The house · facts row drawn (2 bedrooms, 2 gardens, 1 light well, 1 household)", doc: "home-day", at: "house"},
+  {group: "Site · walk through the house (2D drawing)", id: "house-facts-phone", title: "Phone · facts row drawn, two columns", doc: "home-day", at: "house", w: "phone"},
+  {group: "Site · walk through the house (2D drawing)", id: "plan", title: "Walk through · the drawing, no room open (tap a room)", doc: "home-day", at: "floor-plan"},
   {group: "Site · walk through the house (2D drawing)", id: "plan-room", title: "Walk through · Light well open (photo, text, 03 of 10, ← →)", doc: "home-day-plan-light-well", at: "floor-plan"},
   {group: "Site · walk through the house (2D drawing)", id: "plan-room-empty", title: "Walk through · Bathroom open, no photo yet (sand block)", doc: "home-day-plan-bathroom", at: "floor-plan"},
   {group: "Site · walk through the house (2D drawing)", id: "plan-phone", title: "Phone · the drawing upright, front garden at the top", doc: "home-day", at: "floor-plan", w: "phone"},

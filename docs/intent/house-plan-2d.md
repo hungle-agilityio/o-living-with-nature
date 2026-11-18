@@ -6,7 +6,7 @@
 
 ## Goal
 
-The section becomes a hand-drawn 2D drawing of the house, in the style of the owner's watercolour sketch: a small section above a plan, read from the owner's cardboard model of the real house. Tapping a room shows its photo (or an empty block until there is one) and a sentence or two about it.
+The section becomes a hand-drawn 2D drawing of the house, in the style of the owner's watercolour sketch: a small section above a plan, read from the owner's cardboard model of the real house. Tapping a room shows its photo (or an empty block until there is one) and a sentence or two about it. The list "The layout" above it goes: the drawing names the rooms. The facts row above (2 bedrooms, 2 gardens, 1 light well, 1 household) is drawn in the same sketch style.
 
 ## Users
 

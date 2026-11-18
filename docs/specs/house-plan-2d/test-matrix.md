@@ -14,6 +14,7 @@
 | M10 | AC7, AC8 | normal | `/` has `ol.plan__rooms` with ten `li.plan-room` in order, "03 of 10" on Light well with its photo, chip, credit and lazy loading; `/vi/` "03 / 10" and Vietnamese texts. | integration | `src/pages/tests/test_house_drawing.py` | T1 |
 | M11 | AC8 | empty | Front garden, Bathroom and Laundry items show the Sand block with Ở and "No photo of this room yet"; VI "Chưa có ảnh phòng này". | integration | `src/pages/tests/test_house_drawing.py` | T1 |
 | M12 | AC9 | normal | `/` has no `dialog.floor-plan__dialog`, no link to `/static/media/photos/` inside `#floor-plan`, keeps `id="floor-plan"` and loads `js/floor-plan.js` once with `defer`. | integration | `src/pages/tests/test_house_drawing.py` | T1 |
+| M12b | AC9 | normal | `/` and `/vi/` have no `div.house__layout` and no text "The layout" / "Bố cục" or "Two bedrooms" / "Hai phòng ngủ" in `#house`; "Included" / "Đã bao gồm" and its line are still there; `pages.texts.house` has no key `layout` or `layout_*`. | integration | `src/pages/tests/test_house_drawing.py` | T1 |
 | M13 | AC10 | normal | `floor-plan.js` handles a click on `a.plan__room`: adds `js` and `is-open` to the figure, `is-on` and `aria-current` to the room and its item, prevents the jump. | unit | `src/pages/tests/test_house_drawing_panel.py` (reads the script) | T2 |
 | M14 | AC10 | normal | Given `/` at 1440 px with Light well clicked, the panel matches `plan-room`. | browser | screenshot in the verify report (design `plan-room`) | T2 |
 | M15 | AC10 | empty | Given no room open, the hint shows and no ← → buttons show (CSS `.plan.js:not(.is-open) .plan__bar { display: none }`). | integration | `src/pages/tests/test_house_drawing_panel.py` | T2 |
@@ -21,6 +22,11 @@
 | M17 | AC12 | narrow screen | Given `/` at 390 px with Covered veranda tapped, the sheet matches `plan-phone-sheet`; `house.css` makes `.plan.js.is-open .plan__panel` fixed at the bottom with `max-height: 76vh` and `z-index` above the contact bar. | browser + integration | screenshot (design `plan-phone-sheet`) + `src/pages/tests/test_house_drawing_panel.py` | T2 |
 | M18 | AC12 | manual | On a real phone, tap Covered veranda, swipe the sheet's content, tap → twice and ✕: the right rooms show and the sheet closes. | manual | owner on the preview before `/merge` | T2 |
 | M19 | AC13 | normal | `floor-plan.js` has no `import`, no `localStorage`/`sessionStorage`/`document.cookie`, is under 4,000 bytes; `house.css` has a `prefers-reduced-motion: reduce` rule removing the two animations. | unit | `src/pages/tests/test_house_drawing_panel.py` | T2 |
-| M20 | AC14 | normal | `/` and `/vi/` make exactly one query. | integration | `src/pages/tests/test_house_drawing.py` | T1 |
-| M21 | AC14 | normal | `/` and `/vi/` still make exactly one query after the panel script. | integration | `src/pages/tests/test_house_drawing_panel.py` | T2 |
-| M22 | AC15 | normal | `bash scripts/check.sh` passes; only the listed existing tests changed. | integration | the whole suite | T1, T2 |
+| M20 | AC16 | normal | `/` and `/vi/` make exactly one query. | integration | `src/pages/tests/test_house_drawing.py` | T1 |
+| M21 | AC16 | normal | `/` and `/vi/` still make exactly one query after the panel script. | integration | `src/pages/tests/test_house_drawing_panel.py` | T2 |
+| M22 | AC17 | normal | `bash scripts/check.sh` passes; only the listed existing tests changed. | integration | the whole suite | T1, T2 |
+| M23 | AC14 | normal | `/` has `div.house__facts-drawn` with one `svg.house__facts-rule` and four `li`, each with an `svg.house__fact-icon` (`aria-hidden="true"`), the number and the label of `main`; `/vi/` the Vietnamese labels. | integration | `src/pages/tests/test_house_facts_drawn.py` | T3 |
+| M24 | AC14 | normal | Given `/` at 1440 px, the facts row matches the prototype state `house-facts`. | browser | screenshot in the verify report (design `house-facts`) | T3 |
+| M25 | AC14 | empty | n/a: the four facts are fixed texts, never empty. | n/a | — | T3 |
+| M26 | AC15 | narrow screen | Given `/` at 390 px, two columns with the drawing above the number; matches `house-facts-phone`; `house.css` sets the night ink colour under `body[data-daypart="night"]`. | browser + integration | screenshot (design `house-facts-phone`) + `src/pages/tests/test_house_facts_drawn.py` | T3 |
+| M27 | AC16 | normal | `/` and `/vi/` still make exactly one query after the facts drawings. | integration | `src/pages/tests/test_house_facts_drawn.py` | T3 |
