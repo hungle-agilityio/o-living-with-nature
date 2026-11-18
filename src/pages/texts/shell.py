@@ -51,6 +51,11 @@ EN: dict[str, str] = {
     "hero_line": "A garden house in Hòa Xuân, Đà Nẵng. Two bedrooms, two gardens, ",
     "hero_line_accent": "rented whole, by the month.",
     "contact_bar_label": "Contact",
+    "viewer_label": "Photo viewer",
+    "viewer_open": "Open photo full screen: ",
+    "viewer_close": "Close",
+    "viewer_previous": "Previous photo",
+    "viewer_next": "Next photo",
     "not_found_heading": "This path leads nowhere — the garden is this way.",
     "not_found_line": (
         "The page you were looking for isn't here. It may have moved, or the link has a typo."
@@ -103,6 +108,11 @@ VI: dict[str, str] = {
     "hero_line": "Một căn nhà vườn ở Hòa Xuân, Đà Nẵng. Hai phòng ngủ, hai khoảng vườn, ",
     "hero_line_accent": "cho thuê nguyên căn, theo tháng.",
     "contact_bar_label": "Liên hệ",
+    "viewer_label": "Xem ảnh",
+    "viewer_open": "Mở ảnh toàn màn hình: ",
+    "viewer_close": "Đóng",
+    "viewer_previous": "Ảnh trước",
+    "viewer_next": "Ảnh sau",
     "not_found_heading": "Lối này không dẫn đến đâu cả — vườn ở phía này.",
     "not_found_line": (
         "Trang bạn tìm không có ở đây. Có thể trang đã chuyển chỗ, hoặc đường dẫn bị gõ sai."

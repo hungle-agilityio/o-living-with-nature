@@ -146,7 +146,8 @@ def test_page_uses_no_javascript(client: Client) -> None:
 
     # The menu needs no script. The scripts of the home page are the hero's flight (AC22), the
     # photo dialog of the floor plan (one-page AC17), the phone photo carousel of the house
-    # chapter (mobile-smoothness AC1 to AC6) and the phone contact bar (one-page AC12, with the
+    # chapter (mobile-smoothness AC1 to AC6), the full-screen photo viewer (issue #156) and the
+    # phone contact bar (one-page AC12, with the
     # owner's channels, as in the test database), after the load and reveal motion that
     # base.html links (design-match AC13).
     assert "<script" not in _section(html, "header")
@@ -158,6 +159,7 @@ def test_page_uses_no_javascript(client: Client) -> None:
         '<script src="/static/js/floor-plan.js" defer>',
         '<script src="/static/js/house-carousel.js" defer>',
         '<script src="/static/js/area-band.js" defer>',
+        '<script src="/static/js/photo-viewer.js" defer>',
         '<script src="/static/js/contact-bar.js" defer>',
         '<script src="/static/js/lang-switch.js" defer>',
         '<script src="/static/js/count.js" defer>',

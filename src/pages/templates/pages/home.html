@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="{% static 'css/chapters/rent.css' %}">
   <link rel="stylesheet" href="{% static 'css/chapters/faq.css' %}">
   <link rel="stylesheet" href="{% static 'css/chapters/contact.css' %}">
+  <link rel="stylesheet" href="{% static 'css/photo-viewer.css' %}">
   {% if owner.channels %}<noscript><style>.contact-bar { transform: none !important; }</style></noscript>{% endif %}
 {% endblock %}
 {% block structured_data %}<script type="application/ld+json">{{ structured_data }}</script>{% endblock %}
@@ -18,6 +19,9 @@
 {% include "pages/chapters/rent.html" %}
 {% include "pages/chapters/faq.html" %}
 {% include "pages/chapters/contact.html" %}
+{# The full-screen photo viewer (issue #156): a tap on a photo of the chapters opens it. #}
+{% include "includes/photo_viewer.html" %}
+<script src="{% static 'js/photo-viewer.js' %}" defer></script>
 {# The phone contact bar (one-page AC12), on phones only. No channel, no bar. #}
 {% if owner.channels %}<nav class="contact-bar" aria-label="{% text "shell" "contact_bar_label" %}">
   {% include "includes/contact_buttons.html" with place="bar" %}

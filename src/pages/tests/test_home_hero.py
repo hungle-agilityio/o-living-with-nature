@@ -211,7 +211,8 @@ def test_page_loads_the_one_plain_script_deferred(client: Client) -> None:
     page = _parse(_html(client))
 
     # The hero's flight, the photo dialog of the floor plan (one-page AC17), the phone photo
-    # carousel of the house chapter (mobile-smoothness AC1 to AC6), then the phone contact bar
+    # carousel of the house chapter (mobile-smoothness AC1 to AC6), the full-screen photo viewer
+    # (issue #156), then the phone contact bar
     # (one-page AC12), after the load and reveal motion that base.html links (design-match AC13).
     # The JSON-LD block of the head has no src and is left to test_search_ready.py.
     scripts = [script for script in page.all("script") if "src" in script]
@@ -222,6 +223,7 @@ def test_page_loads_the_one_plain_script_deferred(client: Client) -> None:
         "/static/js/floor-plan.js",
         "/static/js/house-carousel.js",
         "/static/js/area-band.js",
+        "/static/js/photo-viewer.js",
         "/static/js/contact-bar.js",
         "/static/js/lang-switch.js",
         "/static/js/count.js",
