@@ -1,9 +1,10 @@
 {% comment %}
 The contact buttons (one-page spec AC9 to AC12): one link button per channel of the owner, in
-the order Call, WhatsApp, Zalo (owner.channels). The first one is the primary button.
+the order Call, WhatsApp, Zalo (owner.channels). The first one is the primary button; chapter 05
+shows all three as outlines (contact-one-place spec AC11).
 
   owner  the site settings (owner_content.services.site_settings)
-  place  where the buttons stand: the chapter id ("rent", "contact") or "bar"
+  place  where the buttons stand: "contact" (chapter 05), "bar" or "journal"
 
 data-channel and data-place are read by the click counter (epic 4). WhatsApp and Zalo open in a
 new tab; Call opens the phone. With no channel, nothing is rendered.
