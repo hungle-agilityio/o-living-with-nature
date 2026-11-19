@@ -1,7 +1,7 @@
 {% load photos price texts %}
 {% comment %}
 Chapter 03, the rent (design-match design.md, "03 ở lâu"): in columns 1–6 the head, the caps
-price line, the buttons and the terms; in columns 8–12 the tea photo and the owner's quote.
+price line and the terms; in columns 8–12 the tea photo and the owner's quote.
 The photo and quote come first in the source so the chapter's text still ends with the terms;
 the grid places them on the right (under the terms on phones).
 {% endcomment %}
@@ -19,7 +19,6 @@ the grid places them on the right (under the terms on phones).
       <p class="chapter-word" lang="vi">ở lâu</p>
       <h2 id="rent-heading">{% text "rent" "heading" %} <span class="accent">{% text "rent" "heading_accent" %}</span></h2>
       <div class="rent__line-block reveal"><p class="rent__line big">{% if owner.price_line %}{{ owner.price_line|price_accents }}{% else %}{% text "rent" "price_none" %}{% endif %}</p></div>
-      {% if owner.channels %}<div class="rent__buttons reveal">{% include "includes/contact_buttons.html" with place="rent" %}</div>{% endif %}
       <div class="rent__terms-block reveal">
         <ul class="rent__terms">
           <li>{% text "rent" "term_whole" %}</li>

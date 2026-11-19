@@ -116,8 +116,7 @@ def test_every_contact_link_has_a_known_place_and_can_be_posted(client: Client) 
     faq = re.search(r'<section id="faq"[^>]*>.*?</section>', html, re.S)
     assert faq
     faq_links = re.findall(r"<a [^>]*data-channel=[^>]*>", faq.group(0))
-    assert faq_links
-    assert all('data-place="faq"' in link for link in faq_links)
+    assert faq_links == []
     channels_seen: set[str] = set()
     for link in links:
         channel = re.search(r'data-channel="([^"]*)"', link)

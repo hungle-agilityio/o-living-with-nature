@@ -435,11 +435,11 @@ def test_no_page_shows_the_values_or_asks_the_database(
 
     html = response.content.decode()
     assert response.status_code == 200
-    # The price line, and the Call, WhatsApp and Zalo links in the rent chapter, the contact
-    # chapter and the phone bar.
+    # The price line, and the Call, WhatsApp and Zalo links in the contact chapter and the phone
+    # bar.
     assert "From 13–14 million VND a month" in html
     for channel in OWNER_CHANNELS:
-        for place in ("rent", "contact", "bar"):
+        for place in ("contact", "bar"):
             assert (
                 f'href="{channel.link}" data-channel="{channel.key}" data-place="{place}"' in html
             ), f"{address} has no {channel.label} link in {place}"
