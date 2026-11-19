@@ -123,13 +123,14 @@ def test_price_line_is_caps_at_84px_and_44px_on_phones_with_line_height_095() ->
     assert "--size-big: 44px" in _phone_part(site)
 
 
-def test_rent_left_column_holds_head_price_buttons_then_terms(client: Client) -> None:
+def test_rent_left_column_holds_head_price_then_terms(client: Client) -> None:
     rent = _section(_home(client), "rent")
 
     left = _element(rent, "div", "rent__price")
-    for part in ("chapter-marker", "chapter-word", "<h2", "rent__line", "contact-buttons"):
+    for part in ("chapter-marker", "chapter-word", "<h2", "rent__line"):
         assert part in left
-    order = [left.index(p) for p in ("<h2", "rent__line", "contact-buttons", "rent__terms")]
+    assert "contact-buttons" not in left
+    order = [left.index(p) for p in ("<h2", "rent__line", "rent__terms")]
     assert order == sorted(order)
     css = RENT_CSS.read_text(encoding="utf-8")
     assert "1 / span 6" in _rule(css, ".rent__price")
@@ -249,7 +250,6 @@ def test_contact_without_a_channel_keeps_the_empty_state(client: Client) -> None
     ("chapter_id", "tag", "css_class"),
     [
         ("rent", "div", "rent__line-block"),
-        ("rent", "div", "rent__buttons"),
         ("rent", "div", "rent__terms-block"),
         ("rent", "div", "rent__photo"),
         ("rent", "figure", "rent__quote"),
@@ -263,11 +263,11 @@ def test_blocks_carry_reveal(client: Client, chapter_id: str, tag: str, css_clas
     assert "reveal" in _classes(section, tag, css_class)
 
 
-def test_reveal_blocks_hold_the_price_line_the_buttons_and_the_terms(client: Client) -> None:
+def test_reveal_blocks_hold_the_price_line_and_the_terms(client: Client) -> None:
     rent = _section(_home(client), "rent")
 
     assert "rent__line big" in _element(rent, "div", "rent__line-block")
-    assert "contact-buttons" in _element(rent, "div", "rent__buttons")
+    assert "rent__buttons" not in rent
     assert "rent__terms" in _element(rent, "div", "rent__terms-block")
 
 

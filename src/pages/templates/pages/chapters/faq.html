@@ -1,8 +1,8 @@
 {% load texts %}{% comment %}
 Chapter 04, FAQ (one-page spec, design.md; two columns, issue #83): on the left the head, the
-owner's line and the contact buttons (sticky on desktop); on the right the eight questions, each
+owner's line (sticky on desktop); on the right the eight questions, each
 a details element that opens and closes without a script, the first one open. name="faq" keeps
-one question open at a time. On phones: head, questions, then the owner's line and buttons.
+one question open at a time. On phones: head, questions, then the owner's line.
 {% endcomment %}
 <section id="faq" class="chapter chapter--faq" aria-labelledby="faq-heading">
   <div class="faq-side reveal">
@@ -12,7 +12,6 @@ one question open at a time. On phones: head, questions, then the owner's line a
     </div>
     <div class="faq-side__invite">
       <p class="faq-side__line">{{ owner.greeting }} <span class="accent">{{ owner.reply_line }}</span></p>
-      {% include "includes/contact_buttons.html" with place="faq" %}
     </div>
   </div>
   <div class="faq-list reveal">

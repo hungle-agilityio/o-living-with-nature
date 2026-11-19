@@ -152,13 +152,11 @@ def test_rent_asks_about_the_rent_without_a_price(client: Client) -> None:
     assert "million VND" not in rent
 
 
-def test_rent_shows_the_buttons_under_the_price_then_the_terms(client: Client) -> None:
+def test_rent_shows_the_terms_under_the_price_and_no_buttons(client: Client) -> None:
     rent = _section(_home(client), "rent")
 
-    links = _links(rent)
-    assert [_text(link) for link in links] == ["Call", "WhatsApp", "Zalo"]
-    assert all('data-place="rent"' in link for link in links)
-    assert rent.index("rent__line") < rent.index(links[0]) < rent.index("rent__terms")
+    assert _links(rent) == []
+    assert rent.index("rent__line") < rent.index("rent__terms")
 
 
 def test_rent_terms_are_listed_as_written(client: Client) -> None:
@@ -273,12 +271,13 @@ def test_bar_is_fixed_to_the_bottom_on_phones_only() -> None:
     assert "contact-bar--away" in _phone_part(css)
 
 
-def test_script_hides_the_bar_over_the_hero_and_the_contact_chapter() -> None:
+def test_script_shows_the_bar_from_chapter_02() -> None:
     script = SCRIPT.read_text(encoding="utf-8")
 
     assert "IntersectionObserver" in script
-    assert 'getElementById("hero")' in script
-    assert 'getElementById("contact")' in script
+    assert 'getElementById("hoa-xuan")' in script
+    assert 'getElementById("hero")' not in script
+    assert 'getElementById("contact")' not in script
     assert "contact-bar--away" in script
 
 

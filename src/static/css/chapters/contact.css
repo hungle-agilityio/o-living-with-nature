@@ -51,8 +51,9 @@
 
 /* The phone contact bar: Ink at 96%, three equal 44px pills, above the phone's home bar. It
    exists only at 760px or less. It starts out of view and shows after the first check of the
-   screen (contact-bar.js adds "contact-bar-ready" to the page); contact-bar.js adds
-   "contact-bar--away" while the hero or any set of contact buttons is on screen. Without
+   screen (contact-bar.js adds "contact-bar-ready" to the page). contact-bar.js adds
+   "contact-bar--away" until chapter 02 reaches the screen, so the bar shows from chapter 02 on,
+   and while a field of the enquiry form has focus, so it steps away then. Without
    JavaScript it always shows there (the noscript rule in home.html). */
 
 .contact-bar {
@@ -74,6 +75,13 @@
 
   .contact-bar--away {
     transform: translateY(110%);
+  }
+
+  /* On phones the bar is the one place for the buttons: chapter 05 shows none once the bar's
+     script has run (if the script never runs, chapter 05 keeps its buttons, so a phone is never
+     left without one). */
+  html.contact-bar-ready .chapter--contact .contact__row .contact-buttons {
+    display: none;
   }
 
   html:not(.contact-bar-ready) .contact-bar {

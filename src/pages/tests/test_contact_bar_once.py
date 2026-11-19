@@ -39,13 +39,15 @@ def _script() -> str:
 # M9: the script watches every set of contact buttons
 
 
-def test_script_watches_the_hero_the_contact_chapter_and_every_set_of_buttons() -> None:
+def test_script_watches_chapter_02_and_the_form() -> None:
     script = _script()
 
-    assert 'getElementById("hero")' in script
-    assert 'getElementById("contact")' in script
-    assert 'querySelectorAll(".contact-buttons")' in script
-    assert ".contains(" in script
+    assert 'getElementById("hoa-xuan")' in script
+    assert 'querySelector("form.enquiry-form")' in script
+    assert '"focusin"' in script
+    assert '"focusout"' in script
+    assert 'getElementById("hero")' not in script
+    assert 'querySelectorAll(".contact-buttons")' not in script
     assert "IntersectionObserver" in script
     assert "contact-bar--away" in script
 
