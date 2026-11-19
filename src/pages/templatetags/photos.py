@@ -1,5 +1,5 @@
 """`{% photo "key" ratio="4 / 3" %}` and `{% area_loop %}`: media slots of `pages.photos`;
-`{% floor_plan %}`: the walk through the house, whose blocks link to those photos."""
+`{% floor_plan %}`: the walk through the house, a hand-drawn plan and the list of its rooms."""
 
 from typing import Any
 
@@ -7,8 +7,8 @@ from django import template
 from django.templatetags.static import static
 
 from pages import floor_plan as floor_plan_service
-from pages import language, photos
-from pages.templatetags.texts import alt_text
+from pages import house_drawing, language, photos
+from pages.templatetags.texts import alt_text, credit_text
 
 register = template.Library()
 
@@ -62,19 +62,38 @@ def area_loop(context: template.Context, ratio: str = "16 / 9") -> dict[str, Any
 
 @register.inclusion_tag("includes/floor_plan.html", takes_context=True)
 def floor_plan(context: template.Context) -> dict[str, Any]:
-    """The blocks of the walk through the house, each with the address of its photo, if any."""
+    """The values of the walk through the house: the drawing (defs, section, sideways and upright
+    plan) and the rooms in walking order, each with its number and, when it has one, its photo.
+    No query."""
     lang = language.of_context(context)
+    words = language.texts("house", lang)
+    rooms = floor_plan_service.rooms(language=lang)
+    items: list[dict[str, Any]] = []
+    for number, room in enumerate(rooms, 1):
+        item: dict[str, Any] = {
+            "key": room.key,
+            "name": room.name,
+            "text": room.text,
+            "number": f"{number:02d} {words['room_of']} {len(rooms):02d}",
+        }
+        if room.photo:
+            item.update(
+                src=static(room.photo.path),
+                alt=alt_text(room.photo, lang),
+                credit=credit_text(room.photo.credit, lang),
+                width=room.photo.width,
+                height=room.photo.height,
+                illustrative=room.photo.illustrative,
+            )
+        items.append(item)
     return {
         "lang": lang,
-        "blocks": [
-            {
-                "name": block.name,
-                "kind": block.kind,
-                "photo": block.photo,
-                "href": static(block.photo.path) if block.photo else None,
-            }
-            for block in floor_plan_service.blocks(language=lang)
-        ],
+        "count": len(rooms),
+        "defs": house_drawing.DEFS,
+        "section": house_drawing.section_svg(words),
+        "plan_h": house_drawing.plan_svg(rooms, words, "h"),
+        "plan_v": house_drawing.plan_svg(rooms, words, "v"),
+        "rooms": items,
     }
 
 
