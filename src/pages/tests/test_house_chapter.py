@@ -25,7 +25,7 @@ WHY = (
 FACTS = [
     ("2", "bedrooms"),
     ("2", "gardens"),
-    ("1", "light well"),
+    ("1", "real kitchen"),
     ("1", "household at a time"),
 ]
 INCLUDED = "Basic furniture. Garden care once a week. Cleaning can be arranged."
@@ -73,7 +73,7 @@ def test_why_paragraph_is_shown_as_written(client: Client) -> None:
 
 def test_facts_row_takes_the_place_of_the_three_points(client: Client) -> None:
     house = _house(client)
-    facts = _block(house, "house__facts reveal")
+    facts = _block(house, "house__facts house__facts--drawn")
 
     assert "house__points" not in house
     assert facts.startswith("<ul")

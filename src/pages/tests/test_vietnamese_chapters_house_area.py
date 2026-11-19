@@ -36,7 +36,7 @@ VI_ROOMS = ["Phòng ngủ · hai", "Giếng trời", "Hiên nhà", "Phòng khác
 VI_FACTS = [
     ("2", "phòng ngủ"),
     ("2", "khoảng vườn"),
-    ("1", "giếng trời"),
+    ("1", "gian bếp thật"),
     ("1", "hộ thuê một lúc"),
 ]
 VI_INCLUDED = "Nội thất cơ bản. Chăm vườn mỗi tuần một lần. Có thể sắp xếp người dọn dẹp."
