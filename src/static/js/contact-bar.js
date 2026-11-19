@@ -54,7 +54,9 @@
   // The root reaches far above the screen: chapter 02 counts as reached once its top is on the
   // screen, however far the visitor has scrolled past it, and a jump from the menu still calls back.
   new IntersectionObserver(function (entries) {
-    below = !entries[entries.length - 1].isIntersecting;
+    // The top check also holds where rootMargin is ignored (a cross-origin frame).
+    var entry = entries[entries.length - 1];
+    below = !entry.isIntersecting && entry.boundingClientRect.top > 0;
     update();
     document.documentElement.classList.add("contact-bar-ready");
   }, { rootMargin: "100000px 0px 0px 0px" }).observe(chapter);

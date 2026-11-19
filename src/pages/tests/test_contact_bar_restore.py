@@ -20,3 +20,11 @@ def test_script_reads_the_focus_again_when_the_page_is_shown() -> None:
     assert 'addEventListener("pageshow"' in script
     assert "form.contains(document.activeElement)" in script
     assert len(script.encode("utf-8")) < 4000
+
+
+def test_bar_steps_away_only_while_chapter_02_is_below_the_screen() -> None:
+    # AC6: away while #hoa-xuan is not on screen *and its top is below the screen*, so a frame
+    # that ignores rootMargin does not hide the bar once chapter 02 is above the screen.
+    script = _script()
+
+    assert "boundingClientRect.top > 0" in script
