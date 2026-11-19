@@ -779,3 +779,30 @@
     transition: none;
   }
 }
+
+/* The facts row as small watercolour drawings (house-plan-2d spec AC14 to AC17; the reference's
+   FACTS_CSS). Last in the file so the --drawn rules win over .house__facts at equal specificity;
+   its 760px block stays a separate last block. */
+.house__facts-drawn { margin: 96px 0 0; }
+.house__facts-rule { display: block; width: 100%; height: 14px; }
+.house__facts--drawn { margin: 0; padding: var(--space-3) 0 0; border-top: 0; }
+.house__facts--drawn li { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 16px; align-items: end; }
+.house__fact-icon { grid-row: 1 / span 2; width: 118px; height: 77px; overflow: visible; }
+.house__facts--drawn .house__fact-number { font-style: italic; font-size: 72px; line-height: .9; }
+.house__facts--drawn .house__fact-label { margin-top: 4px; font-family: var(--font-serif); font-style: italic; font-size: 20px; line-height: 1.2; }
+.fact-ink rect, .fact-ink path, .fact-ink circle:not([fill]) { fill: none; stroke: #3b2e24; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.fact-ink--thin path, .fact-ink--thin circle { stroke: #8a7d58; stroke-width: .9; }
+.fact-wash { fill: #e2bfa4; opacity: .7; }
+.fact-green { fill: #c9d29a; opacity: .8; }
+.fact-moss { fill: #6f8a4f; opacity: .7; }
+.fact-rust { fill: #b5642f; opacity: .75; }
+body[data-daypart="night"] .fact-ink rect, body[data-daypart="night"] .fact-ink path, body[data-daypart="night"] .fact-ink circle:not([fill]) { stroke: #e9e2d3; }
+body[data-daypart="night"] .fact-ink circle[fill] { fill: #e9e2d3; }
+@media (max-width: 760px) {
+  .house__facts-drawn { margin-top: 64px; }
+  .house__facts--drawn { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 28px; }
+  .house__facts--drawn li { grid-template-columns: 1fr; }
+  .house__fact-icon { grid-row: auto; width: 78px; height: 51px; margin-bottom: 6px; }
+  .house__facts--drawn .house__fact-number { font-size: 52px; }
+  .house__facts--drawn .house__fact-label { font-size: 17px; }
+}
