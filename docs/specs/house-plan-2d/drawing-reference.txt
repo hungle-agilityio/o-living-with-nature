@@ -1,12 +1,12 @@
 """Patch docs/design/prototype.html with the 2D house drawing (thread "Redraw the house plan as a 2D sketch").
 
-Usage: python3 add_plan.py <prototype.html in> <prototype.html out>
+Usage: python3 add_plan2.py <prototype.html in> <prototype.html out>
 
 Replaces the schematic room boxes of "Walk through the house" in every home* state with a
 hand-drawn plan (ink line + watercolour wash, in the style of the owner's sketch) and a small
-section above it. Layout read from the owner's cardboard model. Every room is a link; a tap
+section above it. Layout from the owner's description of the real plan (6 × 18 m plot). Every room is a link; a tap
 opens the room panel (desktop: beside the plan; phone: a bottom sheet) with its photo or the
-empty sand block, its text, n / 10 and previous / next.
+empty sand block, its text, n / 7 and previous / next.
 Adds SCENARIOS for the new states.
 """
 import json
@@ -21,8 +21,8 @@ j = page.index("</script>", i)
 docs = json.loads(page[i:j])
 
 # ---------------------------------------------------------------- the rooms
-# Plan units: u runs from the lane (front, 0) to the back fence (250); v across the plot (0..80).
-L, W = 250, 80
+# Plan units (decimetres): u runs from the gate (front, 0) to the back fence (180 = 18 m); v across the plot (0..60 = 6 m).
+L, W = 180, 60
 PH = {  # photo key -> (file, width, height, alt EN, alt VI, credit EN, credit VI)
     "veranda": ("veranda.jpg", 1600, 1060, "A shaded back veranda with wicker chairs and tropical plants", "Hiên sau rợp bóng với ghế mây và cây nhiệt đới", "Photo: Pexels", "Ảnh: Pexels"),
     "lightwell": ("lightwell.jpg", 1200, 1600, "An indoor atrium with hanging plants under a skylight", "Khoảng thông tầng với cây treo dưới giếng trời", "Photo: Fatmanur Üzüm / Pexels", "Ảnh: Fatmanur Üzüm / Pexels"),
@@ -32,53 +32,44 @@ PH = {  # photo key -> (file, width, height, alt EN, alt VI, credit EN, credit V
     "garden-evening": ("garden-evening.jpg", 1067, 1600, "String lights in a garden in the evening", "Dây đèn trong vườn lúc chiều tối", "Photo: CharlieBrown / Pexels", "Ảnh: CharlieBrown / Pexels"),
 }
 
-# key, kind, rect (u0, u1, v0, v1), photo, EN name, VI name, EN text, VI text
+# key, kind, rect (u0, u1, v0, v1) or polygon [(u, v), ...] (the back wall runs on a slant), photo, EN name, VI name, EN text, VI text
 ROOMS = [
-    ("front-garden", "garden", (0, 50, 0, W), None, "Front garden", "Vườn trước",
-     "The way in: a small walled garden between the lane and the house, so the rooms sit back from the street and stay quiet.",
-     "Lối vào: một khoảng vườn nhỏ có tường bao giữa ngõ và nhà, để các phòng lùi xa mặt đường và luôn yên tĩnh."),
-    ("veranda", "room", (50, 90, 34, W), "veranda", "Covered veranda", "Hiên có mái che",
-     "A deep roof over the front of the house, open to the garden: a place to sit with a coffee and watch the rain.",
-     "Mái hiên sâu phía trước nhà, mở ra vườn: chỗ ngồi uống cà phê và ngắm mưa."),
-    ("light-well", "room", (50, 90, 0, 34), "lightwell", "Light well", "Giếng trời",
-     "Open to the sky, with a curved wall and a round opening. It brings daylight and air into the middle of the house.",
-     "Mở lên trời, có vách cong và một ô tròn. Giếng trời đưa ánh sáng và gió vào giữa nhà."),
-    ("living-kitchen", "room", (90, 155, 0, W), "kitchen", "Living room and kitchen", "Phòng khách và bếp",
-     "One open room under the high roof, lit from above. A real kitchen for everyday cooking and a table to eat together.",
-     "Một không gian mở dưới mái cao, lấy sáng từ trên. Bếp thật để nấu mỗi ngày và bàn để cùng ăn."),
-    ("mezzanine", "loft", (96, 126, 4, 42), "mezzanine", "Mezzanine", "Gác lửng",
-     "A loft above the living room: a quiet corner to read or work.",
-     "Gác lửng phía trên phòng khách: một góc yên để đọc sách hay làm việc."),
-    ("bedroom-1", "room", (155, 200, 0, 34), "bedroom", "Bedroom 1", "Phòng ngủ 1",
-     "A calm bedroom at the back of the house, away from the lane.",
-     "Phòng ngủ yên tĩnh ở phía sau nhà, xa ngõ."),
-    ("bathroom", "wet", (155, 182, 34, 50), None, "Bathroom", "Phòng tắm",
-     "One bathroom, between the two bedrooms.",
-     "Một phòng tắm, nằm giữa hai phòng ngủ."),
-    ("bedroom-2", "room", (155, 200, 50, W), "bedroom", "Bedroom 2", "Phòng ngủ 2",
-     "The second bedroom, also at the back: for a guest, a study or someone who keeps different hours.",
-     "Phòng ngủ thứ hai, cũng ở phía sau: cho khách, làm phòng đọc, hay cho người có giờ giấc khác."),
-    ("laundry", "wet", (200, 218, 0, W), None, "Laundry, drying and storage", "Giặt, phơi và kho",
-     "A practical corner at the back: wash, dry clothes out of the rain, and keep things out of sight.",
-     "Góc tiện ích phía sau: giặt, phơi đồ không sợ mưa, và cất đồ gọn gàng."),
-    ("back-garden", "garden", (218, L, 0, W), "garden-evening", "Back garden", "Vườn sau",
-     "A quiet garden behind the house, easy to look after. Garden care once a week is included.",
-     "Khu vườn yên tĩnh sau nhà, dễ chăm. Đã bao gồm chăm vườn mỗi tuần một lần."),
+    ("front-garden", "garden", (0, 90, 0, 35), None, "Front garden", "Vườn trước",
+     "The way in from the gate: a garden 3.5 m wide and 9 m deep, beside the kitchen.",
+     "Lối vào từ cổng: khu vườn rộng 3,5 m, sâu 9 m, nằm cạnh gian bếp."),
+    ("kitchen", "room", (0, 90, 35, W), "kitchen", "Kitchen", "Bếp",
+     "A long kitchen, 2.5 m wide and 9 m deep, along the garden: a real kitchen for everyday cooking and a table to eat together.",
+     "Gian bếp dài, rộng 2,5 m, sâu 9 m, chạy dọc khu vườn: bếp thật để nấu mỗi ngày và bàn để cùng ăn."),
+    ("bathroom", "wet", (90, 112, 0, 25), None, "Bathroom", "Phòng vệ sinh",
+     "The bathroom, off the corridor that leads to the two bedrooms.",
+     "Phòng vệ sinh, mở ra hành lang dẫn vào hai phòng ngủ."),
+    ("laundry", "wet", (90, 112, 35, W), None, "Laundry and drying", "Giặt và phơi",
+     "A corner to wash and dry clothes, across the corridor from the bathroom.",
+     "Góc giặt và phơi đồ, đối diện phòng vệ sinh qua hành lang."),
+    ("bedroom-1", "room", [(112, 0), (L, 0), (L, 15), (168, 30), (112, 30)], "bedroom", "Bedroom 1", "Phòng ngủ 1",
+     "A calm bedroom at the back of the house, away from the gate.",
+     "Phòng ngủ yên tĩnh ở phía sau nhà, xa cổng."),
+    ("bedroom-2", "room", [(112, 30), (168, 30), (145, W), (112, W)], "bedroom", "Bedroom 2", "Phòng ngủ 2",
+     "The second bedroom, next to the first, opening onto the back garden.",
+     "Phòng ngủ thứ hai, cạnh phòng thứ nhất, nhìn ra vườn sau."),
+    ("back-garden", "garden", [(L, 15), (L, W), (145, W)], "garden-evening", "Back garden", "Vườn sau",
+     "A small triangle of garden at the back corner, easy to look after. Garden care once a week is included.",
+     "Mảnh vườn tam giác nhỏ ở góc sau nhà, dễ chăm. Đã bao gồm chăm vườn mỗi tuần một lần."),
 ]
 
 T = {
     "en": dict(heading="Walk through the house", chip="Sketch · not to scale",
-               note="Drawn from the cardboard model of the house, not the architect's plan.",
+               note="A hand sketch of the 6 × 18 m plan, not the architect's drawing.",
                hint="Tap a room on the plan to look inside.", section="Section", plan="Plan",
                prev="Previous room", next="Next room", close="Close", of="of",
                photo_chip="Illustrative photo", empty="No photo of this room yet",
-               lane="lane", plan_label="Plan of the house: tap a room"),
+               lane="gate", hall="hall", plan_label="Plan of the house: tap a room"),
     "vi": dict(heading="Đi một vòng quanh nhà", chip="Phác thảo · không theo tỉ lệ",
-               note="Vẽ theo mô hình bìa của căn nhà, chưa phải bản vẽ của kiến trúc sư.",
+               note="Phác tay mặt bằng 6 × 18 m, chưa phải bản vẽ của kiến trúc sư.",
                hint="Chạm vào một phòng trên bản vẽ để xem bên trong.", section="Mặt cắt", plan="Mặt bằng",
                prev="Phòng trước", next="Phòng sau", close="Đóng", of="/",
                photo_chip="Ảnh minh hoạ", empty="Chưa có ảnh phòng này",
-               lane="ngõ", plan_label="Mặt bằng căn nhà: chạm vào một phòng"),
+               lane="cổng", hall="hành lang", plan_label="Mặt bằng căn nhà: chạm vào một phòng"),
 }
 
 # ---------------------------------------------------------------- drawing helpers
@@ -127,7 +118,7 @@ def plan_svg(lang, orient):
     rng = random.Random(7)
     pad = 26
     if orient == "h":
-        s, su = 3.3, 3.3
+        s, su = 4.4, 4.6
         def P(u, v):
             return pad + 34 + u * su, pad + v * s
         def R(u0, u1, v0, v1):
@@ -135,7 +126,7 @@ def plan_svg(lang, orient):
             return x0, y0, x1 - x0, y1 - y0
         vw, vh = pad * 2 + 34 + L * su, pad * 2 + W * s + 14
     else:
-        s, su = 4.3, 3.0
+        s, su = 5.7, 4.15
         def P(u, v):
             return pad + v * s, pad + 34 + u * su
         def R(u0, u1, v0, v1):
@@ -145,46 +136,75 @@ def plan_svg(lang, orient):
 
     g_wash, g_ink, g_hit, g_text = [], [], [], []
     # trees around the plot (outside), like the sketch
-    for (u, v, r) in [(-4, -6, 15), (30, 88, 13), (120, -9, 12), (232, 90, 16), (256, 14, 14), (176, 89, 11)]:
+    for (u, v, r) in [(-4, -6, 15), (30, 68, 13), (100, -8, 12), (172, 68, 16), (186, 12, 14), (128, 68, 11)]:
         x, y = P(u, v)
         g_wash.append(tree(rng, x, y, r * (1 if orient == "h" else 1.1), "plan-tree plan-tree--out"))
-    for key, kind, (u0, u1, v0, v1), photo, en, vi, _, _ in ROOMS:
-        x, y, w, h = R(u0, u1, v0, v1)
+    def inside(pts, x, y):
+        hit = False
+        for k in range(len(pts)):
+            (x1, y1), (x2, y2) = pts[k], pts[k - 1]
+            if (y1 > y) != (y2 > y) and x < x1 + (y - y1) * (x2 - x1) / (y2 - y1):
+                hit = not hit
+        return hit
+
+    def inset(pts, d):
+        mx = sum(p[0] for p in pts) / len(pts); my = sum(p[1] for p in pts) / len(pts)
+        out = []
+        for (px, py) in pts:
+            dx, dy = mx - px, my - py
+            n = max((dx * dx + dy * dy) ** 0.5, 1)
+            out.append((px + dx / n * d * 1.4, py + dy / n * d * 1.4))
+        return out
+
+    def pstr(pts):
+        return " ".join(f"{px:.1f},{py:.1f}" for px, py in pts)
+
+    for key, kind, shape, photo, en, vi, _, _ in ROOMS:
+        if isinstance(shape, tuple):
+            u0, u1, v0, v1 = shape
+            shape = [(u0, v0), (u1, v0), (u1, v1), (u0, v1)]
+        pts = [P(u, v) for u, v in shape]
+        xs = [p[0] for p in pts]; ys = [p[1] for p in pts]
+        x, y, w, h = min(xs), min(ys), max(xs) - min(xs), max(ys) - min(ys)
+        outline = "".join(sketch_line(rng, *pts[k], *pts[(k + 1) % len(pts)], 1.1 if kind == "garden" else 2.0) for k in range(len(pts)))
         name = en if lang == "en" else vi
         if kind == "garden":
-            g_wash.append(f'<rect x="{x + 3:.1f}" y="{y + 3:.1f}" width="{w - 6:.1f}" height="{h - 6:.1f}" class="plan-wash plan-wash--garden" filter="url(#plan-wash)"/>')
-            # planting in the garden
-            for k in range(3 if key == "front-garden" else 4):
-                tx = x + w * rng.uniform(0.2, 0.8); ty = y + h * (0.2 + 0.6 * k / 3 if orient == "h" else rng.uniform(0.25, 0.75))
-                if orient == "v":
-                    tx = x + w * (0.15 + 0.7 * k / 3); ty = y + h * rng.uniform(0.3, 0.7)
-                g_wash.append(tree(rng, tx, ty, rng.uniform(8, 12)))
-            g_ink.append(f'<g class="plan-wall plan-wall--fence">{sketch_rect(rng, x, y, w, h, 1.1)}</g>')
+            g_wash.append(f'<polygon points="{pstr(inset(pts, 3))}" class="plan-wash plan-wash--garden" filter="url(#plan-wash)"/>')
+            # planting in the garden, kept clear of the label in the middle
+            n_tree = 4 if key == "front-garden" else 2
+            placed, tries = 0, 0
+            mx = sum(xs) / len(xs); my = sum(ys) / len(ys)
+            while placed < n_tree and tries < 200:
+                tries += 1
+                r = rng.uniform(8, 12)
+                tx = x + w * rng.uniform(0.1, 0.9); ty = y + h * rng.uniform(0.15, 0.85)
+                if not all(inside(pts, tx + ddx, ty + ddy) for ddx, ddy in [(r, 0), (-r, 0), (0, r), (0, -r)]):
+                    continue
+                if abs(tx - mx) < 50 and abs(ty - my) < 22:
+                    continue
+                g_wash.append(tree(rng, tx, ty, r)); placed += 1
+            g_ink.append(f'<g class="plan-wall plan-wall--fence">{outline}</g>')
         else:
-            cls = {"room": "plan-wash--room", "wet": "plan-wash--wet", "loft": "plan-wash--loft"}[kind]
-            if kind != "loft":
-                g_wash.append(f'<rect x="{x + 2:.1f}" y="{y + 2:.1f}" width="{w - 4:.1f}" height="{h - 4:.1f}" class="plan-wash {cls}" filter="url(#plan-wash)"/>'
-                              f'<rect x="{x + 4:.1f}" y="{y + 4:.1f}" width="{w - 8:.1f}" height="{h - 8:.1f}" class="plan-edge {cls}" filter="url(#plan-wash)"/>')
+            cls = {"room": "plan-wash--room", "wet": "plan-wash--wet"}[kind]
+            g_wash.append(f'<polygon points="{pstr(inset(pts, 2))}" class="plan-wash {cls}" filter="url(#plan-wash)"/>'
+                          f'<polygon points="{pstr(inset(pts, 4))}" class="plan-edge {cls}" filter="url(#plan-wash)"/>')
             if kind == "wet":
-                g_wash.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" fill="url(#plan-hatch)"/>')
-            if kind == "loft":
-                g_ink.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" class="plan-loft"/>')
-            else:
-                g_ink.append(f'<g class="plan-wall">{sketch_rect(rng, x, y, w, h, 2.0)}</g>')
+                g_wash.append(f'<polygon points="{pstr(pts)}" fill="url(#plan-hatch)"/>')
+            g_ink.append(f'<g class="plan-wall">{outline}</g>')
         # the tap target and its label
         g_hit.append(
             f'<a class="plan__room" href="#room-{key}" data-room="{key}" aria-label="{name}">'
-            f'<rect class="plan__hit" x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}"/>'
+            f'<polygon class="plan__hit" points="{pstr(pts)}"/>'
         )
-        cx, cy = x + w / 2, y + h / 2
-        if key == "living-kitchen":
-            cx, cy = P(137, 40)
-        if key == "laundry" and orient == "h":
+        cx, cy = sum(xs) / len(xs), sum(ys) / len(ys)
+        if len(pts) == 3:
+            w = w * 0.55
+        if False:
             label = f'<text class="plan__label" x="{cx:.1f}" y="{cy:.1f}" transform="rotate(-90 {cx:.1f} {cy:.1f})">{name}</text>'
         else:
             words = name.split(" ")
             lines, cur = [], ""
-            maxc = 12 if key == "living-kitchen" else max(int(w / 7.2), 6)
+            maxc = max(int(w / 7.2), 6)
             for wd in words:
                 if len(cur) + len(wd) + 1 > maxc and cur:
                     lines.append(cur); cur = wd
@@ -192,34 +212,28 @@ def plan_svg(lang, orient):
                     cur = (cur + " " + wd).strip()
             lines.append(cur)
             y0 = cy - (len(lines) - 1) * 8
-            if key == "light-well":
-                y0 = y + h - 10 - (len(lines) - 1) * 16 if orient == "h" else y + h - 8 - (len(lines) - 1) * 16
             label = "".join(f'<text class="plan__label" x="{cx:.1f}" y="{y0 + n * 16:.1f}">{ln}</text>' for n, ln in enumerate(lines))
         g_hit.append(label + "</a>")
 
-    # details: light well round wall + opening, skylights, kitchen counter and table, beds, door gaps
-    x, y, w, h = R(50, 90, 0, 34)
-    r = min(w, h) * 0.34
-    lcx, lcy = x + w / 2, y + h / 2 - (6 if orient == "h" else 4)
-    g_ink.append(f'<circle cx="{lcx:.1f}" cy="{lcy:.1f}" r="{r:.1f}" class="plan-round" filter="url(#plan-wash)"/>'
-                 f'<circle cx="{lcx:.1f}" cy="{lcy:.1f}" r="{r:.1f}" class="plan-round__ink"/>'
-                 f'<circle cx="{lcx:.1f}" cy="{lcy:.1f}" r="2.2" fill="{INK}"/>')
-    for (u0, u1, v0, v1) in [(130, 142, 12, 26), (130, 142, 54, 68)]:
-        sx, sy, sw_, sh = R(u0, u1, v0, v1)
-        g_ink.append(f'<rect x="{sx:.1f}" y="{sy:.1f}" width="{sw_:.1f}" height="{sh:.1f}" class="plan-sky"/>')
-    kx, ky, kw, kh = R(140, 153, 50, 78)  # kitchen counter along the wall
+    # details: the corridor, kitchen counter and table, beds, bathroom fixtures, drying lines
+    hx, hy, hw, hh = R(90, 112, 25, 35)
+    g_ink.append(f'<g class="plan-wall">{sketch_line(rng, *P(90, 25), *P(112, 25), 1.2)}{sketch_line(rng, *P(90, 35), *P(112, 35), 1.2)}</g>')
+    hcx, hcy = hx + hw / 2, hy + hh / 2 + 3
+    g_ink.append(f'<text class="plan__note" x="{hcx:.1f}" y="{hcy:.1f}">{t["hall"]}</text>')
+    kx, ky, kw, kh = R(6, 70, 55, 59)  # kitchen counter along the outer wall
     g_ink.append(f'<rect x="{kx:.1f}" y="{ky:.1f}" width="{kw:.1f}" height="{kh:.1f}" class="plan-furn"/>')
-    tx, ty = P(116, 64)
-    g_ink.append(f'<circle cx="{tx:.1f}" cy="{ty:.1f}" r="13" class="plan-furn"/>')
-    for (u0, u1, v0, v1) in [(178, 198, 6, 26), (178, 198, 56, 76)]:
+    tx, ty = P(78, 46)
+    g_ink.append(f'<circle cx="{tx:.1f}" cy="{ty:.1f}" r="12" class="plan-furn"/>')
+    for (u0, u1, v0, v1) in [(138, 160, 4, 24), (120, 142, 36, 54)]:
         bx, by, bw, bh = R(u0, u1, v0, v1)
         g_ink.append(f'<rect x="{bx:.1f}" y="{by:.1f}" width="{bw:.1f}" height="{bh:.1f}" rx="2" class="plan-furn"/>')
-    # stair to the loft
-    for k in range(6):
-        sx0, sy0 = P(96 + k * 3, 42); sx1, sy1 = P(96 + k * 3, 50)
-        g_ink.append(f'<path d="M{sx0:.1f} {sy0:.1f} L{sx1:.1f} {sy1:.1f}" class="plan-stair"/>')
+    wx, wy = P(96, 6)
+    g_ink.append(f'<circle cx="{wx:.1f}" cy="{wy:.1f}" r="5" class="plan-furn"/>')
+    for k in range(3):
+        lx0, ly0 = P(93 + k * 7, 40); lx1, ly1 = P(93 + k * 7, 56)
+        g_ink.append(f'<path d="M{lx0:.1f} {ly0:.1f} L{lx1:.1f} {ly1:.1f}" class="plan-sky"/>')
     # the lane and the arrow in, like the sketch
-    ax, ay = P(-12, 40)
+    ax, ay = P(-12, 17)
     if orient == "h":
         arrow = f'<path d="M{ax - 6:.1f} {ay:.1f} L{ax + 16:.1f} {ay:.1f} M{ax + 9:.1f} {ay - 6:.1f} L{ax + 16:.1f} {ay:.1f} L{ax + 9:.1f} {ay + 6:.1f}" class="plan-arrow"/>'
         lane = f'<text class="plan__note" x="{ax - 4:.1f}" y="{ay - 12:.1f}" style="text-anchor:start">{t["lane"]}</text>'
@@ -237,50 +251,43 @@ def plan_svg(lang, orient):
 
 
 def section_svg(lang):
-    """The long section above the plan: hill, trees, veranda lean-to, round opening, gable."""
+    """The long section above the plan: trees, kitchen lean-to, round opening, low bathroom block, bedroom gable."""
     t = T[lang]
     rng = random.Random(3)
-    su, pad, base = 3.3, 26, 150
+    su, pad, base = 4.6, 26, 150
     X = lambda u: pad + u * su
     parts = []
     # hills behind, washed
     parts.append(f'<path d="M0 {base - 40} C 120 40, 260 60, 360 70 S 600 20, 700 50 S 860 70, 900 60 L900 {base} L0 {base}Z" class="sec-hill" filter="url(#plan-wash)"/>')
-    for (u, r) in [(-2, 34), (22, 26), (236, 36), (258, 24)]:
+    for (u, r) in [(-2, 34), (30, 26), (170, 30), (186, 24)]:
         parts.append(f'<circle cx="{X(u):.1f}" cy="{base - 52:.1f}" r="{r}" class="sec-tree" filter="url(#plan-wash)"/>'
                      f'<path d="M{X(u):.1f} {base} L{X(u):.1f} {base - 40:.1f} M{X(u):.1f} {base - 30:.1f} L{X(u) - 14:.1f} {base - 58:.1f} M{X(u):.1f} {base - 36:.1f} L{X(u) + 12:.1f} {base - 66:.1f}" class="sec-trunk"/>')
-    # front wall of the garden
+    # front wall and gate
     parts.append(f'<g class="plan-ink">{sketch_line(rng, X(0), base, X(0), base - 26, 1.4)}</g>')
-    # veranda + light well block (low, lean-to)
-    vx0, vx1 = X(50), X(90)
-    parts.append(f'<path d="M{vx0:.1f} {base} L{vx0:.1f} {base - 48} L{vx1:.1f} {base - 62} L{vx1:.1f} {base}Z" class="sec-wall" filter="url(#plan-wash)"/>')
-    parts.append(f'<g class="plan-ink">{sketch_line(rng, vx0 - 8, base - 46, vx1 + 4, base - 64, 1.8)}{sketch_line(rng, vx0, base, vx0, base - 48, 1.4)}</g>')
-    for k in range(9):
-        xx = vx0 - 6 + k * (vx1 - vx0 + 8) / 9
-        yy = base - 46 - (xx - vx0 + 6) * 18 / (vx1 - vx0 + 10)
+    # the kitchen along the garden: a long low lean-to
+    kx0, kx1 = X(2), X(90)
+    parts.append(f'<path d="M{kx0:.1f} {base} L{kx0:.1f} {base - 46} L{kx1:.1f} {base - 60} L{kx1:.1f} {base}Z" class="sec-wall" filter="url(#plan-wash)"/>')
+    parts.append(f'<g class="plan-ink">{sketch_line(rng, kx0 - 8, base - 44, kx1 + 4, base - 62, 1.8)}{sketch_line(rng, kx0, base, kx0, base - 46, 1.4)}</g>')
+    for k in range(14):
+        xx = kx0 - 6 + k * (kx1 - kx0 + 8) / 14
+        yy = base - 44 - (xx - kx0 + 6) * 18 / (kx1 - kx0 + 10)
         parts.append(f'<path d="M{xx:.1f} {yy:.1f} q3 -4 6 0" class="sec-corr"/>')
-    parts.append(f'<circle cx="{(vx0 + vx1) / 2:.1f}" cy="{base - 26:.1f}" r="17" class="sec-round" filter="url(#plan-wash)"/>'
-                 f'<circle cx="{(vx0 + vx1) / 2:.1f}" cy="{base - 26:.1f}" r="17" class="plan-round__ink"/>')
-    # main gable over living + bedrooms
-    gx0, gx1 = X(90), X(200)
+    parts.append(f'<circle cx="{X(46):.1f}" cy="{base - 24:.1f}" r="15" class="sec-round" filter="url(#plan-wash)"/>'
+                 f'<circle cx="{X(46):.1f}" cy="{base - 24:.1f}" r="15" class="plan-round__ink"/>')
+    # bathroom and laundry: a low flat block
+    mx0, mx1 = X(90), X(112)
+    parts.append(f'<path d="M{mx0:.1f} {base} L{mx0:.1f} {base - 62} L{mx1:.1f} {base - 62} L{mx1:.1f} {base}Z" class="sec-wall" filter="url(#plan-wash)"/>'
+                 f'<g class="plan-ink">{sketch_line(rng, mx0 - 2, base - 62, mx1 + 2, base - 62, 1.6)}</g>')
+    # the bedrooms under the gable
+    gx0, gx1 = X(112), X(180)
     ridge = base - 112
     parts.append(f'<path d="M{gx0:.1f} {base} L{gx0:.1f} {base - 70} L{(gx0 + gx1) / 2:.1f} {ridge} L{gx1:.1f} {base - 70} L{gx1:.1f} {base}Z" class="sec-wall sec-wall--main" filter="url(#plan-wash)"/>')
     parts.append(f'<g class="plan-ink">{sketch_line(rng, gx0 - 6, base - 66, (gx0 + gx1) / 2, ridge - 2, 2)}{sketch_line(rng, (gx0 + gx1) / 2, ridge - 2, gx1 + 6, base - 66, 2)}'
-                 f'{sketch_line(rng, gx0, base, gx0, base - 70, 1.4)}{sketch_line(rng, gx1, base, gx1, base - 70, 1.4)}'
-                 f'{sketch_line(rng, gx0, base - 54, X(126), base - 54, 1.1)}</g>')
-    # skylights on the roof
-    for u in (133, 139):
-        sx = X(u); sy = base - 70 - (sx - gx0) * (112 - 70) / ((gx1 - gx0) / 2)
-        parts.append(f'<path d="M{sx:.1f} {sy:.1f} l0 -9 l12 -3 l0 9" class="sec-sky"/>')
-    # figures: a person on the loft and one in the living room, like the sketch
-    fx, fy = X(110), base - 54
-    parts.append(f'<g class="sec-person"><circle cx="{fx:.1f}" cy="{fy - 18:.1f}" r="3.2"/><path d="M{fx:.1f} {fy - 14:.1f} l0 9 l-5 5 M{fx:.1f} {fy - 5:.1f} l6 5"/></g>')
-    fx, fy = X(145), base
-    parts.append(f'<g class="sec-person"><circle cx="{fx:.1f}" cy="{fy - 26:.1f}" r="3.2"/><path d="M{fx:.1f} {fy - 22:.1f} l0 12 l-4 10 M{fx:.1f} {fy - 10:.1f} l4 10"/></g>')
-    # back lean-to (laundry)
-    bx0, bx1 = X(200), X(218)
-    parts.append(f'<path d="M{bx0:.1f} {base} L{bx0:.1f} {base - 58} L{bx1:.1f} {base - 44} L{bx1:.1f} {base}Z" class="sec-wall" filter="url(#plan-wash)"/>'
-                 f'<g class="plan-ink">{sketch_line(rng, bx0 - 2, base - 58, bx1 + 6, base - 42, 1.6)}{sketch_line(rng, bx1, base, bx1, base - 44, 1.3)}</g>'
-                 f'<path d="M{bx0 + 8:.1f} {base} L{bx0 + 8:.1f} {base - 22} A10 10 0 0 1 {bx1 - 4:.1f} {base - 22} L{bx1 - 4:.1f} {base}" class="sec-arch"/>')
+                 f'{sketch_line(rng, gx0, base, gx0, base - 70, 1.4)}{sketch_line(rng, gx1, base, gx1, base - 70, 1.4)}</g>')
+    parts.append(f'<path d="M{X(150):.1f} {base} L{X(150):.1f} {base - 26} A11 11 0 0 1 {X(150) + 22:.1f} {base - 26} L{X(150) + 22:.1f} {base}" class="sec-arch"/>')
+    # figures: one in the kitchen, one in the garden
+    for fx, fy in ((X(60), base), (X(24), base)):
+        parts.append(f'<g class="sec-person"><circle cx="{fx:.1f}" cy="{fy - 26:.1f}" r="3.2"/><path d="M{fx:.1f} {fy - 22:.1f} l0 12 l-4 10 M{fx:.1f} {fy - 10:.1f} l4 10"/></g>')
     parts.append(f'<g class="plan-ink">{sketch_line(rng, -10, base, 900, base, 1.6)}</g>')
     w = pad * 2 + L * su
     return (f'<svg class="plan__section" viewBox="0 0 {w:.0f} {base + 22}" aria-hidden="true" focusable="false">{"".join(parts)}'
@@ -507,10 +514,10 @@ FACT_ICONS = {
         '<g class="fact-ink fact-ink--thin"><circle cx="30" cy="38" r="20"/><circle cx="68" cy="34" r="16"/>'
         '<path d="M30 38 l14 -12 M30 38 l18 4 M30 38 l4 18 M30 38 l-14 12 M30 38 l-18 -4 M30 38 l-4 -18 M68 34 l11 -9 M68 34 l14 3 M68 34 l3 14 M68 34 l-11 9 M68 34 l-14 -3"/></g>'
     ),
-    "well": (
-        '<g filter="url(#plan-wash)"><circle cx="49" cy="38" r="20" class="fact-moss"/></g>'
-        '<g class="fact-ink"><circle cx="49" cy="38" r="20" stroke-width="2.4"/><circle cx="49" cy="38" r="2" fill="#3b2e24"/>'
-        '<path d="M49 6 v8 M27 12 l5 6 M71 12 l-5 6 M18 30 l7 2 M80 30 l-7 2" stroke-width="1.2"/></g>'
+    "kitchen": (
+        '<g filter="url(#plan-wash)"><path d="M26 34 H72 V52 Q72 58 66 58 H32 Q26 58 26 52 Z" class="fact-moss"/></g>'
+        '<g class="fact-ink"><path d="M26 34 H72 V52 Q72 58 66 58 H32 Q26 58 26 52 Z" stroke-width="2.2"/><path d="M22 34 H76"/>'
+        '<path d="M18 40 H26 M72 40 H80"/><path d="M40 26 q-4 -5 0 -10 q4 -5 0 -10 M50 26 q-4 -5 0 -10 q4 -5 0 -10 M60 26 q-4 -5 0 -10 q4 -5 0 -10" stroke-width="1.2"/><path d="M4 60 H94"/></g>'
     ),
     "home": (
         '<g filter="url(#plan-wash)"><path d="M18 58 V32 L49 12 L80 32 V58 Z" class="fact-wash"/><circle cx="35" cy="44" r="7" class="fact-rust"/></g>'
@@ -522,9 +529,9 @@ FACT_ICONS = {
 
 def facts_html(lang):
     rows = (
-        [("2", "bedrooms", "beds"), ("2", "gardens", "gardens"), ("1", "light well", "well"), ("1", "household at a time", "home")]
+        [("2", "bedrooms", "beds"), ("2", "gardens", "gardens"), ("1", "real kitchen", "kitchen"), ("1", "household at a time", "home")]
         if lang == "en" else
-        [("2", "phòng ngủ", "beds"), ("2", "khoảng vườn", "gardens"), ("1", "giếng trời", "well"), ("1", "hộ thuê một lúc", "home")]
+        [("2", "phòng ngủ", "beds"), ("2", "khoảng vườn", "gardens"), ("1", "gian bếp thật", "kitchen"), ("1", "hộ thuê một lúc", "home")]
     )
     rng = random.Random(11)
     rule = '<svg class="house__facts-rule" viewBox="0 0 1000 14" preserveAspectRatio="none" aria-hidden="true" focusable="false"><g class="fact-ink">'
@@ -592,26 +599,26 @@ for key in list(docs):
 
 base_en = json.loads(page[i:j])["home-day"]
 base_vi = json.loads(page[i:j])["home-vi-day"]
-docs["home-day-plan-light-well"] = patch(base_en, "en", "light-well")
+docs["home-day-plan-kitchen"] = patch(base_en, "en", "kitchen")
 docs["home-day-plan-bathroom"] = patch(base_en, "en", "bathroom")
-docs["home-day-plan-veranda"] = patch(base_en, "en", "veranda")
-docs["home-vi-day-plan-veranda"] = patch(base_vi, "vi", "veranda")
+docs["home-day-plan-bedroom-1"] = patch(base_en, "en", "bedroom-1")
+docs["home-vi-day-plan-bedroom-1"] = patch(base_vi, "vi", "bedroom-1")
 
-NEW = """  {group: "Site · walk through the house (2D drawing)", id: "house-facts", title: "01 The house · facts row drawn (2 bedrooms, 2 gardens, 1 light well, 1 household)", doc: "home-day", at: "house"},
+NEW = """  {group: "Site · walk through the house (2D drawing)", id: "house-facts", title: "01 The house · facts row drawn (2 bedrooms, 2 gardens, 1 real kitchen, 1 household)", doc: "home-day", at: "house"},
   {group: "Site · walk through the house (2D drawing)", id: "house-facts-phone", title: "Phone · facts row drawn, two columns", doc: "home-day", at: "house", w: "phone"},
   {group: "Site · walk through the house (2D drawing)", id: "plan", title: "Walk through · the drawing, no room open (tap a room)", doc: "home-day", at: "floor-plan"},
-  {group: "Site · walk through the house (2D drawing)", id: "plan-room", title: "Walk through · Light well open (photo, text, 03 of 10, ← →)", doc: "home-day-plan-light-well", at: "floor-plan"},
+  {group: "Site · walk through the house (2D drawing)", id: "plan-room", title: "Walk through · Kitchen open (photo, text, 02 of 07, ← →)", doc: "home-day-plan-kitchen", at: "floor-plan"},
   {group: "Site · walk through the house (2D drawing)", id: "plan-room-empty", title: "Walk through · Bathroom open, no photo yet (sand block)", doc: "home-day-plan-bathroom", at: "floor-plan"},
-  {group: "Site · walk through the house (2D drawing)", id: "plan-phone", title: "Phone · the drawing upright, front garden at the top", doc: "home-day", at: "floor-plan", w: "phone"},
-  {group: "Site · walk through the house (2D drawing)", id: "plan-phone-sheet", title: "Phone · Covered veranda open in the bottom sheet (✕, ← →)", doc: "home-day-plan-veranda", at: "floor-plan", w: "phone"},
+  {group: "Site · walk through the house (2D drawing)", id: "plan-phone", title: "Phone · the drawing upright, gate and front garden at the top", doc: "home-day", at: "floor-plan", w: "phone"},
+  {group: "Site · walk through the house (2D drawing)", id: "plan-phone-sheet", title: "Phone · Bedroom 1 open in the bottom sheet (✕, ← →)", doc: "home-day-plan-bedroom-1", at: "floor-plan", w: "phone"},
   {group: "Site · walk through the house (2D drawing)", id: "vi-plan", title: "/vi/ Đi một vòng quanh nhà · bản vẽ", doc: "home-vi-day", at: "floor-plan"},
-  {group: "Site · walk through the house (2D drawing)", id: "vi-plan-phone-sheet", title: "/vi/ Phone · Hiên có mái che mở trong khung dưới", doc: "home-vi-day-plan-veranda", at: "floor-plan", w: "phone"},
+  {group: "Site · walk through the house (2D drawing)", id: "vi-plan-phone-sheet", title: "/vi/ Phone · Phòng ngủ 1 mở trong khung dưới", doc: "home-vi-day-plan-bedroom-1", at: "floor-plan", w: "phone"},
 """
 tail = page[j:]
 anchor = "var SCENARIOS = [\n"
 tail = tail.replace(anchor, anchor + NEW, 1)
 head = page[:i].replace("Full-screen photo viewer added on 2026-11-18 (main 9c45cfa), drawn by hand: not built yet.",
-    "Full-screen photo viewer added on 2026-11-18 (main 9c45cfa), drawn by hand: not built yet.\n  Walk through the house as a 2D drawing (from the cardboard model) added on 2026-11-18 (main 9cda474), drawn by hand: not built yet.", 1)
+    "Full-screen photo viewer added on 2026-11-18 (main 9c45cfa), drawn by hand: not built yet.\n  Walk through the house as a 2D drawing (6 × 18 m plan from the owner) added on 2026-11-18 (main 9cda474), drawn by hand: not built yet.", 1)
 blob = json.dumps(docs, ensure_ascii=False).replace("</", "<\\/")
 open(out, "w", encoding="utf-8").write(head + blob + tail)
 print("ok", len(docs))
