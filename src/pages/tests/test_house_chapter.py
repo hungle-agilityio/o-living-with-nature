@@ -25,18 +25,8 @@ WHY = (
 FACTS = [
     ("2", "bedrooms"),
     ("2", "gardens"),
-    ("1", "light well"),
+    ("1", "real kitchen"),
     ("1", "household at a time"),
-]
-LAYOUT = [
-    "Two bedrooms",
-    "One bathroom",
-    "Living room and kitchen",
-    "Mezzanine",
-    "Light well",
-    "Front and back gardens",
-    "Covered veranda",
-    "Laundry, drying and storage area",
 ]
 INCLUDED = "Basic furniture. Garden care once a week. Cleaning can be arranged."
 COLLAGE = ["bedroom", "lightwell", "veranda", "kitchen", "garden-evening"]
@@ -83,7 +73,7 @@ def test_why_paragraph_is_shown_as_written(client: Client) -> None:
 
 def test_facts_row_takes_the_place_of_the_three_points(client: Client) -> None:
     house = _house(client)
-    facts = _block(house, "house__facts reveal")
+    facts = _block(house, "house__facts house__facts--drawn")
 
     assert "house__points" not in house
     assert facts.startswith("<ul")
@@ -125,13 +115,6 @@ def test_collage_scrolls_sideways_inside_its_box_on_narrow_screens() -> None:
     assert "100vw" not in css
 
 
-def test_layout_list_has_its_label_and_eight_lines(client: Client) -> None:
-    layout = _block(_house(client), "house__layout reveal")
-
-    assert _text(_block(layout, "label muted")) == "The layout"
-    assert [_text(item) for item in re.findall(r"<li>(.*?)</li>", layout, re.S)] == LAYOUT
-
-
 def test_included_line_has_its_label(client: Client) -> None:
     included = _block(_house(client), "house__included reveal")
 
@@ -142,7 +125,7 @@ def test_included_line_has_its_label(client: Client) -> None:
 def test_texts_come_in_the_order_of_the_design(client: Client) -> None:
     text = _text(_house(client))
 
-    order = [OWNER_LINE, WHY, f"{FACTS[0][0]} {FACTS[0][1]}", "The layout", LAYOUT[-1], INCLUDED]
+    order = [OWNER_LINE, WHY, "2 bedrooms", INCLUDED]
     positions = [text.index(part) for part in order]
     assert positions == sorted(positions)
 

@@ -21,27 +21,18 @@
     <li class="house__room house__room--garden-evening reveal">{% photo "garden-evening" ratio="4 / 3" %}<p class="house__room-label label">{% text "house" "room_garden_evening" %}</p></li>
   </ul>
 
-  <ul class="house__facts reveal">
-    <li><span class="house__fact-number">2</span> <span class="house__fact-label">{% text "house" "fact_bedrooms" %}</span></li>
-    <li><span class="house__fact-number">2</span> <span class="house__fact-label">{% text "house" "fact_gardens" %}</span></li>
-    <li><span class="house__fact-number">1</span> <span class="house__fact-label">{% text "house" "fact_light_well" %}</span></li>
-    <li><span class="house__fact-number">1</span> <span class="house__fact-label">{% text "house" "fact_household" %}</span></li>
-  </ul>
+  {# The facts row drawn in the style of the sketch (house-plan-2d spec AC14 to AC17): the rule is the reference's sketch_line from (4, 7) to (996, 7), width 1.4, random.Random(11), pasted as fixed markup. The icons use #plan-wash of the floor plan. #}
+  <div class="house__facts-drawn reveal">
+    <svg class="house__facts-rule" viewBox="0 0 1000 14" preserveAspectRatio="none" aria-hidden="true" focusable="false"><g class="fact-ink"><path d="M1.8 6.9 Q499.9 7.1 999.0 7.2" stroke-width="1.40" opacity="0.95"/><path d="M1.2 7.5 Q499.2 7.0 998.3 6.6" stroke-width="0.84" opacity="0.55"/></g></svg>
+    <ul class="house__facts house__facts--drawn">
+      <li><svg class="house__fact-icon" viewBox="0 0 98 64" aria-hidden="true" focusable="false"><g filter="url(#plan-wash)"><rect x="8" y="10" width="36" height="48" class="fact-wash"/><rect x="54" y="10" width="36" height="48" class="fact-wash"/></g><g class="fact-ink"><rect x="8" y="10" width="36" height="48" rx="2"/><rect x="54" y="10" width="36" height="48" rx="2"/><rect x="12" y="14" width="28" height="9" rx="3"/><rect x="58" y="14" width="28" height="9" rx="3"/><path d="M8 30 q18 4 36 0 M54 30 q18 4 36 0"/></g></svg><span class="house__fact-number">2</span> <span class="house__fact-label">{% text "house" "fact_bedrooms" %}</span></li>
+      <li><svg class="house__fact-icon" viewBox="0 0 98 64" aria-hidden="true" focusable="false"><g filter="url(#plan-wash)"><circle cx="30" cy="38" r="20" class="fact-green"/><circle cx="68" cy="34" r="16" class="fact-green"/></g><g class="fact-ink fact-ink--thin"><circle cx="30" cy="38" r="20"/><circle cx="68" cy="34" r="16"/><path d="M30 38 l14 -12 M30 38 l18 4 M30 38 l4 18 M30 38 l-14 12 M30 38 l-18 -4 M30 38 l-4 -18 M68 34 l11 -9 M68 34 l14 3 M68 34 l3 14 M68 34 l-11 9 M68 34 l-14 -3"/></g></svg><span class="house__fact-number">2</span> <span class="house__fact-label">{% text "house" "fact_gardens" %}</span></li>
+      <li><svg class="house__fact-icon" viewBox="0 0 98 64" aria-hidden="true" focusable="false"><g filter="url(#plan-wash)"><path d="M26 34 H72 V52 Q72 58 66 58 H32 Q26 58 26 52 Z" class="fact-moss"/></g><g class="fact-ink"><path d="M26 34 H72 V52 Q72 58 66 58 H32 Q26 58 26 52 Z" stroke-width="2.2"/><path d="M22 34 H76"/><path d="M18 40 H26 M72 40 H80"/><path d="M40 26 q-4 -5 0 -10 q4 -5 0 -10 M50 26 q-4 -5 0 -10 q4 -5 0 -10 M60 26 q-4 -5 0 -10 q4 -5 0 -10" stroke-width="1.2"/><path d="M4 60 H94"/></g></svg><span class="house__fact-number">1</span> <span class="house__fact-label">{% text "house" "fact_kitchen" %}</span></li>
+      <li><svg class="house__fact-icon" viewBox="0 0 98 64" aria-hidden="true" focusable="false"><g filter="url(#plan-wash)"><path d="M18 58 V32 L49 12 L80 32 V58 Z" class="fact-wash"/><circle cx="35" cy="44" r="7" class="fact-rust"/></g><g class="fact-ink"><path d="M12 35 L49 10 L86 35"/><path d="M18 31 V58 H80 V31"/><circle cx="35" cy="44" r="7"/><circle cx="62" cy="38" r="2.6" fill="#3b2e24"/><path d="M62 41 v9 l-4 8 M62 50 l4 8 M62 44 l-5 4 M62 44 l5 4"/><path d="M4 58 H94"/></g></svg><span class="house__fact-number">1</span> <span class="house__fact-label">{% text "house" "fact_household" %}</span></li>
+    </ul>
+  </div>
 
   <div class="house__details">
-    <div class="house__layout reveal">
-      <p class="label muted">{% text "house" "layout" %}</p>
-      <ul>
-        <li>{% text "house" "layout_bedrooms" %}</li>
-        <li>{% text "house" "layout_bathroom" %}</li>
-        <li>{% text "house" "layout_living" %}</li>
-        <li>{% text "house" "layout_mezzanine" %}</li>
-        <li>{% text "house" "layout_light_well" %}</li>
-        <li>{% text "house" "layout_gardens" %}</li>
-        <li>{% text "house" "layout_veranda" %}</li>
-        <li>{% text "house" "layout_laundry" %}</li>
-      </ul>
-    </div>
     <div class="house__included reveal">
       <p class="label muted">{% text "house" "included" %}</p>
       <p>{% text "house" "included_line" %}</p>

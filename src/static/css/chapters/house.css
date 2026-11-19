@@ -1,8 +1,8 @@
 /* Chapter 01, the house (#house; design-match design.md, "01 ở nhà"). The shared chapter rules
    (spacing, marker, word, heading) are in site.css. Desktop, on 12 columns: the head (columns
    1–7) beside the owner line and "Why Ở" (columns 8–12, at the bottom); the room collage (18px
-   gaps, 72px below), each photo at its own height and shift; the facts row (96px below); then the
-   layout list and "Included" (columns 1–5) beside the walk through the house (columns 7–12).
+   gaps, 72px below), each photo at its own height and shift; the facts row (96px below); then
+   "Included" (columns 1–5) and, across the whole width under it, the walk through the house.
    Phones (760px or less): one column; the collage a swipe carousel that runs to the screen edges,
    one card of 84% of the row at a time (photo box 4 / 5), snapping to the centre one card per
    swipe, with no rise and no zoom inside it; under it the pager ("1 / 5" and five dots), built by
@@ -141,7 +141,7 @@
   color: var(--muted);
 }
 
-/* The layout list, "Included" and the walk through the house */
+/* "Included" and the walk through the house */
 
 .house__details {
   margin-top: 96px;
@@ -151,138 +151,514 @@
   grid-column: 1 / span 5;
 }
 
-.house__layout ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.house__layout li {
-  padding: var(--space-2) 0;
-  border-top: 1px solid var(--line);
-}
-
 .house__included p {
   margin: 0;
 }
 
 .house__included .label {
-  margin-top: var(--space-4);
-}
-
-.house__layout .label,
-.house__included .label {
+  margin-top: 0;
   margin-bottom: var(--space-2);
 }
 
-/* Walk through the house (#floor-plan): a schematic, not the real layout. Blocks in walking order
-   from the front garden to the back garden, drawn with lines only (no image file). Gardens and
-   wide rooms run across the plan; the other rooms sit two by two. */
+/* Walk through the house (#floor-plan): a hand-drawn section and plan (SVG made by
+   pages.house_drawing) on a paper card, with the seven rooms listed beside it in walking order
+   (8 of 12 parts for the card, 4 for the list). The plan lies sideways on wide screens and
+   upright at 860px or less, where the list goes under the card. The buttons of the panel stay
+   hidden until the script of #161 shows them. */
 
 .house__plan {
-  grid-column: 7 / span 6;
-  grid-row: 1 / span 2;
+  grid-column: 1 / -1;
+  grid-row: auto;
   align-self: start;
-  margin: 0;
+  margin: var(--space-4) 0 0;
 }
 
-.floor-plan__heading {
-  margin: 0 0 var(--space-2);
+.plan__heading {
+  margin: 0 0 16px;
   font-weight: inherit;
 }
 
-.floor-plan__drawing {
-  position: relative;
-  padding: var(--space-2) var(--space-2) calc(var(--space-2) + 40px);
-  border: 1px solid var(--line);
+.plan__body {
+  display: grid;
+  grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+  gap: 24px;
+  align-items: start;
 }
 
-.floor-plan__rooms {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-1);
+.plan__paper {
+  position: relative;
+  overflow: hidden;
+  padding: 18px 18px 52px;
+  background: #f3ece0;
+  border: 1px solid #ddd2bf;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
+  color: #3b2e24;
+}
+
+.plan__defs {
+  position: absolute;
+}
+
+.plan__section {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 4px;
+}
+
+.plan__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.plan__svg--v {
+  display: none;
+}
+
+.plan-ink path,
+.plan-wall path {
+  fill: none;
+  stroke: #3b2e24;
+  stroke-linecap: round;
+}
+
+.plan-wall--fence path {
+  stroke-dasharray: 5 4;
+}
+
+.plan-wash {
+  opacity: 0.55;
+}
+
+.plan-wash--room {
+  fill: #e2bfa4;
+}
+
+.plan-wash--wet {
+  fill: #d8c6b4;
+}
+
+.plan-wash--garden {
+  fill: #b9c58f;
+  opacity: 0.42;
+}
+
+.plan-edge {
+  fill: none !important;
+  stroke-width: 3;
+  opacity: 0.35;
+}
+
+.plan-edge.plan-wash--room {
+  stroke: #c99a7a;
+}
+
+.plan-edge.plan-wash--wet {
+  stroke: #b9a48f;
+}
+
+.plan-tree__wash {
+  fill: #e7dfae;
+  opacity: 0.75;
+}
+
+.plan-tree--out .plan-tree__wash {
+  fill: #e9e2bd;
+}
+
+.plan-tree__ring {
+  fill: none;
+  stroke: #9a8f6a;
+  stroke-width: 0.8;
+}
+
+.plan-tree__spokes path {
+  stroke: #9a8f6a;
+  stroke-width: 0.6;
+}
+
+.plan-round__ink {
+  fill: none;
+  stroke: #3b2e24;
+  stroke-width: 2.4;
+}
+
+.plan-sky {
+  fill: none;
+  stroke: #3b2e24;
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.plan-furn {
+  fill: none;
+  stroke: #3b2e24;
+  stroke-width: 1;
+  opacity: 0.7;
+}
+
+.plan-arrow {
+  fill: none;
+  stroke: #3b2e24;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.plan__label {
+  font: italic 500 15px/1 var(--font-serif, "Cormorant Garamond", serif);
+  fill: #3b2e24;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.plan__note {
+  font: 500 10px/1 var(--font-sans, sans-serif);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  fill: #7a6b5c;
+  text-anchor: middle;
+}
+
+.sec-hill {
+  fill: #a9b97c;
+  opacity: 0.45;
+}
+
+.sec-tree {
+  fill: #8fa462;
+  opacity: 0.55;
+}
+
+.sec-trunk {
+  fill: none;
+  stroke: #3b2e24;
+  stroke-width: 1.2;
+}
+
+.sec-wall {
+  fill: #c9a88d;
+  opacity: 0.6;
+}
+
+.sec-wall--main {
+  fill: #b99a80;
+}
+
+.sec-corr {
+  fill: none;
+  stroke: #3b2e24;
+  stroke-width: 0.9;
+}
+
+.sec-round {
+  fill: #b5642f;
+  opacity: 0.75;
+}
+
+.sec-arch {
+  fill: #f3ece0;
+  stroke: #3b2e24;
+  stroke-width: 1.3;
+}
+
+.sec-person circle {
+  fill: #3b2e24;
+}
+
+.sec-person path {
+  fill: none;
+  stroke: #3b2e24;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.plan__hit {
+  fill: transparent;
+  stroke: transparent;
+  stroke-width: 3;
+  transition:
+    fill 0.25s ease,
+    stroke 0.25s ease;
+}
+
+.plan__room {
+  cursor: pointer;
+  outline: none;
+}
+
+.plan__room:hover .plan__hit {
+  fill: rgba(63, 90, 58, 0.12);
+}
+
+.plan__room:focus-visible .plan__hit {
+  stroke: #3f5a3a;
+  stroke-dasharray: 4 3;
+}
+
+.plan__room.is-on .plan__hit {
+  fill: rgba(63, 90, 58, 0.22);
+  stroke: #3f5a3a;
+  stroke-width: 3;
+}
+
+.plan__room.is-on .plan__label {
+  font-weight: 700;
+}
+
+.plan__chip {
+  position: absolute;
+  left: 18px;
+  bottom: 14px;
+}
+
+.plan__panel {
+  position: sticky;
+  top: calc(var(--header-height, 64px) + 16px);
+}
+
+.plan__bar {
+  display: none;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+
+.plan__step,
+.plan__close {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: none;
+  color: var(--ink);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.plan__step:hover,
+.plan__close:hover,
+.plan__step:focus-visible,
+.plan__close:focus-visible {
+  background: var(--sand);
+}
+
+.plan__close {
+  display: none;
+}
+
+.plan__hint {
+  margin: 0;
+  padding: 24px;
+  border: 1px dashed var(--line);
+  color: var(--muted);
+  font: italic 22px/1.3 var(--font-serif, serif);
+}
+
+.plan__rooms {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.floor-plan__part--garden,
-.floor-plan__part--wide {
-  grid-column: 1 / -1;
+.plan-room {
+  padding: 0 0 24px;
+  outline: none;
+  scroll-margin-top: calc(var(--header-height) + var(--space-2));
 }
 
-.floor-plan__room {
-  display: flex;
-  align-items: center;
-  min-height: 56px;
-  height: 100%;
-  padding: var(--space-1) var(--space-2);
-  border: 1px solid var(--ink);
-  color: var(--ink);
-  font-size: var(--size-body);
-  line-height: 1.3;
+.plan-room + .plan-room {
+  border-top: 1px solid var(--line);
+  padding-top: 24px;
 }
 
-.floor-plan__part--garden .floor-plan__room {
-  border-style: dashed;
-  border-color: var(--muted);
-  color: var(--muted);
+.plan-room__count {
+  margin: 0 0 6px;
+  font-variant-numeric: tabular-nums;
 }
 
-a.floor-plan__room {
-  background: var(--sand);
-  text-decoration: underline;
-  text-underline-offset: 3px;
+.plan-room__name {
+  margin: 0 0 14px;
+  font: 400 34px/1.05 var(--font-serif, serif);
 }
 
-a.floor-plan__room::after {
-  content: "↗";
-  content: "↗" / ""; /* a mark for the eye only: screen readers skip it */
-  margin-left: auto;
-  padding-left: var(--space-1);
-  text-decoration: none;
-}
-
-a.floor-plan__room:hover,
-a.floor-plan__room:focus-visible {
-  border-color: var(--ink);
-  background: var(--ground);
-}
-
-.floor-plan__dialog {
-  width: min(880px, calc(100% - 2 * var(--space-2)));
-  max-height: calc(100% - 2 * var(--space-2));
-  padding: var(--space-2);
-  border: 1px solid var(--line);
-  background: var(--ground);
-  color: var(--ink);
-}
-
-.floor-plan__dialog::backdrop {
-  background: var(--chip);
-}
-
-.floor-plan__dialog .media {
+.plan-room__media {
   margin: 0;
 }
 
-/* At most 70% of the screen high, so a tall photo still leaves its chip, credit and Close in
-   view; the width follows from the photo's ratio (set by the script). */
-.floor-plan__box {
-  width: min(100%, calc(70vh * var(--photo-ratio, 1.5)));
-  margin: 0 auto;
+.plan-room__box {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
 }
 
-.floor-plan__box img {
+.plan-room__box img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.floor-plan__dialog form {
-  margin-top: var(--space-2);
-  text-align: right;
+.plan-room__box--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sand);
+}
+
+.plan-room__mark {
+  font: 400 64px/1 var(--font-serif, serif);
+  color: var(--sand-ink, #b8ae98);
+}
+
+.plan-room__text {
+  margin: 12px 0 0;
+}
+
+/* With the script (floor-plan.js): one room at a time. */
+.plan.js .plan-room {
+  display: none;
+  padding: 0;
+  border: 0;
+}
+
+.plan.js .plan-room.is-on {
+  display: block;
+  animation: plan-in 0.3s ease;
+}
+
+.plan.js .plan__bar {
+  display: flex;
+}
+
+.plan.js.is-open .plan__hint {
+  display: none;
+}
+
+.plan.js:not(.is-open) .plan__bar {
+  display: none;
+}
+
+@keyframes plan-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.plan__note-line {
+  margin-top: 10px;
+}
+
+@media (max-width: 860px) {
+  .plan__body {
+    grid-template-columns: 1fr;
+  }
+
+  .plan__paper {
+    padding: 12px 10px 48px;
+  }
+
+  .plan__svg--h {
+    display: none;
+  }
+
+  .plan__svg--v {
+    display: block;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  .plan__label {
+    font-size: 16px;
+  }
+
+  .plan__hint {
+    padding: 14px 16px;
+    font-size: 19px;
+  }
+
+  .plan-room__name {
+    font-size: 30px;
+  }
+
+  .plan-room__box {
+    aspect-ratio: 16 / 10;
+  }
+
+  /* The room panel becomes a bottom sheet, above the header and the contact bar. */
+  .plan.js .plan__panel {
+    position: static;
+  }
+
+  .plan.js.is-open .plan__panel {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    z-index: 60;
+    max-height: 76vh;
+    overflow-y: auto;
+    padding: 0 16px max(20px, env(safe-area-inset-bottom));
+    background: var(--ground);
+    border-top: 1px solid var(--line);
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.2);
+    animation: plan-up 0.3s ease;
+  }
+
+  .plan.js.is-open .plan__bar {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 12px 0 8px;
+    margin: 0;
+    background: var(--ground);
+  }
+
+  .plan.js.is-open .plan__close {
+    display: inline-block;
+    margin-left: auto;
+    order: 3;
+  }
+
+  .plan.js.is-open .plan__step[data-step="-1"] {
+    order: 1;
+  }
+
+  .plan.js.is-open .plan__step[data-step="1"] {
+    order: 2;
+  }
+}
+
+.plan.js.is-instant .plan-room.is-on, .plan.js.is-open.is-instant .plan__panel {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plan.js .plan-room.is-on,
+  .plan.js.is-open .plan__panel {
+    animation: none;
+  }
+}
+
+@keyframes plan-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @media (max-width: 760px) {
@@ -402,4 +778,31 @@ a.floor-plan__room:focus-visible {
   .house__dots button::before {
     transition: none;
   }
+}
+
+/* The facts row as small watercolour drawings (house-plan-2d spec AC14 to AC17; the reference's
+   FACTS_CSS). Last in the file so the --drawn rules win over .house__facts at equal specificity;
+   its 760px block stays a separate last block. */
+.house__facts-drawn { margin: 96px 0 0; }
+.house__facts-rule { display: block; width: 100%; height: 14px; }
+.house__facts--drawn { margin: 0; padding: var(--space-3) 0 0; border-top: 0; }
+.house__facts--drawn li { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 16px; align-items: end; }
+.house__fact-icon { grid-row: 1 / span 2; width: 118px; height: 77px; overflow: visible; }
+.house__facts--drawn .house__fact-number { font-style: italic; font-size: 72px; line-height: .9; }
+.house__facts--drawn .house__fact-label { margin-top: 4px; font-family: var(--font-serif); font-style: italic; font-size: 20px; line-height: 1.2; }
+.fact-ink rect, .fact-ink path, .fact-ink circle:not([fill]) { fill: none; stroke: #3b2e24; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.fact-ink--thin path, .fact-ink--thin circle { stroke: #8a7d58; stroke-width: .9; }
+.fact-wash { fill: #e2bfa4; opacity: .7; }
+.fact-green { fill: #c9d29a; opacity: .8; }
+.fact-moss { fill: #6f8a4f; opacity: .7; }
+.fact-rust { fill: #b5642f; opacity: .75; }
+body[data-daypart="night"] .fact-ink rect, body[data-daypart="night"] .fact-ink path, body[data-daypart="night"] .fact-ink circle:not([fill]) { stroke: #e9e2d3; }
+body[data-daypart="night"] .fact-ink circle[fill] { fill: #e9e2d3; }
+@media (max-width: 760px) {
+  .house__facts-drawn { margin-top: 64px; }
+  .house__facts--drawn { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 28px; }
+  .house__facts--drawn li { grid-template-columns: 1fr; }
+  .house__fact-icon { grid-row: auto; width: 78px; height: 51px; margin-bottom: 6px; }
+  .house__facts--drawn .house__fact-number { font-size: 52px; }
+  .house__facts--drawn .house__fact-label { font-size: 17px; }
 }

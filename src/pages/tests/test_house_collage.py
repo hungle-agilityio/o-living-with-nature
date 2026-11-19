@@ -31,7 +31,7 @@ COLLAGE = [
 FACTS = [
     ("2", "bedrooms"),
     ("2", "gardens"),
-    ("1", "light well"),
+    ("1", "real kitchen"),
     ("1", "household at a time"),
 ]
 
@@ -108,7 +108,6 @@ def test_chapter_parts_come_in_order(client: Client) -> None:
         'class="house__why',
         'class="house__collage"',
         'class="house__facts',
-        'class="house__layout',
         'class="house__included',
         'id="floor-plan"',
     ]
@@ -168,10 +167,11 @@ def test_room_label_uses_the_11px_capitals_of_the_site_label(client: Client) -> 
 
 
 def test_facts_row_shows_four_numbers_over_labels(client: Client) -> None:
-    facts = _block(_house(client), "house__facts reveal")
+    facts = _block(_house(client), "house__facts house__facts--drawn")
 
     pairs = re.findall(
-        r'<li>\s*<span class="house__fact-number">(.*?)</span>\s*'
+        r'<li>\s*<svg class="house__fact-icon"[^>]*>.*?</svg>\s*'
+        r'<span class="house__fact-number">(.*?)</span>\s*'
         r'<span class="house__fact-label">(.*?)</span>\s*</li>',
         facts,
         re.S,
@@ -243,8 +243,7 @@ def test_blocks_of_the_chapter_carry_reveal(client: Client) -> None:
     for css_class in (
         "house__owner quote reveal",
         "house__why reveal",
-        "house__facts reveal",
-        "house__layout reveal",
+        "house__facts-drawn reveal",
         "house__included reveal",
     ):
         assert f'class="{css_class}"' in house, css_class

@@ -36,49 +36,30 @@ VI_ROOMS = ["Phòng ngủ · hai", "Giếng trời", "Hiên nhà", "Phòng khác
 VI_FACTS = [
     ("2", "phòng ngủ"),
     ("2", "khoảng vườn"),
-    ("1", "giếng trời"),
+    ("1", "gian bếp thật"),
     ("1", "hộ thuê một lúc"),
-]
-VI_LAYOUT = [
-    "Hai phòng ngủ",
-    "Một phòng tắm",
-    "Phòng khách và bếp",
-    "Gác lửng",
-    "Giếng trời",
-    "Vườn trước và vườn sau",
-    "Hiên có mái che",
-    "Khu giặt, phơi và kho",
 ]
 VI_INCLUDED = "Nội thất cơ bản. Chăm vườn mỗi tuần một lần. Có thể sắp xếp người dọn dẹp."
 VI_BLOCKS = [
     "Vườn trước",
-    "Phòng khách và bếp",
-    "Giếng trời",
+    "Bếp",
+    "Phòng vệ sinh",
+    "Giặt và phơi",
     "Phòng ngủ 1",
     "Phòng ngủ 2",
-    "Phòng tắm",
-    "Gác lửng",
-    "Hiên có mái che",
     "Vườn sau",
-    "Giặt, phơi và kho",
 ]
 EN_BLOCKS = [
     "Front garden",
-    "Living room and kitchen",
-    "Light well",
+    "Kitchen",
+    "Bathroom",
+    "Laundry and drying",
     "Bedroom 1",
     "Bedroom 2",
-    "Bathroom",
-    "Mezzanine",
-    "Covered veranda",
     "Back garden",
-    "Laundry, drying and storage",
 ]
-NO_PHOTO_VI = ["Vườn trước", "Phòng tắm", "Vườn sau", "Giặt, phơi và kho"]
-VI_SCHEMATIC_NOTE = (
-    "Sơ đồ tạm cho đến khi có bản vẽ của kiến trúc sư: đây là các phòng của căn nhà, "
-    "chưa phải cách bố trí thật."
-)
+NO_PHOTO_VI = ["Vườn trước", "Phòng vệ sinh", "Giặt và phơi"]
+VI_NOTE = "Phác tay mặt bằng 6 × 18 m, chưa phải bản vẽ của kiến trúc sư."
 
 # The English texts written in house.html (the greeting is left out, it comes from the owner).
 EN_HOUSE_TEXTS = [
@@ -94,14 +75,6 @@ EN_HOUSE_TEXTS = [
     "bedrooms",
     "gardens",
     "household at a time",
-    "The layout",
-    "Two bedrooms",
-    "One bathroom",
-    "Living room and kitchen",
-    "Mezzanine",
-    "Front and back gardens",
-    "Covered veranda",
-    "Laundry, drying and storage area",
     "Included",
     "Basic furniture",
     "Garden care once a week",
@@ -111,8 +84,6 @@ EN_HOUSE_TEXTS = [
     "Bedroom 1",
     "Bedroom 2",
     "Bathroom",
-    "Schematic",
-    "Close",
 ]
 
 EN_HOA_XUAN_TEXTS = [
@@ -170,10 +141,17 @@ def _block(html: str, css_class: str) -> str:
     return match.group(2)
 
 
-def _rooms(html: str) -> list[tuple[str, str]]:
-    """The floor plan blocks in order: (name, tag), where tag is `a` for a link."""
-    found = re.findall(r'<(a|span) class="floor-plan__room"[^>]*>(.*?)</\1>', html, re.DOTALL)
-    return [(_text(name), tag) for tag, name in found]
+def _rooms(html: str) -> list[tuple[str, bool]]:
+    """The rooms of the list in order: (name, whether the item has a photo)."""
+    rooms = re.search(r'<ol class="plan__rooms">(.*?)</ol>', html, re.DOTALL)
+    assert rooms, "no list of rooms"
+    items = re.findall(r'<li class="plan-room"[^>]*>(.*?)</li>', rooms.group(1), re.DOTALL)
+    found = []
+    for item in items:
+        name = re.search(r'<h4 class="plan-room__name">(.*?)</h4>', item, re.DOTALL)
+        assert name, item
+        found.append((_text(name.group(1)), "<img" in item))
+    return found
 
 
 def _attrs(html: str, name: str) -> list[str]:
@@ -206,9 +184,8 @@ def test_vi_house_chapter_shows_every_vietnamese_text_and_no_english_one(client:
         re.DOTALL,
     )
     assert [(_text(n), _text(label)) for n, label in facts] == VI_FACTS
-    layout = _block(house, "house__layout")
-    assert "Bố cục" in _text(layout)
-    assert [_text(i) for i in re.findall(r"<li>(.*?)</li>", layout, re.DOTALL)] == VI_LAYOUT
+    assert "house__layout" not in house
+    assert "Bố cục" not in text
     assert _text(_block(house, "house__included")) == f"Đã bao gồm {VI_INCLUDED}"
     for english in EN_HOUSE_TEXTS:
         assert english not in text, english
@@ -216,31 +193,39 @@ def test_vi_house_chapter_shows_every_vietnamese_text_and_no_english_one(client:
 
 def test_vi_walk_through_the_house_in_vietnamese(client: Client) -> None:
     house = _chapter(_get(client, "/vi/"), "house")
-    plan = re.search(r'<figure id="floor-plan".*?</figure>', house, re.DOTALL)
+    plan = re.search(
+        r'<figure id="floor-plan".*</figure>(?=\s*<script src="/static/js/floor-plan.js")',
+        _get(client, "/vi/"),
+        re.DOTALL,
+    )
     assert plan
 
     assert "Đi một vòng quanh nhà" in _text(plan.group(0))
     assert [name for name, _ in _rooms(plan.group(0))] == VI_BLOCKS
-    assert _text(_block(plan.group(0), "media__chip floor-plan__chip")) == "Sơ đồ"
-    assert VI_SCHEMATIC_NOTE in _text(plan.group(0))
-    dialog = re.search(r"<dialog.*?</dialog>", house, re.DOTALL)
-    assert dialog
-    assert 'aria-label="Ảnh"' in dialog.group(0)
-    assert "Ảnh minh hoạ" in _text(dialog.group(0))
-    assert _text(_block(dialog.group(0), "button button--secondary floor-plan__close")) == "Đóng"
+    assert _text(_block(plan.group(0), "media__chip plan__chip")) == (
+        "Phác thảo · không theo tỉ lệ"
+    )
+    assert VI_NOTE in _text(plan.group(0))
+    assert '<dialog class="floor-plan__dialog"' not in house
     assert 'aria-label="Photo"' not in house
+    for label in ("Phòng trước", "Phòng sau", "Đóng"):
+        assert f'aria-label="{label}"' in plan.group(0), label
 
 
-def test_vi_blocks_without_a_photo_keep_their_name_and_have_no_link(client: Client) -> None:
+def test_vi_rooms_without_a_photo_show_the_empty_block(client: Client) -> None:
     plan = _chapter(_get(client, "/vi/"), "house")
 
     rooms = dict(_rooms(plan))
     for name in NO_PHOTO_VI:
-        assert rooms[name] == "span", name
+        assert rooms[name] is False, name
     for name in set(VI_BLOCKS) - set(NO_PHOTO_VI):
-        assert rooms[name] == "a", name
-    linked = re.findall(r'<a class="floor-plan__room" href="[^"]+"', plan)
-    assert len(linked) == len(VI_BLOCKS) - len(NO_PHOTO_VI)
+        assert rooms[name] is True, name
+    linked = re.findall(r'<a class="plan__room" href="#room-[\w-]+"', plan)
+    assert len(linked) == 2 * len(VI_BLOCKS)
+    items = re.findall(r'<li class="plan-room"[^>]*>.*?</li>', plan, re.DOTALL)
+    for item, name in zip(items, VI_BLOCKS, strict=True):
+        if name in NO_PHOTO_VI:
+            assert "Chưa có ảnh phòng này" in item, name
 
 
 def test_vi_hoa_xuan_chapter_shows_every_vietnamese_text_and_the_same_maps_link(
@@ -281,14 +266,13 @@ def test_en_house_and_hoa_xuan_chapters_keep_every_english_text(client: Client) 
     for english in EN_HOA_XUAN_TEXTS:
         assert english in area, english
     assert [n for n, _ in _rooms(_chapter(html, "house"))] == EN_BLOCKS
-    assert 'aria-label="Photo"' in html
     assert "Ảnh" not in house
 
 
-def test_floor_plan_blocks_default_to_english() -> None:
-    assert [block.name for block in floor_plan.blocks()] == EN_BLOCKS
-    assert [block.name for block in floor_plan.blocks(language="en")] == EN_BLOCKS
-    assert [block.name for block in floor_plan.blocks(language="vi")] == VI_BLOCKS
+def test_floor_plan_rooms_default_to_english() -> None:
+    assert [room.name for room in floor_plan.rooms()] == EN_BLOCKS
+    assert [room.name for room in floor_plan.rooms(language="en")] == EN_BLOCKS
+    assert [room.name for room in floor_plan.rooms(language="vi")] == VI_BLOCKS
 
 
 def test_every_photo_has_the_vietnamese_alt_text_of_the_spec() -> None:
@@ -310,15 +294,14 @@ def test_vi_page_alts_loop_label_data_alt_and_credits_are_vietnamese(client: Cli
     assert not alts & english_alts
     assert f'aria-label="{VI_LOOP_LABEL}"' in chapters
     assert photos.AREA_LOOP.label not in chapters
-    data_alts = _attrs(chapters, "data-alt")
-    assert data_alts
-    assert set(data_alts) <= set(VI_ALTS.values())
     credits = re.findall(r'<figcaption class="media__credit">(.*?)</figcaption>', chapters)
     credits += _attrs(chapters, "data-credit")
     assert credits
     for credit in credits:
         text = _text(credit)
-        assert text in ("", "Video: Pexels", VI_SCHEMATIC_NOTE) or text.startswith("Ảnh: "), text
+        assert text in ("", "Video: Pexels", "Chưa có ảnh phòng này") or text.startswith("Ảnh: "), (
+            text
+        )
         assert not text.startswith("Photo: "), text
     assert "Video: Pexels" in chapters
 
