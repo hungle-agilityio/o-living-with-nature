@@ -31,6 +31,11 @@
         update();
       }, 0);
     });
+    // A page restored from the back-forward cache may keep focus in the form with no focusout.
+    window.addEventListener("pageshow", function () {
+      typing = form.contains(document.activeElement);
+      update();
+    });
   }
 
   // No observer: mark the page ready at once, so the bar shows as it does without the script.
