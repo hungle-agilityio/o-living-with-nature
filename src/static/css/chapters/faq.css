@@ -2,11 +2,11 @@
    desktop and 60px on phones (design.md), / 0.7 for small capitals.
 
    Two columns (issue #83): a 12-column grid with 40px gaps. The side block (columns 1–4) holds
-   the head, a Line rule, the owner's line and the contact buttons, and stays in place while the
+   the head, a Line rule, the owner's line, and stays in place while the
    questions (columns 6–12) scroll. Each question is a row with a "+" (closed) or "–" (open) in
    Cormorant on the right; the details element opens and closes on its own, with no script, and
    name="faq" keeps one open at a time. On phones the chapter is one column: head, questions,
-   then the owner's line and the buttons. */
+   then the owner's line. */
 
 .chapter--faq h2 {
   margin-top: var(--space-4);

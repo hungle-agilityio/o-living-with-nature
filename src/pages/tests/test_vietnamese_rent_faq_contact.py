@@ -21,7 +21,7 @@ pytestmark = pytest.mark.django_db
 
 NUMBER = "0945 384 500"
 CHANNELS = ("call", "whatsapp", "zalo")
-PLACES = ("bar", "rent", "faq", "contact")
+PLACES = ("bar", "contact")
 
 EN_PRICE = "From 13–14 million VND a month"
 VI_PRICE = "Từ 13–14 triệu đồng mỗi tháng"
@@ -167,7 +167,7 @@ def test_m28_rent_chapter_in_vietnamese(client: Client) -> None:
     line = _section(rent, r'<p class="rent__line big">.*?</p>')
     assert _plain(line) == VI_PRICE
     assert _accents(line) == ["triệu", "mỗi tháng"]
-    assert _buttons(rent) == VI_BUTTONS
+    assert _buttons(rent) == []
     for term in VI_TERMS:
         assert term in _plain(_section(rent, r'<ul class="rent__terms">.*?</ul>'))
     quote = _section(rent, r"<blockquote>.*?</blockquote>")
@@ -191,7 +191,7 @@ def test_m28_faq_chapter_in_vietnamese(client: Client) -> None:
         for item in items
     ] == VI_QUESTIONS
     assert 'name="faq"' in faq
-    assert _buttons(faq) == VI_BUTTONS
+    assert _buttons(faq) == []
 
 
 def test_m28_contact_chapter_in_vietnamese(client: Client) -> None:
@@ -237,7 +237,7 @@ def test_m28_english_page_keeps_its_values(client: Client) -> None:
         assert expected in rent
     for expected in EN_FAQ_TEXTS:
         assert expected in faq
-    assert _buttons(_chapter(html, "rent")) == ["Call", "WhatsApp", "Zalo"]
+    assert _buttons(_chapter(html, "rent")) == []
     assert _buttons(_bar(html)) == ["Call", "WhatsApp", "Zalo"]
     assert _plain(_heading(_chapter(html, "contact"))) == "Will you stay?"
     assert _accents(_section(_chapter(html, "rent"), r'<p class="rent__line big">.*?</p>')) == [
@@ -306,8 +306,8 @@ def test_m31_buttons_keep_their_link_channel_and_place_in_both_languages(client:
         (channel, place) for channel in CHANNELS for place in PLACES
     }
     assert vietnamese == english
-    assert ("tel:+84945384500", "call", "rent") in vietnamese
-    assert ("https://wa.me/84945384500", "whatsapp", "faq") in vietnamese
+    assert ("tel:+84945384500", "call", "bar") in vietnamese
+    assert ("https://wa.me/84945384500", "whatsapp", "contact") in vietnamese
     assert ("https://zalo.me/0945384500", "zalo", "contact") in vietnamese
 
 

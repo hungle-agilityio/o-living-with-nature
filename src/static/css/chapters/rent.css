@@ -1,10 +1,9 @@
 /* Chapter 03, the rent (#rent), design-match design.md "03 ở lâu". The shared chapter rules
    (container, marker, word, heading) are in site.css. Desktop: a 12-column grid with 24px gaps.
    Columns 1–6: the head, the price line in Be Vietnam Pro 300 capitals at 84px (56px under the
-   heading), the buttons (36px under it) and the terms (48px under them). Columns 8–12: the tea
+   heading) and the terms (48px under the price line). Columns 8–12: the tea
    photo, 560px high, then the owner's quote in Cormorant 24px. The photo and quote come first
-   in the source; on phones (one column) they move under the terms, the photo at 4 / 5.
-   The buttons themselves are in contact.css. */
+   in the source; on phones (one column) they move under the terms, the photo at 4 / 5. */
 
 .chapter--rent {
   position: relative;
@@ -45,10 +44,6 @@
 .rent__line .accent {
   font-variant-caps: normal;
   font-size: 0.7em;
-}
-
-.rent__buttons {
-  margin-top: 36px;
 }
 
 .rent__terms-block {

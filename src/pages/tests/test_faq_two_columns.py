@@ -112,7 +112,7 @@ def test_side_block_comes_before_the_list(client: Client) -> None:
 # AC2: head, rule, the owner's line, the buttons with place="faq"
 
 
-def test_side_block_holds_the_head_the_line_and_the_buttons(client: Client) -> None:
+def test_side_block_holds_the_head_and_the_line(client: Client) -> None:
     side = _element(_faq(client), "div", "faq-side")
 
     assert "04 · questions" in _text(side)
@@ -122,10 +122,9 @@ def test_side_block_holds_the_head_the_line_and_the_buttons(client: Client) -> N
     assert line.group(1) == (
         'Hi, I&#x27;m Bún. <span class="accent">I usually reply within an hour.</span>'
     )
-    links = re.findall(r"<a [^>]*data-channel=[^>]*>", side)
-    assert links
-    assert all('data-place="faq"' in link for link in links)
-    assert side.index("<h2") < side.index("faq-side__line") < side.index("contact-buttons")
+    assert not re.findall(r"<a [^>]*data-channel=[^>]*>", side)
+    assert "contact-buttons" not in side
+    assert side.index("<h2") < side.index("faq-side__line")
 
 
 def test_owner_line_follows_the_owner_values(client: Client) -> None:
