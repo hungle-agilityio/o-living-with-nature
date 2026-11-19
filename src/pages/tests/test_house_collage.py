@@ -108,7 +108,6 @@ def test_chapter_parts_come_in_order(client: Client) -> None:
         'class="house__why',
         'class="house__collage"',
         'class="house__facts',
-        'class="house__layout',
         'class="house__included',
         'id="floor-plan"',
     ]
@@ -244,7 +243,6 @@ def test_blocks_of_the_chapter_carry_reveal(client: Client) -> None:
         "house__owner quote reveal",
         "house__why reveal",
         "house__facts reveal",
-        "house__layout reveal",
         "house__included reveal",
     ):
         assert f'class="{css_class}"' in house, css_class
