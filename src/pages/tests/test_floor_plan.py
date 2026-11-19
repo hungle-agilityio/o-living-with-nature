@@ -167,14 +167,14 @@ def test_page_loads_the_floor_plan_script_deferred(client: Client) -> None:
     assert '<script src="/static/js/floor-plan.js" defer></script>' in html
 
 
-def test_script_is_plain_and_opens_the_photo_in_the_dialog() -> None:
+def test_script_is_plain_and_opens_a_room() -> None:
     script = SCRIPT.read_text(encoding="utf-8")
 
-    assert len(script.encode()) < 6_000
+    assert len(script.encode()) < 4_000
     for sign in ("import ", "require(", "http://", "https://", "jQuery", "eval(", "innerHTML"):
         assert sign not in script, sign
     assert '"use strict"' in script
-    assert "showModal" in script
+    assert "plan__room" in script
     assert "preventDefault" in script
     assert "floor-plan" in script
 
